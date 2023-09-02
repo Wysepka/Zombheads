@@ -5,10 +5,11 @@
 
 #include "Data/AssetLoader.h"
 #include "Data/WeaponsPrimaryDataAsset.h"
-#include "Data/AssetLoaderInitializer.h"
+#include "Data/AnimationsPrimaryDataAsset.h"
 
 void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 {
+	
 	if(!AssetManager->IsValid())
 	{
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Asset Manager is not valid"));
@@ -16,6 +17,12 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 
 	}
 	LastAssetManager = AssetManager;
+	LoadWeaponsPrimaryDataAsset();
+	LoadAnimationsPrimaryDataAsset();
+}
+
+void UAssetLoader::LoadWeaponsPrimaryDataAsset()
+{
 	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Weapons");
 	TArray<FPrimaryAssetId> WeaponIDList;
 	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, WeaponIDList);
@@ -35,6 +42,28 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 	}
 }
 
+void UAssetLoader::LoadAnimationsPrimaryDataAsset()
+{
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Animations");
+	TArray<FPrimaryAssetId> AnimationsIDList;
+	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, AnimationsIDList);
+	//LastAssetManager.getpri
+
+	for (const FPrimaryAssetId& AnimationID : AnimationsIDList)
+	{
+		FPrimaryAssetId AssetID = AnimationID;
+		// Get tag/value data for an unloaded weapon
+		FAssetData AssetDataToParse;
+		LastAssetManager->GetPrimaryAssetData(AnimationID, AssetDataToParse);
+		TArray<FName> Bundles;
+		AssetsLoadedDelegate.BindUObject(this, &UAssetLoader::AssetsLoadedCallback, AnimationID);
+		LastAssetManager->LoadPrimaryAsset(AnimationID, Bundles, AssetsLoadedDelegate);
+
+		//AssetDataToParse.
+		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClass.ToString());
+	}
+}
+
 void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 {
 	if(ID.PrimaryAssetType == FName("Weapons"))
@@ -44,10 +73,22 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ERROR: Could not load WeaponsData"));
 			return;
 		}
-		WeaponsDataLoaded = true;
+		bWeaponsDataLoaded = true;
 		if(WeaponsCallbacks.IsBound())
 		{
 			WeaponsCallbacks.Broadcast(WeaponsData);
+		}
+	} else if(ID.PrimaryAssetType == FName("Animations"))
+	{
+		AnimationsData = LastAssetManager->GetPrimaryAssetObject<UAnimationsPrimaryDataAsset>(ID);
+		if (AnimationsData == nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ERROR: Could not load AnimationsData"));
+			return;
+		}
+		bAnimationsDataLoaded = true;
+		if(AnimationsCallbacks.IsBound())
+		{
+			AnimationsCallbacks.Broadcast(AnimationsData);
 		}
 	}
 }
@@ -59,11 +100,26 @@ FWeaponDataAssetLoadedDelegate* UAssetLoader::GetWeaponDataDelegate()
 
 bool UAssetLoader::GetIfWeaponsDataInitialized() const
 {
-	return WeaponsDataLoaded;
+	return bWeaponsDataLoaded;
 }
 
 UWeaponsPrimaryDataAsset* UAssetLoader::GetWeaponsData() const
 {
 	return WeaponsData;
+}
+
+FAnimationsDataAssetLoadedDelegate* UAssetLoader::GetAnimationsDataDelegate()
+{
+	return &AnimationsCallbacks;
+}
+
+bool UAssetLoader::GetIfAnimationsDataInitialized() const
+{
+	return bAnimationsDataLoaded;
+}
+
+UAnimationsPrimaryDataAsset* UAssetLoader::GetAnimationsData() const
+{
+	return AnimationsData;
 }
 

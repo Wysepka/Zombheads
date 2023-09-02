@@ -8,14 +8,18 @@
 #include "Engine/AssetManager.h"
 #include "CoreMinimal.h"
 #include "Data/AssetLoaderInitializer.h"
+#include "Weapons/Usable.h"
 
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE_OneParam(FChangedSlotDelegate , int);
+DECLARE_MULTICAST_DELEGATE_OneParam(FInventoryItemUsedDelegate, const IUsable&)
 class ZOMBHEADS_API IPlayerInventory
 {
 private:
 	//int CurrentSlotEquiped = 0;
+	bool bIsValid;
 
 public:
 	IPlayerInventory();
@@ -28,4 +32,9 @@ public:
 	virtual void DeloadInventory();
 	virtual void Use();
 
+	virtual bool IsAiming();
+	virtual FChangedSlotDelegate* GetChangedSlotDelegate();
+	virtual FInventoryItemUsedDelegate* GetInventoryItemUsedDelegate();
+	
+	virtual bool IsValid();
 };

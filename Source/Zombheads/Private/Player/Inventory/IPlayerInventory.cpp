@@ -7,6 +7,7 @@
 
 IPlayerInventory::IPlayerInventory()
 {
+	bIsValid = true;
 }
 
 IPlayerInventory::~IPlayerInventory()
@@ -30,8 +31,36 @@ void IPlayerInventory::GetWeaponsFromData(UWeaponsPrimaryDataAsset* WeaponsData)
 {
 }
 
-void IPlayerInventory::DeloadInventory(){}
+void IPlayerInventory::DeloadInventory()
+{
+	bIsValid = false;
+}
 
 void IPlayerInventory::Use()
 {
+}
+
+bool IPlayerInventory::IsAiming()
+{
+	return false;
+}
+
+FChangedSlotDelegate* IPlayerInventory::GetChangedSlotDelegate()
+{
+	UE_LOG(LogTemp, Log, TEXT("Returning nullptr from GetChangedSlotDelegate"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Returning nullptr from GetChangedSlotDelegate"));
+	return nullptr;
+}
+
+FInventoryItemUsedDelegate* IPlayerInventory::GetInventoryItemUsedDelegate()
+{
+	UE_LOG(LogTemp, Log, TEXT("Returning nullptr from GetInventoryItemUsedDelegate"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Returning nullptr from GetInventoryItemUsedDelegate"));
+		
+	return nullptr;
+}
+
+bool IPlayerInventory::IsValid()
+{
+	return bIsValid;
 }

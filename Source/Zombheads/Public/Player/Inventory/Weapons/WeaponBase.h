@@ -15,6 +15,8 @@
 #include "Player/Inventory/PlayerInventory.h"
 #include "WeaponBase.generated.h"
 
+
+
 //class UAssetLoader;
 UCLASS()
 class ZOMBHEADS_API AWeaponBase : public AActor , public IUsable
@@ -45,5 +47,4 @@ public:
 	virtual void DeEquip() override;
 	virtual void Initialize() override;
 	virtual void Use() override;
-	
 };

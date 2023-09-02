@@ -3,30 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Player/Inventory/Weapons/WeaponBase.h"
-#include "WeaponFirearm.generated.h"
+#include "Engine/DataAsset.h"
+#include "PDA_Character.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZOMBHEADS_API AWeaponFirearm : public AWeaponBase
+class ZOMBHEADS_API UPDA_Character : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere , Category = "Firearm")
-	USceneComponent* Muzzle;
+	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
+	float PlayerWalkingSpeed = 1.f;
+
+	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
+	float PlayerRunningSpeed = 1.f;
 
 public:
-	virtual void Use() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Firearm")
-	void SetMuzzleSceneComponent(USceneComponent* value)
-	{
-		this->Muzzle = value;
-	}
-
-	virtual EItemType GetUsableType() const override {return EItemType::Firearm;}
+	float GetPlayerWalkingSpeed();
+	float GetPlayerRunningSpeed();
 	
 };

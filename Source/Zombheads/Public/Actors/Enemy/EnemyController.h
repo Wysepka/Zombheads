@@ -21,9 +21,14 @@ private:
 
 	UPROPERTY(EditAnywhere , Category = "Settings")
 	float StoppingDistance;
+
+	USceneComponent* TargetPivot;
+	void AssignTargetPivotCallback(USceneComponent* TargetPivot);
 	
 protected:
 	void BeginPlay() override;
+	void MoveToTarget(const FTransform& TargetTransform);
+	void RotateToTarget(const FTransform& TargetTransform , const float DeltaTime) const;
 	void Tick(float DeltaSeconds) override;
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 

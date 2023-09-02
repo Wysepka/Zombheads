@@ -9,6 +9,7 @@
 #include "Engine/AssetManager.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 //#include "Data/WeaponsPrimaryDataAsset.h"
+//#include "AnimationsPrimaryDataAsset.h"
 #include "Delegates/IDelegateInstance.h"
 #include "Engine/StreamableManager.h"
 #include "AssetLoader.generated.h"
@@ -17,8 +18,10 @@
  * 
  */
 class UWeaponsPrimaryDataAsset;
+class UAnimationsPrimaryDataAsset;
 class AAssetLoaderInitializer;
 DECLARE_MULTICAST_DELEGATE_OneParam(FWeaponDataAssetLoadedDelegate , UWeaponsPrimaryDataAsset*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FAnimationsDataAssetLoadedDelegate, UAnimationsPrimaryDataAsset*);
 DECLARE_DELEGATE(FStreamableDelegate);
 class UDataAsset;
 UCLASS(Blueprintable, BlueprintType)
@@ -28,16 +31,25 @@ class ZOMBHEADS_API UAssetLoader : public UObject
 	friend class AAssetLoaderInitializer;
 private:
 	FStreamableDelegate AssetsLoadedDelegate;
+	void LoadWeaponsPrimaryDataAsset();
+	void LoadAnimationsPrimaryDataAsset();
 	void LoadAssets(UAssetManager* AssetManager);
 	void AssetsLoadedCallback(FPrimaryAssetId ID);
 	UAssetManager* LastAssetManager;
 	FWeaponDataAssetLoadedDelegate WeaponsCallbacks;
+	FAnimationsDataAssetLoadedDelegate AnimationsCallbacks;
 
 	UWeaponsPrimaryDataAsset* WeaponsData;
-	bool WeaponsDataLoaded;
+	UAnimationsPrimaryDataAsset* AnimationsData;
+	bool bWeaponsDataLoaded;
+	bool bAnimationsDataLoaded;
 
 public:
 	FWeaponDataAssetLoadedDelegate* GetWeaponDataDelegate();
 	bool GetIfWeaponsDataInitialized() const;
 	UWeaponsPrimaryDataAsset* GetWeaponsData() const;
+
+	FAnimationsDataAssetLoadedDelegate* GetAnimationsDataDelegate();
+	bool GetIfAnimationsDataInitialized() const;
+	UAnimationsPrimaryDataAsset* GetAnimationsData() const;
 };

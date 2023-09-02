@@ -3,6 +3,9 @@
 
 #include "Actors/Enemy/EnemyController.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
+
 void AEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -17,24 +20,59 @@ void AEnemyController::BeginPlay()
 	{
 		UE_LOG(LogTemp , Log , TEXT("Could not find Target of type %s") , *(APlayerPawn::StaticClass()->GetName()))
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find target of type: %s") ,*(APlayerPawn::StaticClass()->GetName()) ));
+		return;
+	}
+
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(Target);
+	if(PlayerPawn == nullptr)
+	{
+		UE_LOG(LogTemp , Log , TEXT("Could not cast PlayerPawn: %s") , *(APlayerPawn::StaticClass()->GetName()))
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not cast PlayerPawn: %s") ,*(APlayerPawn::StaticClass()->GetName()) ));
+		return;
+	}
+	
+	TargetPivot = PlayerPawn->GetPlayerPivot();
+
+	if(TargetPivot == nullptr)
+	{
+		PlayerPawn->GetPlayerPivotInitializedDelegate()->AddUObject(this, &AEnemyController::AssignTargetPivotCallback);
+		//UE_LOG(LogTemp , Log , TEXT("Could not find PlayerPivot on Obj: %s") , *(APlayerPawn::StaticClass()->GetName()))
+		//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find PlayerPivot on Obj: %s") ,*(APlayerPawn::StaticClass()->GetName()) ));
 	}
 }
+
+void AEnemyController::AssignTargetPivotCallback(USceneComponent* TargetPivotCallback)
+{
+	this->TargetPivot = TargetPivotCallback;
+}
+
 
 void AEnemyController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	FTransform TargetTranform = Target->GetTransform();
-	float DistToTarget = FVector::Distance(GetNavAgentLocation(),TargetTranform.GetLocation());
+	MoveToTarget(TargetTranform);
+	RotateToTarget(TargetTranform ,DeltaSeconds);
+}
+
+void AEnemyController::MoveToTarget(const FTransform& TargetTransform)
+{
+	if(TargetPivot == nullptr)
+	{
+		return;
+	}
+	//FTransform TargetTranform = Target->GetTransform();
+	float DistToTarget = FVector::Distance(GetNavAgentLocation(),TargetTransform.GetLocation());
 	if(DistToTarget > StoppingDistance)
 	{
-		if(!IsFollowingAPath())
-		{
+		//if(!IsFollowingAPath())
+		//{
 			//MoveToActor(Target , StoppingDistance);
 			FAIMoveRequest MoveRequest;
-			MoveToActor(Target , StoppingDistance);
-			
+			//MoveToActor(Target , StoppingDistance);
+			MoveToLocation(TargetPivot->GetComponentLocation() , StoppingDistance);
 			//MoveToLocation(GetNavAgentLocation()  + FVector::ForwardVector * 1000.f);
-		}
+		//}
 	} else
 	{
 		if(OnReachedTarget.IsBound())
@@ -43,6 +81,53 @@ void AEnemyController::Tick(float DeltaSeconds)
 		}
 	}
 }
+
+void AEnemyController::RotateToTarget(const FTransform& TargetTransform , const float DeltaTime) const
+{
+	/*
+	FVector DirToTarget = TargetTransform.GetLocation() - GetNavAgentLocation();
+	if(DirToTarget.Normalize())
+	{
+		//USceneComponent* RootComponent = GetRootComponent();
+		RootComponent->SetWorldRotation(DirToTarget.Rotation());
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp , Warning , TEXT("Could not Normalize dir to Target for Agent: %s") , *GetName());
+	}
+	*/
+
+	APawn* ControlledPawn = GetPawn();
+	if(ControlledPawn != nullptr)
+	{
+		//UCharacterMovementComponent* CharacterMovementComponent = ControlledPawn->FindComponentByClass<UCharacterMovementComponent>();
+		UFloatingPawnMovement* FloatingPawnMovement = ControlledPawn->FindComponentByClass<UFloatingPawnMovement>();
+
+		if(FloatingPawnMovement)
+		{
+			FVector Velocity = FloatingPawnMovement->Velocity;
+
+			if (!Velocity.IsNearlyZero())
+			{
+				// Calculate the rotation that points in the direction of movement
+				FRotator DesiredRotation = Velocity.Rotation();
+				DesiredRotation.Pitch = 0.0f; // Optional: Zero out pitch rotation if you want to limit rotation to horizontal plane
+
+				// Interpolate to the desired rotation smoothly
+				FRotator NewRotation = FMath::RInterpTo(ControlledPawn->GetActorRotation(), DesiredRotation,DeltaTime , 2.f);
+
+				// Set the new rotation for the enemy character
+				ControlledPawn->SetActorRotation(NewRotation);
+			}
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f , FColor::Red , FString::Printf(TEXT("Could not find CharacterMovementComponent in enemy: %s") , *GetName()));
+		}
+	}
+}
+
 
 void AEnemyController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {

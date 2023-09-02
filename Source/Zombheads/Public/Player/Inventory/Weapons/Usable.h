@@ -16,15 +16,33 @@ class UUsable : public UInterface
 /**
  * 
  */
+
+UENUM()
+enum class EItemType : uint8
+{
+	Firearm		UMETA(DisplayName = "Firearm"),
+	NoType		UMETA(DisplayName = "NoType"),
+};
+
+class IUsable;
+DECLARE_MULTICAST_DELEGATE_OneParam(FUsableItemUsed , const IUsable&)
 class ZOMBHEADS_API IUsable
 {
 	GENERATED_BODY()
-
+private:
+	FUsableItemUsed ItemUsedDelegate;
+	
 public:
 	virtual void Equip();
 	virtual void DeEquip();
 	virtual void Initialize();
 	virtual void Use();
+
+	virtual EItemType GetUsableType() const {return EItemType::NoType;}
+	virtual FUsableItemUsed* GetUsableItemUsedDelegate() {return &ItemUsedDelegate;}
+	
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 };
+
+

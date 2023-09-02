@@ -38,6 +38,8 @@ private:
 	USoundWave* UnHolsterWeaponSound;
 
 	USkeletalMeshComponent* SkeletalMeshComp;
+	FChangedSlotDelegate ChangedSlotDelegate;
+	FInventoryItemUsedDelegate InventoryItemUsedDelegate;
 
 public:
 	PlayerInventory(USceneComponent* ActiveContainer, USceneComponent* DisabledContainer , AActor* Owner , UWorld* World);
@@ -49,6 +51,10 @@ public:
 	virtual void GetWeaponsFromData(UWeaponsPrimaryDataAsset* WeaponsData) override;
 	virtual void DeloadInventory() override;
 	virtual void Use() override;
+	virtual bool IsAiming() override;
+
+	virtual FChangedSlotDelegate* GetChangedSlotDelegate() override;
+	virtual FInventoryItemUsedDelegate* GetInventoryItemUsedDelegate() override;
 
 	inline const static FString WeaponSocketRightID = FString("Socket_Weapon_Right");
 };

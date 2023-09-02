@@ -43,7 +43,7 @@ void APlayerCharacterWrapper::BeginPlay() {
 	UInventorySceneContainer* ActiveContainer = nullptr;
 	UInventorySceneContainer* DisabledContainer = nullptr;
 	PlayerPawn->GetInventorySceneContainers(ActiveContainer, DisabledContainer);
-
+	
 	if (ActiveContainer == NULL || DisabledContainer == NULL) {
 		UE_LOG(LogTemp, Log, TEXT("One of Inventory Container is NULL"));
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("ERROR: One of Inventory Container is NULL")));
@@ -52,6 +52,7 @@ void APlayerCharacterWrapper::BeginPlay() {
 
 	Inventory = new	PlayerInventory(ActiveContainer, DisabledContainer , ActorPawn , GetWorld());
 
+	PlayerPawn->SetupPlayerPawn(Inventory);
 	/*
 	UAssetManager& AssetManager = UAssetManager::Get();
 	if (AssetManager.IsValid()) {
@@ -84,13 +85,19 @@ void APlayerCharacterWrapper::FindPawnCharRepresentation(AActor* ActorPawn) {
 		UE_LOG(LogTemp, Log, TEXT("Could not find PawnCharRepresentation %s"), *PawnClassName);
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("ERROR: Could not find PawnCharRepresentation Type: %s"), *PawnClassName));
 		return;
-	} 
+	}
+
+	
 }
 
 void APlayerCharacterWrapper::BeginDestroy() {
-	if (Inventory != NULL) {
+	if (Inventory != nullptr) {
 		Inventory->DeloadInventory();
 		delete Inventory;
+	}
+	if(PlayerPawn != nullptr)
+	{
+		PlayerPawn->DisposePlayerPawn();
 	}
 	Super::BeginDestroy();
 }
@@ -226,3 +233,4 @@ void APlayerCharacterWrapper::LookAtMousePos() {
 	}
 	//GetMousePosition(float MouseXPos, float MouseYPos);
 }
+

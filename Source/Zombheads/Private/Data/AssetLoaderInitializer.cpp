@@ -15,7 +15,8 @@ AAssetLoaderInitializer::AAssetLoaderInitializer()
 void AAssetLoaderInitializer::BeginPlay()
 {
 	Super::BeginPlay();
-	AssetLoader->LoadAssets(&UAssetManager::Get());
+	UAssetManager& AssetManager = UAssetManager::Get();
+	AssetLoader->LoadAssets(&AssetManager);
 }
 
 // Called every frame

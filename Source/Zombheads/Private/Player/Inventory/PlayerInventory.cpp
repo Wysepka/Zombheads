@@ -9,8 +9,9 @@
 
 //const FString PlayerInventory::WeaponSocketRightID = FString("Socket_Weapon_Right");
 
-PlayerInventory::PlayerInventory(USceneComponent* ActiveContainer, USceneComponent* DisabledContainer , AActor* Owner , UWorld* World) 
+PlayerInventory::PlayerInventory(USceneComponent* ActiveContainer, USceneComponent* DisabledContainer , AActor* Owner , UWorld* World) : IPlayerInventory()
 {
+	
 	this->ActiveContainer = ActiveContainer;
 	this->DisabledContainer = DisabledContainer;
 	this->World = World;
@@ -117,7 +118,7 @@ void PlayerInventory::GetWeaponsFromData(UWeaponsPrimaryDataAsset* WeaponsData)
 }
 
 void PlayerInventory::DeloadInventory() {
-
+	IPlayerInventory::DeloadInventory();
 }
 
 void PlayerInventory::Use()
@@ -125,8 +126,28 @@ void PlayerInventory::Use()
 	if(CurrentSlotEquiped > 0)
 	{
 		WeaponCache[CurrentSlotEquiped]->Use();
+		if(InventoryItemUsedDelegate.IsBound())
+		{
+			InventoryItemUsedDelegate.Broadcast(*WeaponCache[CurrentSlotEquiped]);
+		}
 	}
 }
+
+bool PlayerInventory::IsAiming()
+{
+	return CurrentSlotEquiped > 0;
+}
+
+FChangedSlotDelegate* PlayerInventory::GetChangedSlotDelegate()
+{
+	return &ChangedSlotDelegate;
+}
+
+FInventoryItemUsedDelegate* PlayerInventory::GetInventoryItemUsedDelegate()
+{
+	return &InventoryItemUsedDelegate;
+}
+
 
 void PlayerInventory::Equip1Slot() {
 	if (CurrentSlotEquiped == 0) {
@@ -142,7 +163,11 @@ void PlayerInventory::Equip1Slot() {
 		WeaponCache[1]->Equip();
 		CurrentSlotEquiped = 1;
 	}
-	
+
+	if(ChangedSlotDelegate.IsBound())
+	{
+		ChangedSlotDelegate.Broadcast(CurrentSlotEquiped);
+	}
 }
 
 void PlayerInventory::Equip2Slot()
@@ -159,6 +184,11 @@ void PlayerInventory::Equip2Slot()
 		WeaponCache[CurrentSlotEquiped]->DeEquip();
 		WeaponCache[2]->Equip();
 		CurrentSlotEquiped = 2;
+	}
+
+	if(ChangedSlotDelegate.IsBound())
+	{
+		ChangedSlotDelegate.Broadcast(CurrentSlotEquiped);
 	}
 }
 
