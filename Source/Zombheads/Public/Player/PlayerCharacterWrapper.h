@@ -15,6 +15,8 @@
 #include "Inventory/IPlayerInventory.h"
 #include "GameFramework/PlayerController.h"
 #include <UObject/Object.h>
+
+#include "CharacterMovement.h"
 #include "Engine/AssetManager.h"
 #include "Engine.h"
 #include "Data/AssetLoader.h"
@@ -33,7 +35,7 @@ enum class EPlayerMovingCoordinates : uint8
 };
 
 UCLASS()
-class ZOMBHEADS_API APlayerCharacterWrapper : public APlayerController
+class ZOMBHEADS_API APlayerCharacterWrapper : public APlayerController , public ICharacterMovement
 {
 GENERATED_BODY()
 
@@ -46,14 +48,40 @@ private:
 	void LookAtMousePos();
 	FVector DesiredPosition;
 	FVector MovementForward;
+	FVector MovementBackward;
 	FVector MovementRight;
-	IPlayerInventory* Inventory;
+	FVector MovementLeft;
+	FVector MovementFinalNormalized;
+	FVector MovementFinal;
+	float WalkSpeedMultiplier;
+	float RunSpeedMultiplier;
+	bool bIsSprinting;
+
+	TSharedPtr<IPlayerInventory> Inventory;
 	void Equip1Slot();
 	void Equip2Slot();
 	void Use();
 	void FindPawnCharRepresentation(AActor* ActorPawn);
 	class USceneComponent* PawnCharRepresentation;
 	APlayerPawn* PlayerPawn;
+
+	void ApplyBaseSpeed(UPDA_Character* Data);
+
+	void MoveForward(const FInputActionValue& Value);
+	void MoveBackwards(const FInputActionValue& Value);
+	void ResetMoveForward();
+	void ResetMoveBackwards();
+	void MoveRight(const FInputActionValue& Value);
+	void MoveLeft(const FInputActionValue& Value);
+	void ResetMoveRight();
+	void ResetMoveLeft();
+	
+	
+	void SprintBegin();
+	void SprintEnd();
+
+	UPROPERTY(EditDefaultsOnly  , Category = "EnhancedInput" , meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputDataAsset> PlayerInputData;
 
 public:
 
@@ -66,9 +94,6 @@ public:
 	UPROPERTY(Category = "Moving", BlueprintReadWrite, EditAnywhere)
 	EPlayerMovingCoordinates moveCoordsType;
 
-	UPROPERTY(Category = "Moving" , BlueprintReadWrite , EditAnywhere)
-	float MovingSpeed;
-
 	UPROPERTY(Category = "Moving", BlueprintReadOnly)
 	FRotator RotationToMousePos;
 
@@ -80,12 +105,6 @@ public:
 
 	UPROPERTY(Category = "Comps", BlueprintReadWrite)
 	FPrimaryAssetType PrimaryAssetTypeTest;
-
-	void MoveCharacter();
-
-	void MoveForward(float value);
-
-	void MoveRight(float value);
 
 	// Helper function to get the scene component pointer
 	UFUNCTION(BlueprintPure, Category = "Comps")
@@ -109,4 +128,9 @@ public:
 	}
 
 	virtual void Tick(float DeltaTime) override;
+
+	virtual float GetCharacterRunSpeed() const override;
+	virtual float GetCharacterWalkSpeed() const override;
+	virtual bool GetIfCharacterSprinting() const override;
+	virtual float GetCharacterMovementMagnitude() const override;
 };

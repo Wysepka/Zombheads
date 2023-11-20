@@ -5,6 +5,11 @@
 #include "Player/PlayerCharacterWrapper.h"
 
 #include "AssetViewUtils.h"
+#include "Data/PDA_Character.h"
+#include "DSP/Encoders/OggVorbisEncoder.h"
+#include "DSP/Encoders/OggVorbisEncoder.h"
+#include "Evaluation/MovieSceneEvaluationKey.h"
+#include "UObject/WeakInterfacePtr.h"
 
 APlayerCharacterWrapper::APlayerCharacterWrapper() {
 }
@@ -15,6 +20,9 @@ APlayerCharacterWrapper::APlayerCharacterWrapper() {
 
 void APlayerCharacterWrapper::BeginPlay() {
 	Super::BeginPlay();
+
+	FInputModeGameOnly InputMode; 
+	SetInputMode(InputMode);
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("BeginPlay from Code"));
 
@@ -40,8 +48,8 @@ void APlayerCharacterWrapper::BeginPlay() {
 		return;
 	}
 
-	UInventorySceneContainer* ActiveContainer = nullptr;
-	UInventorySceneContainer* DisabledContainer = nullptr;
+	TWeakObjectPtr<UInventorySceneContainer> ActiveContainer = nullptr;
+	TWeakObjectPtr<UInventorySceneContainer> DisabledContainer = nullptr;
 	PlayerPawn->GetInventorySceneContainers(ActiveContainer, DisabledContainer);
 	
 	if (ActiveContainer == NULL || DisabledContainer == NULL) {
@@ -50,17 +58,9 @@ void APlayerCharacterWrapper::BeginPlay() {
 		return;
 	}
 
-	Inventory = new	PlayerInventory(ActiveContainer, DisabledContainer , ActorPawn , GetWorld());
+	Inventory = MakeShared<PlayerInventory>(ActiveContainer , DisabledContainer , ActorPawn , GetWorld());
 
-	PlayerPawn->SetupPlayerPawn(Inventory);
-	/*
-	UAssetManager& AssetManager = UAssetManager::Get();
-	if (AssetManager.IsValid()) {
-		AssetManager.StartInitialLoading();
-
-		//Inventory->PreloadInventory(AssetManager);
-	}
-	*/
+	PlayerPawn->SetupPlayerPawn(Inventory , TWeakInterfacePtr<ICharacterMovement>(this));
 
 	AActor* LoaderInitializerActor = UGameplayStatics::GetActorOfClass(GetWorld() , AAssetLoaderInitializer::StaticClass());
 	if(LoaderInitializerActor == nullptr)
@@ -72,6 +72,21 @@ void APlayerCharacterWrapper::BeginPlay() {
 
 	AAssetLoaderInitializer* LoaderInitializer = Cast<AAssetLoaderInitializer>(LoaderInitializerActor);
 	Inventory->PreloadInventory(LoaderInitializer);
+
+	UAssetLoader* AssetLoader = LoaderInitializer->GetAssetLoader();
+	if(AssetLoader->GetIfCharactersDataInitialized())
+	{
+		ApplyBaseSpeed(AssetLoader->GetCharacterData());
+	} else
+	{
+		AssetLoader->GetCharacterDataDelegate()->AddUObject(this, &APlayerCharacterWrapper::ApplyBaseSpeed);
+	}
+}
+
+void APlayerCharacterWrapper::ApplyBaseSpeed(UPDA_Character* Data)
+{
+	WalkSpeedMultiplier = Data->GetPlayerWalkingSpeed();
+	RunSpeedMultiplier = Data->GetPlayerRunningSpeed();
 }
 
 void APlayerCharacterWrapper::FindPawnCharRepresentation(AActor* ActorPawn) {
@@ -93,7 +108,7 @@ void APlayerCharacterWrapper::FindPawnCharRepresentation(AActor* ActorPawn) {
 void APlayerCharacterWrapper::BeginDestroy() {
 	if (Inventory != nullptr) {
 		Inventory->DeloadInventory();
-		delete Inventory;
+		Inventory = nullptr;
 	}
 	if(PlayerPawn != nullptr)
 	{
@@ -102,21 +117,33 @@ void APlayerCharacterWrapper::BeginDestroy() {
 	Super::BeginDestroy();
 }
 
-void APlayerCharacterWrapper::MoveCharacter()
-{
-}
-/*
-void APlayerCharacterWrapper::BeginPlay_Impl() {
-
-}
-*/
 void APlayerCharacterWrapper::SetupInputComponent() {
 	Super::SetupInputComponent();
-	this->InputComponent->BindAxis("MoveForward", this, &APlayerCharacterWrapper::MoveForward);
-	this->InputComponent->BindAxis("MoveRight", this, &APlayerCharacterWrapper::MoveRight);
-	this->InputComponent->BindAction(FName("Slot1"),IE_Pressed, this, &APlayerCharacterWrapper::Equip1Slot);
-	this->InputComponent->BindAction(FName("Slot2") , IE_Pressed , this , &APlayerCharacterWrapper::Equip2Slot);
-	this->InputComponent->BindAction(FName("Use") , IE_Pressed , this, &APlayerCharacterWrapper::Use);
+
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer());
+	InputSubsystem->AddMappingContext(PlayerInputData->GetPlayerMappingContext().Get() , 0);
+	
+	UEnhancedInputComponent* Eic = Cast<UEnhancedInputComponent>(this->InputComponent);
+
+	Eic->BindAction(PlayerInputData->GetPlayerMoveForwardAction().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::MoveForward);
+	Eic->BindAction(PlayerInputData->GetPlayerMoveForwardAction().Get() , ETriggerEvent::Completed , this, &APlayerCharacterWrapper::ResetMoveForward);
+
+	Eic->BindAction(PlayerInputData->GetPlayerMoveBackwardAction().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::MoveBackwards);
+	Eic->BindAction(PlayerInputData->GetPlayerMoveBackwardAction().Get() , ETriggerEvent::Completed , this, &APlayerCharacterWrapper::ResetMoveBackwards);
+
+	Eic->BindAction(PlayerInputData->GetPlayerMoveRightAction().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::MoveRight);
+	Eic->BindAction(PlayerInputData->GetPlayerMoveRightAction().Get() , ETriggerEvent::Completed , this, &APlayerCharacterWrapper::ResetMoveRight);
+
+	Eic->BindAction(PlayerInputData->GetPlayerMoveLeftAction().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::MoveLeft);
+	Eic->BindAction(PlayerInputData->GetPlayerMoveLeftAction().Get() , ETriggerEvent::Completed , this, &APlayerCharacterWrapper::ResetMoveLeft);
+
+	
+	Eic->BindAction(PlayerInputData->GetPlayerSlot1Action().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::Equip1Slot);
+	Eic->BindAction(PlayerInputData->GetPlayerSlot2Action().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::Equip2Slot);
+	Eic->BindAction(PlayerInputData->GetPlayerUseAction().Get() , ETriggerEvent::Triggered , this, &APlayerCharacterWrapper::Use);
+	Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Triggered , this , &APlayerCharacterWrapper::SprintBegin);
+	Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Completed , this, &APlayerCharacterWrapper::SprintEnd);
+	
 }
 
 void APlayerCharacterWrapper::Equip1Slot() {
@@ -137,51 +164,104 @@ void APlayerCharacterWrapper::Use()
 }
 
 
-void APlayerCharacterWrapper::MoveForward(float value) {
-	if (FMath::IsNearlyZero(value)) { 
+void APlayerCharacterWrapper::MoveForward(const FInputActionValue& Value) {
+	float moveValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(moveValue)) { 
 		MovementForward = FVector::ZeroVector;
 		return; 
 	}
 	APawn* ControllerPawn = GetPawn();
 	if (ControllerPawn) {
 		if (moveCoordsType == EPlayerMovingCoordinates::LocalCoords) {
-			MovementForward = value * ControllerPawn->GetActorForwardVector();
+			MovementForward = moveValue * ControllerPawn->GetActorForwardVector();
 		}
 		else if (moveCoordsType == EPlayerMovingCoordinates::WorldCoords) {
-			MovementForward = value * FVector::ForwardVector;
+			MovementForward = moveValue * FVector::ForwardVector;
 		}
-		//ControllerPawn->AddMovementInput(MovementForward);
-		/*
-		UPawnMovementComponent* PawnMovememt = ControllerPawn->GetMovementComponent();
-		if (PawnMovememt != NULL) {
-			PawnMovememt->AddInputVector(MovementForward);
-		}
-		*/
 	}
-	//transform.
 }
 
-void APlayerCharacterWrapper::MoveRight(float value) {
-	if (FMath::IsNearlyZero(value)) { 
+void APlayerCharacterWrapper::MoveBackwards(const FInputActionValue& Value)
+{
+	float moveValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(moveValue)) { 
+		MovementBackward = FVector::ZeroVector;
+		return; 
+	}
+	APawn* ControllerPawn = GetPawn();
+	if (ControllerPawn) {
+		if (moveCoordsType == EPlayerMovingCoordinates::LocalCoords) {
+			MovementBackward = moveValue * ControllerPawn->GetActorForwardVector();
+		}
+		else if (moveCoordsType == EPlayerMovingCoordinates::WorldCoords) {
+			MovementBackward = moveValue * FVector::ForwardVector;
+		}
+	}
+}
+
+void APlayerCharacterWrapper::ResetMoveForward()
+{
+	MovementForward = FVector::ZeroVector;
+}
+
+void APlayerCharacterWrapper::ResetMoveBackwards()
+{
+	MovementBackward = FVector::ZeroVector;
+}
+
+void APlayerCharacterWrapper::MoveRight(const FInputActionValue& Value) {
+	float moveValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(moveValue)) { 
 		MovementRight = FVector::ZeroVector;
 		return; 
 	}
 	APawn* ControllerPawn = GetPawn();
 	if (ControllerPawn) {
 		if (moveCoordsType == EPlayerMovingCoordinates::LocalCoords) {
-			MovementRight = value * ControllerPawn->GetActorRightVector();
+			MovementRight = moveValue * ControllerPawn->GetActorRightVector();
 		}
 		else if (moveCoordsType == EPlayerMovingCoordinates::WorldCoords) {
-			MovementRight = value * FVector::RightVector;
+			MovementRight = moveValue * FVector::RightVector;
 		}
-		//ControllerPawn->AddMovementInput(MovementRight);
-		/*
-		UPawnMovementComponent* PawnMovememt = ControllerPawn->GetMovementComponent();
-		if (PawnMovememt != NULL) {
-			PawnMovememt->AddInputVector(MovementRight);
-		}
-		*/
 	}
+}
+
+void APlayerCharacterWrapper::MoveLeft(const FInputActionValue& Value)
+{
+	float moveValue = Value.Get<float>();
+	if (FMath::IsNearlyZero(moveValue)) { 
+		MovementLeft = FVector::ZeroVector;
+		return; 
+	}
+	APawn* ControllerPawn = GetPawn();
+	if (ControllerPawn) {
+		if (moveCoordsType == EPlayerMovingCoordinates::LocalCoords) {
+			MovementLeft = moveValue * ControllerPawn->GetActorRightVector();
+		}
+		else if (moveCoordsType == EPlayerMovingCoordinates::WorldCoords) {
+			MovementLeft = moveValue * FVector::RightVector;
+		}
+	}
+}
+
+void APlayerCharacterWrapper::ResetMoveRight()
+{
+	MovementRight = FVector::ZeroVector;
+}
+
+void APlayerCharacterWrapper::ResetMoveLeft()
+{
+	MovementLeft = FVector::ZeroVector;
+}
+
+void APlayerCharacterWrapper::SprintBegin()
+{
+	bIsSprinting = true;
+}
+
+void APlayerCharacterWrapper::SprintEnd()
+{
+	bIsSprinting = false;
 }
 
 void APlayerCharacterWrapper::Tick(float delta) {
@@ -193,12 +273,42 @@ void APlayerCharacterWrapper::Tick(float delta) {
 	{
 		UPawnMovementComponent* PawnMovememt = ControllerPawn->GetMovementComponent();
 		if (PawnMovememt != NULL) {
-			FVector ForwardAndRight = MovementForward + MovementRight;
-			if (ForwardAndRight.Normalize()) {
-				PawnMovememt->AddInputVector(ForwardAndRight * MovingSpeed);
+			MovementFinalNormalized = MovementForward - MovementBackward + MovementRight - MovementLeft;
+			MovementFinalNormalized.Normalize();
+			
+			if(bIsSprinting)
+			{
+				MovementFinal = MovementFinalNormalized * RunSpeedMultiplier;
 			}
+			else
+			{
+				MovementFinal = MovementFinalNormalized * WalkSpeedMultiplier;
+			}
+			
+			PawnMovememt->AddInputVector(MovementFinal);
 		}
 	}
+}
+
+float APlayerCharacterWrapper::GetCharacterRunSpeed() const
+{
+	return RunSpeedMultiplier;
+}
+
+float APlayerCharacterWrapper::GetCharacterWalkSpeed() const
+{
+	return WalkSpeedMultiplier;
+}
+
+
+bool APlayerCharacterWrapper::GetIfCharacterSprinting() const
+{
+	return bIsSprinting;
+}
+
+float APlayerCharacterWrapper::GetCharacterMovementMagnitude() const
+{
+	return MovementFinal.Size();
 }
 
 void APlayerCharacterWrapper::LookAtMousePos() {

@@ -9,7 +9,7 @@
 
 //const FString PlayerInventory::WeaponSocketRightID = FString("Socket_Weapon_Right");
 
-PlayerInventory::PlayerInventory(USceneComponent* ActiveContainer, USceneComponent* DisabledContainer , AActor* Owner , UWorld* World) : IPlayerInventory()
+PlayerInventory::PlayerInventory(const TWeakObjectPtr<USceneComponent>& ActiveContainer, const TWeakObjectPtr<USceneComponent>& DisabledContainer ,const TWeakObjectPtr<AActor>& Owner , UWorld* World) : IPlayerInventory()
 {
 	
 	this->ActiveContainer = ActiveContainer;
@@ -69,7 +69,7 @@ void PlayerInventory::GetWeaponsFromData(UWeaponsPrimaryDataAsset* WeaponsData)
 		//UWorld::SpawnActor()
 		FTransform DisabledContainerTransform = DisabledContainer->GetComponentTransform();
 		FActorSpawnParameters SpawnParameters = FActorSpawnParameters();
-		SpawnParameters.Owner = Owner;
+		SpawnParameters.Owner = Owner.Get();
 		TMap<FString , FWeaponsData> WeaponsDataMap = WeaponsData->GetWeaponsDataMap();
 		FWeaponsData WeaponDataStruct = WeaponsDataMap[ActiveWeaponsIDs[i]];
 		TSubclassOf<AWeaponBase> Template = WeaponDataStruct.ActorBlueprint;

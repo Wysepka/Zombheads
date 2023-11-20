@@ -10,4 +10,6 @@ UPlayerAnimInstance::UPlayerAnimInstance(const FObjectInitializer& ObjectInitial
 	ShotValue = 1.f;
 	IsArmed = false;
 	ShotSpeed = 1.f;
+	WalkSpeedMultiplier = 1.f;
+	RunSpeedMultiplier = 1.f;
 }

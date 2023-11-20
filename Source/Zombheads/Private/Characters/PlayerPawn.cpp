@@ -7,6 +7,7 @@
 
 #include "Editor.h"
 #include "Data/AnimationsPrimaryDataAsset.h"
+#include "Player/PlayerCharacterWrapper.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -20,35 +21,33 @@ APlayerPawn::APlayerPawn()
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	FCoreDelegates::OnExit.AddUObject(this, &APlayerPawn::ExitingApplication);	
-/*	
-#if WITH_EDITOR
-	FEditorDelegates::EndPIE.AddUObject(this, &APlayerPawn::ExitingApplication);
-#else
-	FCoreDelegates::OnExit.AddUObject(this, &APlayerpa)	
-#endif
-*/	
+	FCoreDelegates::OnExit.AddUObject(this, &APlayerPawn::ExitingApplication);
+	VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
 }
 
 void APlayerPawn::DisposeInventoryDelegates()
 {
-	if(PlayerInventory != nullptr && PlayerInventory->IsValid())
+	if(PlayerInventory != nullptr && PlayerInventory.IsValid())
 	{
-		FChangedSlotDelegate* SlotDelegate = PlayerInventory->GetChangedSlotDelegate();
-		if(SlotDelegate != nullptr)
-		{
-			if(SlotDelegate->IsBoundToObject(this))
-			{
-				SlotDelegate->Remove(ChangedSlotHandle);
-			}
-		}
+		IPlayerInventory* InvPin = PlayerInventory.Pin().Get();
 
-		FInventoryItemUsedDelegate* InventoryItemUsedDelegate = PlayerInventory->GetInventoryItemUsedDelegate();
-		if(InventoryItemUsedDelegate != nullptr)
+		if(InvPin != nullptr)
 		{
-			if(InventoryItemUsedDelegate->IsBoundToObject(this))
+			FChangedSlotDelegate* SlotDelegate =InvPin->GetChangedSlotDelegate();
+			if(SlotDelegate != nullptr)
 			{
-				InventoryItemUsedDelegate->Remove(InventoryUsedHandle);
+				if(SlotDelegate->IsBoundToObject(this))
+				{
+					SlotDelegate->Remove(ChangedSlotHandle);
+				}
+			}
+			FInventoryItemUsedDelegate* InventoryItemUsedDelegate = InvPin->GetInventoryItemUsedDelegate();
+			if(InventoryItemUsedDelegate != nullptr)
+			{
+				if(InventoryItemUsedDelegate->IsBoundToObject(this))
+				{
+					InventoryItemUsedDelegate->Remove(InventoryUsedHandle);
+				}
 			}
 		}
 	}
@@ -89,6 +88,27 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(CharacterMovement.IsValid())
+	{
+		const bool IsSprinting = CharacterMovement.Get()->GetIfCharacterSprinting();
+		const float MovementMagnitude = CharacterMovement.Get()->GetCharacterMovementMagnitude();
+
+		AnimInstance->IsWalking = !FMath::IsNearlyZero(MovementMagnitude);
+		AnimInstance->IsRunning = IsSprinting && !FMath::IsNearlyZero(MovementMagnitude);
+		
+	/*
+	if(AnimInstance->IsWalking != ! IsSprinting)
+	{
+		AnimInstance->IsWalking = FMath::IsNearlyZero(MovementMagnitude);
+	}
+	if(AnimInstance->IsRunning != IsSprinting)
+	{
+		AnimInstance->IsRunning = IsSprinting && FMath::IsNearlyZero(MovementMagnitude);
+	}
+	*/
+		AnimInstance->WalkSpeedMultiplier = MovementMagnitude * CharacterMovement.Get()->GetCharacterWalkSpeed();
+		AnimInstance->RunSpeedMultiplier = MovementMagnitude * CharacterMovement.Get()->GetCharacterRunSpeed();
+	}
 }
 
 // Called to bind functionality to input
@@ -96,13 +116,26 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	APlayerCharacterWrapper* CharWrapper = Cast<APlayerCharacterWrapper>(GetController());
+
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(CharWrapper->GetLocalPlayer());
+	InputSubsystem->AddMappingContext(PlayerInputData->GetPlayerMappingContext().Get() , 0);
+
+	if(VitalityComponent.Get() != nullptr)
+	{
+		UEnhancedInputComponent* Eic = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+		Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Triggered , VitalityComponent.Get() , &UActorVitalityComponent::BeginSprint);
+		Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Completed , VitalityComponent.Get() , &UActorVitalityComponent::EndSprint);
+	}
 }
 
-void APlayerPawn::SetupPlayerPawn(IPlayerInventory* PlayerInventoryOther)
+void APlayerPawn::SetupPlayerPawn(const TSharedPtr<IPlayerInventory>& PlayerInventoryOther ,const TWeakInterfacePtr<ICharacterMovement>& CharacterMovementOther)
 {
 	AActor* AssetLoaderInitializerActor = UGameplayStatics::GetActorOfClass(GetWorld() , AAssetLoaderInitializer::StaticClass());
 	AAssetLoaderInitializer* AssetLoaderInitializer = Cast<AAssetLoaderInitializer>(AssetLoaderInitializerActor);
-	auto animsInit = AssetLoaderInitializer->GetAssetLoader()->GetIfAnimationsDataInitialized();
+	UAssetLoader* AssetLoaderPin = AssetLoaderInitializer->GetAssetLoader();
+
+	auto animsInit = AssetLoaderPin->GetIfAnimationsDataInitialized();
 	if(animsInit)
 	{
 		//AimMontage = AssetLoaderInitializer->GetAssetLoader()->GetAnimationsData()->GetPlayerAnimData()->GetAimMontage();
@@ -112,20 +145,39 @@ void APlayerPawn::SetupPlayerPawn(IPlayerInventory* PlayerInventoryOther)
 	{
 		AssetLoaderInitializer->GetAssetLoader()->GetAnimationsDataDelegate()->AddUObject(this, &APlayerPawn::AnimationsDataCallback);
 	}
-	this->PlayerInventory = PlayerInventoryOther;
-	ChangedSlotHandle = PlayerInventory->GetChangedSlotDelegate()->AddUObject(this, &APlayerPawn::HandleChangedSlotAnim);
-	InventoryUsedHandle = PlayerInventory->GetInventoryItemUsedDelegate()->AddUObject(this, &APlayerPawn::HandleItemUsedAnim);
+	
+	InitializeCharacterData(AssetLoaderPin);
 
+	//Not checking if Inventory is destroyed due to calling it in BeginPlay
+	ChangedSlotHandle = PlayerInventoryOther.Get()->GetChangedSlotDelegate()->AddUObject(this, &APlayerPawn::HandleChangedSlotAnim);
+	InventoryUsedHandle = PlayerInventoryOther.Get()->GetInventoryItemUsedDelegate()->AddUObject(this, &APlayerPawn::HandleItemUsedAnim);
+	this->CharacterMovement = CharacterMovementOther;
+	this->PlayerInventory = PlayerInventoryOther;
 	//SkeletalMeshComponent->GetAnimInstance()
 	//PlayerInventoryOther.
+}
+
+void APlayerPawn::InitializeCharacterData(UAssetLoader* AssetLoaderPin)
+{
+	UPDA_Character* CharData;
+
+	if(AssetLoaderPin != nullptr)
+	{
+		const auto charInit = AssetLoaderPin->GetPrimaryDataAsset<UPDA_Character>(this,CharData);
+		if(charInit.Key)
+		{
+			PrimaryDataAssetLoaded(CharData);
+		}
+	}
 }
 
 void APlayerPawn::DisposePlayerPawn()
 {
 	PlayerInventory = nullptr;
+	CharacterMovement = nullptr;
 }
 
-void APlayerPawn::GetInventorySceneContainers(UInventorySceneContainer*& Active, UInventorySceneContainer*& Disabled) {
+void APlayerPawn::GetInventorySceneContainers(TWeakObjectPtr<UInventorySceneContainer>& Active, TWeakObjectPtr<UInventorySceneContainer>& Disabled) {
 	if (!bInventorySceneContainersFetched) {
 		TArray<AActor*> Childs;
 		GetAttachedActors(Childs, true, true);
@@ -145,8 +197,9 @@ void APlayerPawn::GetInventorySceneContainers(UInventorySceneContainer*& Active,
 		}
 		bInventorySceneContainersFetched = true;
 	}
-	Active = ActiveInventoryContainer;
-	Disabled = DisabledInventoryContainer;
+	Active = ActiveInventoryContainer.Get();
+	Disabled = DisabledInventoryContainer.Get();
+
 	//TArray<UInventorySceneContainer*> Containers = { ActiveInventoryContainer, DisabledInventoryContainer };
 	//return Containers;
 }
@@ -162,6 +215,15 @@ FPlayerPivotInitialized* APlayerPawn::GetPlayerPivotInitializedDelegate()
 	return &PlayerPawnInitializedDelegate;
 }
 
+TWeakInterfacePtr<IVitalityComponent> APlayerPawn::GetVitalityComponent()
+{
+	return VitalityComponentInterface;
+}
+
+void APlayerPawn::Test()
+{
+}
+
 void APlayerPawn::SetSkeletalMeshComponent_CPP(USkeletalMeshComponent* SkeletelMeshComp)
 {
 	this->SkeletalMeshComponent = SkeletelMeshComp;
@@ -173,7 +235,15 @@ void APlayerPawn::AnimationsDataCallback(UAnimationsPrimaryDataAsset* Animations
 {
 	AimMontage = AnimationsData->GetPlayerAnimData()->GetAimMontage();
 	ShotMontage = AnimationsData->GetPlayerAnimData()->GetShotMontage();
-	//StartLoopingAnimation();
+}
+
+void APlayerPawn::PrimaryDataAssetLoaded(UPDA_Character* Data)
+{
+	const auto VitCompPin = VitalityComponent.Get();
+	if(VitCompPin != nullptr)
+	{
+		VitCompPin->LoadData(TSoftObjectPtr<UPDA_Character>(Data));
+	}
 }
 
 void APlayerPawn::HandleChangedSlotAnim(int CurrentSlot)

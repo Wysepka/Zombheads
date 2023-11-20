@@ -5,6 +5,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actors/Components/ActorVitalityComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Components/SceneComponent.h"
 #include "Player/Inventory/InventorySceneContainer.h"
@@ -16,13 +17,19 @@
 #include "Animations/PlayerAnimInstance.h"
 #include "Player/Inventory/Weapons/WeaponFirearm.h"
 #include "Misc/CoreDelegates.h"
+#include "Player/CharacterMovement.h"
 #include "Player/Inventory/Weapons/WeaponBase.h"
+#include "UObject/WeakInterfacePtr.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "Data/InputDataAsset.h"
 #include "PlayerPawn.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FPlayerPivotInitialized , USceneComponent*);
 
 UCLASS()
-class ZOMBHEADS_API APlayerPawn : public APawn
+class ZOMBHEADS_API APlayerPawn : public APawn , public IAssetLoaderObserver
 {
 	GENERATED_BODY()
 
@@ -35,20 +42,27 @@ private:
 
 	USceneComponent* PawnPivot;
 	
-	IPlayerInventory* PlayerInventory;
+	TWeakPtr<IPlayerInventory> PlayerInventory;
 	FDelegateHandle ChangedSlotHandle;
 	FDelegateHandle InventoryUsedHandle;
 
-	class UInventorySceneContainer* ActiveInventoryContainer;
-	class UInventorySceneContainer* DisabledInventoryContainer;
+	TWeakObjectPtr<UInventorySceneContainer> ActiveInventoryContainer;
+	TWeakObjectPtr<UInventorySceneContainer> DisabledInventoryContainer;
 
 	USkeletalMeshComponent* SkeletalMeshComponent;
 	UPlayerAnimInstance* AnimInstance;
 	UAnimBlueprint* AnimBlueprint;
+
+	TWeakInterfacePtr<ICharacterMovement> CharacterMovement;
+	TObjectPtr<UActorVitalityComponent> VitalityComponent;
+	TWeakInterfacePtr<IVitalityComponent> VitalityComponentInterface;
 	
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	void SetSkeletalMeshComponent_CPP(USkeletalMeshComponent* SkeletelMeshComp);
+	
 	void AnimationsDataCallback(UAnimationsPrimaryDataAsset* AnimationsData);
+	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
+	
 	void HandleChangedSlotAnim(int CurrentSlot);
 	void HandleItemUsedAnim(const IUsable& WeaponBase);
 	void ExitingApplication(bool ExitingPlayMode);
@@ -63,11 +77,14 @@ private:
 		this->PawnPivot = value;
 	}
 
-	//Well i know this is a race condition but life is to short to write perfect code
+	//Well i know this is a race condition but life is too short to write perfect code
 	UFUNCTION(BlueprintCallable, Category = "Comps" , meta = (AllowPrivateAccess = "true"))
 	void InvokePlayerPivotDelegate();
 	
 	FPlayerPivotInitialized PlayerPawnInitializedDelegate;
+
+	UPROPERTY(EditDefaultsOnly  , Category = "EnhancedInput" , meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputDataAsset> PlayerInputData;
 
 protected:
 	// Called when the game starts or when spawned
@@ -99,10 +116,15 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void InitializeCharacterData(UAssetLoader* AssetLoaderPin);
 
-	void SetupPlayerPawn(IPlayerInventory* PlayerInventoryOther);
+	void SetupPlayerPawn(const TSharedPtr<IPlayerInventory>& PlayerInventoryOther ,const TWeakInterfacePtr<ICharacterMovement>& CharacterMovementOther);
 	void DisposePlayerPawn();
-	void GetInventorySceneContainers(UInventorySceneContainer*& Active , UInventorySceneContainer*& Disabled);
+	void GetInventorySceneContainers(TWeakObjectPtr<UInventorySceneContainer>& Active , TWeakObjectPtr<UInventorySceneContainer>& Disabled);
 	USceneComponent* GetPlayerPivot() const;
 	FPlayerPivotInitialized* GetPlayerPivotInitializedDelegate();
+
+	TWeakInterfacePtr<IVitalityComponent> GetVitalityComponent();
+
+	void Test();
 };

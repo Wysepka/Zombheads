@@ -8,7 +8,6 @@
 #include "Data/AssetLoader.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/AssetManager.h"
-#include "EditorTutorial.h"
 #include "Data/AssetLoaderInitializer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/Inventory/PlayerInventory.h"

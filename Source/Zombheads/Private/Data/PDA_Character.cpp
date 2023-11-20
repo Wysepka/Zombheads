@@ -3,12 +3,32 @@
 
 #include "Data/PDA_Character.h"
 
-float UPDA_Character::GetPlayerWalkingSpeed()
+float UPDA_Character::GetPlayerWalkingSpeed() const
 {
 	return PlayerWalkingSpeed;
 }
 
-float UPDA_Character::GetPlayerRunningSpeed()
+float UPDA_Character::GetPlayerRunningSpeed() const
 {
 	return PlayerRunningSpeed;
+}
+
+float UPDA_Character::GetCharacterMaxHealth() const
+{
+	return MaxHealth;
+}
+
+float UPDA_Character::GetCharacterMaxStamina() const
+{
+	return MaxStamina;
+}
+
+float UPDA_Character::GetCharacterStaminaDepletePerSec() const
+{
+	return StaminaDepletePerSec;
+}
+
+float UPDA_Character::GetCharacterStaminaIncreasePerSec() const
+{
+	return StaminaIncreasePerSec;
 }

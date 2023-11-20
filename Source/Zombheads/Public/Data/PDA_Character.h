@@ -21,9 +21,36 @@ private:
 	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
 	float PlayerRunningSpeed = 1.f;
 
+	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
+	float MaxHealth;
+
+	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
+	float MaxStamina;
+	
+	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
+	float StaminaDepletePerSec;
+
+	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
+	float StaminaIncreasePerSec;
+	
 public:
 
-	float GetPlayerWalkingSpeed();
-	float GetPlayerRunningSpeed();
-	
+	float GetPlayerWalkingSpeed() const;
+	float GetPlayerRunningSpeed() const;
+	float GetCharacterMaxHealth() const;
+	float GetCharacterMaxStamina() const;
+	float GetCharacterStaminaDepletePerSec() const;
+	float GetCharacterStaminaIncreasePerSec() const;
+
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Character");
+		FPrimaryAssetId PrimaryAssetId;
+
+		PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
+
+		return PrimaryAssetId;
+	}
+
+	//UPDA_Character& operator=(const UPDA_Character& other);
 };

@@ -30,4 +30,10 @@ public:
 	
 	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "AnimData")
 	bool IsRunning;
+
+	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "AnimData")
+	float WalkSpeedMultiplier;
+
+	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "AnimData")
+	float RunSpeedMultiplier;
 };

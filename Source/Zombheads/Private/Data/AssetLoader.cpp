@@ -6,6 +6,7 @@
 #include "Data/AssetLoader.h"
 #include "Data/WeaponsPrimaryDataAsset.h"
 #include "Data/AnimationsPrimaryDataAsset.h"
+#include "Data/PDA_Character.h"
 
 void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 {
@@ -19,6 +20,7 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 	LastAssetManager = AssetManager;
 	LoadWeaponsPrimaryDataAsset();
 	LoadAnimationsPrimaryDataAsset();
+	LoadCharacterPrimaryDataAsset();
 }
 
 void UAssetLoader::LoadWeaponsPrimaryDataAsset()
@@ -52,12 +54,31 @@ void UAssetLoader::LoadAnimationsPrimaryDataAsset()
 	for (const FPrimaryAssetId& AnimationID : AnimationsIDList)
 	{
 		FPrimaryAssetId AssetID = AnimationID;
-		// Get tag/value data for an unloaded weapon
 		FAssetData AssetDataToParse;
 		LastAssetManager->GetPrimaryAssetData(AnimationID, AssetDataToParse);
 		TArray<FName> Bundles;
 		AssetsLoadedDelegate.BindUObject(this, &UAssetLoader::AssetsLoadedCallback, AnimationID);
 		LastAssetManager->LoadPrimaryAsset(AnimationID, Bundles, AssetsLoadedDelegate);
+
+		//AssetDataToParse.
+		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClass.ToString());
+	}
+}
+
+void UAssetLoader::LoadCharacterPrimaryDataAsset()
+{
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Character");
+	TArray<FPrimaryAssetId> IDList;
+	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, IDList);
+
+	for (const FPrimaryAssetId& ID : IDList)
+	{
+		FPrimaryAssetId AssetID = ID;
+		FAssetData AssetDataToParse;
+		LastAssetManager->GetPrimaryAssetData(ID, AssetDataToParse);
+		TArray<FName> Bundles;
+		AssetsLoadedDelegate.BindUObject(this, &UAssetLoader::AssetsLoadedCallback, ID);
+		LastAssetManager->LoadPrimaryAsset(ID, Bundles, AssetsLoadedDelegate);
 
 		//AssetDataToParse.
 		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClass.ToString());
@@ -90,6 +111,18 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 		{
 			AnimationsCallbacks.Broadcast(AnimationsData);
 		}
+	} else if(ID.PrimaryAssetType == FName("Character"))
+	{
+		CharacterData = LastAssetManager->GetPrimaryAssetObject<UPDA_Character>(ID);
+		if (CharacterData == nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ERROR: Could not load CharacterData"));
+			return;
+		}
+		bCharacterDataLoaded = true;
+		if(CharacterCallbacks.IsBound())
+		{
+			CharacterCallbacks.Broadcast(CharacterData);
+		}
 	}
 }
 
@@ -121,5 +154,20 @@ bool UAssetLoader::GetIfAnimationsDataInitialized() const
 UAnimationsPrimaryDataAsset* UAssetLoader::GetAnimationsData() const
 {
 	return AnimationsData;
+}
+
+FCharacterDataAssetLoadedDelegate* UAssetLoader::GetCharacterDataDelegate()
+{
+	return &CharacterCallbacks;
+}
+
+bool UAssetLoader::GetIfCharactersDataInitialized() const
+{
+	return bCharacterDataLoaded;
+}
+
+UPDA_Character* UAssetLoader::GetCharacterData() const
+{
+	return CharacterData;
 }
 

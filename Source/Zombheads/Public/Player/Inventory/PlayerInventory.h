@@ -22,14 +22,14 @@ DECLARE_DELEGATE(FStreamableDelegate);
 class ZOMBHEADS_API PlayerInventory : public IPlayerInventory
 {
 private:
-	USceneComponent* ActiveContainer;
-	USceneComponent* DisabledContainer;
+	TWeakObjectPtr<USceneComponent> ActiveContainer;
+	TWeakObjectPtr<USceneComponent> DisabledContainer;
 
 	FStreamableDelegate WeaponsLoadDelegate;
 	int CurrentSlotEquiped = 0;
 	UAssetManager* LastAssetManager;
 
-	AActor* Owner;
+	TWeakObjectPtr<AActor> Owner;
 	UWorld* World;
 
 	TMap<uint8 , IUsable*> WeaponCache;
@@ -42,7 +42,7 @@ private:
 	FInventoryItemUsedDelegate InventoryItemUsedDelegate;
 
 public:
-	PlayerInventory(USceneComponent* ActiveContainer, USceneComponent* DisabledContainer , AActor* Owner , UWorld* World);
+	PlayerInventory(const TWeakObjectPtr<USceneComponent>& ActiveContainer, const TWeakObjectPtr<USceneComponent>& DisabledContainer ,const TWeakObjectPtr<AActor>& Owner , UWorld* World);
 	~PlayerInventory();
 
 	virtual void Equip1Slot() override;
