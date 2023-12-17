@@ -41,13 +41,13 @@ PlayerInventory::~PlayerInventory()
 
 void PlayerInventory::PreloadInventory(AAssetLoaderInitializer* AssetInitializer)
 {
-	UAssetLoader* AssetLoader = AssetInitializer->GetAssetLoader();
-	if(AssetLoader->GetIfWeaponsDataInitialized())
+	TWeakObjectPtr<UAssetLoader> AssetLoader = AssetInitializer->GetAssetLoader();
+	if(AssetLoader.Get()->GetIfWeaponsDataInitialized())
 	{
-		GetWeaponsFromData(AssetLoader->GetWeaponsData());
+		GetWeaponsFromData(AssetLoader.Get()->GetWeaponsData());
 	} else
 	{
-		AssetLoader->GetWeaponDataDelegate()->AddRaw(this , &PlayerInventory::GetWeaponsFromData);
+		AssetLoader.Get()->GetWeaponDataDelegate()->AddRaw(this , &PlayerInventory::GetWeaponsFromData);
 	}
 }
 

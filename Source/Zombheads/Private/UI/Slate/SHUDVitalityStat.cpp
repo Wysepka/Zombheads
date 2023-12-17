@@ -178,9 +178,5 @@ void SHUDVitalityStat::Construct(const FArguments& inArgs)
 	*/
 }
 
-void SHUDVitalityStat::SetGameplayHUD(TSharedPtr<AHUDGameplay> HUDGameplay)
-{
-	this->OwningHUD = HUDGameplay;
-}
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

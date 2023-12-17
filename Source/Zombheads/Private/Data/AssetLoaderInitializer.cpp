@@ -27,14 +27,14 @@ void AAssetLoaderInitializer::Tick(float DeltaTime)
 
 }
 
-UAssetLoader* AAssetLoaderInitializer::GetAssetLoader()
+TWeakObjectPtr<UAssetLoader> AAssetLoaderInitializer::GetAssetLoader()
 {
 	if(AssetLoader == nullptr)
 	{
 		UE_LOG(LogTemp , Log, TEXT("AssetLoader is not initialized ! Creating new Instance"));
 		AssetLoader = NewObject<UAssetLoader>(UAssetLoader::StaticClass());
 	}
-	return AssetLoader;
+	return TWeakObjectPtr<UAssetLoader>(AssetLoader);
 }
 
 

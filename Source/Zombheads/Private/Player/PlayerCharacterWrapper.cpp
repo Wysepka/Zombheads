@@ -73,7 +73,20 @@ void APlayerCharacterWrapper::BeginPlay() {
 	AAssetLoaderInitializer* LoaderInitializer = Cast<AAssetLoaderInitializer>(LoaderInitializerActor);
 	Inventory->PreloadInventory(LoaderInitializer);
 
-	UAssetLoader* AssetLoader = LoaderInitializer->GetAssetLoader();
+	AssetLoader = LoaderInitializer->GetAssetLoader();
+
+	UPDA_Character* CharData;
+	auto arg = AssetLoader->GetPrimaryDataAsset<UPDA_Character>(this, CharData);
+
+	if(arg.Key)
+	{
+		ApplyBaseSpeed(CharData);
+	}
+	else
+	{
+		CharDataDelegate = arg.Value;
+	}
+	/*
 	if(AssetLoader->GetIfCharactersDataInitialized())
 	{
 		ApplyBaseSpeed(AssetLoader->GetCharacterData());
@@ -81,6 +94,12 @@ void APlayerCharacterWrapper::BeginPlay() {
 	{
 		AssetLoader->GetCharacterDataDelegate()->AddUObject(this, &APlayerCharacterWrapper::ApplyBaseSpeed);
 	}
+	*/
+}
+
+void APlayerCharacterWrapper::PrimaryDataAssetLoaded(UPDA_Character* Data)
+{
+	ApplyBaseSpeed(Data);
 }
 
 void APlayerCharacterWrapper::ApplyBaseSpeed(UPDA_Character* Data)
@@ -113,6 +132,13 @@ void APlayerCharacterWrapper::BeginDestroy() {
 	if(PlayerPawn != nullptr)
 	{
 		PlayerPawn->DisposePlayerPawn();
+	}
+	if(AssetLoader != nullptr)
+	{
+		if(CharDataDelegate.IsValid())
+		{
+			AssetLoader->UnRegisterCallback<UPDA_Character>(&CharDataDelegate);
+		}
 	}
 	Super::BeginDestroy();
 }

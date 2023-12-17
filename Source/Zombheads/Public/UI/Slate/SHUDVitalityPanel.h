@@ -7,7 +7,6 @@
 #include "SlateCore.h"
 #include "SlateExtras.h"
 #include "SHUDVitalityStat.h"
-#include "UI/HUDGameplay.h"
 
 /**
  * 
@@ -19,7 +18,7 @@ class  SHUDVitalityPanel : public SVerticalBox /* , public FChildren */
 	
 	//SLATE_ARGUMENT(TSharedPtr<SHUDVitalityStat>, StaminaStatArg);
 	//SLATE_ARGUMENT(TSharedPtr<SHUDVitalityStat>, HealthStatArg);
-	SLATE_ARGUMENT(TSharedPtr<AHUDGameplay>, OwningHUDArg);
+	SLATE_ARGUMENT(TSharedPtr<FHUDVitalityData>, VitalityDataArg);
 
 	SLATE_END_ARGS()
 
@@ -44,9 +43,7 @@ class  SHUDVitalityPanel : public SVerticalBox /* , public FChildren */
 	TSharedPtr<SVerticalBox> LayoutGroup;
 
 	TArray<TSharedPtr<FSlotBase>> SlotsContainer;
-	TSharedPtr<AHUDGameplay> OwningHUD;
-public:
-	void SetGameplayHUD(TSharedPtr<AHUDGameplay> HUDGameplay);
-
+	TSharedPtr<FHUDVitalityData> VitalityData;
+	
 	//TPanelChildren<SVerticalBox::FSlot> ChildrenSlots;
 };

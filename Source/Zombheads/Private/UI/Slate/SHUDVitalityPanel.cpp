@@ -77,20 +77,13 @@ void SHUDVitalityPanel::Construct(const FArguments& inArgs)
 	//SlotsContainer.Add(MakeShareable(Slot2HZ));
 	//Children.AddSlot(Slot1HZBase);
 	
-	StaminaStat = SNew(SHUDVitalityStat).OwningHUDArg(inArgs._OwningHUDArg);
+	StaminaStat = SNew(SHUDVitalityStat).VitalityStatDataArg(MakeShareable( inArgs._VitalityDataArg.Get()->GetStaminaData()));
 	StaminaStat->SetVisibility(EVisibility::Visible);
-	HealthStat = SNew(SHUDVitalityStat).OwningHUDArg(inArgs._OwningHUDArg);
+	HealthStat = SNew(SHUDVitalityStat).VitalityStatDataArg(MakeShareable(inArgs._VitalityDataArg.Get()->GetHealthData()));
 	HealthStat->SetVisibility(EVisibility::Visible);
 
 	Slot1HZBase->AttachWidget(StaminaStat.ToSharedRef());
 	Slot2HZBase->AttachWidget(HealthStat.ToSharedRef());
-}
-
-void SHUDVitalityPanel::SetGameplayHUD(TSharedPtr<AHUDGameplay> HUDGameplay)
-{
-	this->OwningHUD = HUDGameplay;
-	StaminaStat->SetGameplayHUD(HUDGameplay);
-	HealthStat->SetGameplayHUD(HUDGameplay);
 }
 
 //Region below is FChildren derived abstract methods

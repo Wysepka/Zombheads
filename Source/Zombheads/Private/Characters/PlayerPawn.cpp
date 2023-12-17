@@ -133,9 +133,9 @@ void APlayerPawn::SetupPlayerPawn(const TSharedPtr<IPlayerInventory>& PlayerInve
 {
 	AActor* AssetLoaderInitializerActor = UGameplayStatics::GetActorOfClass(GetWorld() , AAssetLoaderInitializer::StaticClass());
 	AAssetLoaderInitializer* AssetLoaderInitializer = Cast<AAssetLoaderInitializer>(AssetLoaderInitializerActor);
-	UAssetLoader* AssetLoaderPin = AssetLoaderInitializer->GetAssetLoader();
+	TWeakObjectPtr<UAssetLoader> AssetLoaderPin = AssetLoaderInitializer->GetAssetLoader();
 
-	auto animsInit = AssetLoaderPin->GetIfAnimationsDataInitialized();
+	auto animsInit = AssetLoaderPin.Get()->GetIfAnimationsDataInitialized();
 	if(animsInit)
 	{
 		//AimMontage = AssetLoaderInitializer->GetAssetLoader()->GetAnimationsData()->GetPlayerAnimData()->GetAimMontage();
@@ -146,7 +146,7 @@ void APlayerPawn::SetupPlayerPawn(const TSharedPtr<IPlayerInventory>& PlayerInve
 		AssetLoaderInitializer->GetAssetLoader()->GetAnimationsDataDelegate()->AddUObject(this, &APlayerPawn::AnimationsDataCallback);
 	}
 	
-	InitializeCharacterData(AssetLoaderPin);
+	InitializeCharacterData(AssetLoaderPin.Get());
 
 	//Not checking if Inventory is destroyed due to calling it in BeginPlay
 	ChangedSlotHandle = PlayerInventoryOther.Get()->GetChangedSlotDelegate()->AddUObject(this, &APlayerPawn::HandleChangedSlotAnim);

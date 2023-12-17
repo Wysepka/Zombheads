@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/PDA_HUD.h"
 #include "UObject/Interface.h"
 
 #include "AssetLoaderObserver.generated.h"
@@ -31,10 +32,11 @@ class ZOMBHEADS_API IAssetLoaderObserver
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	virtual void PrimaryDataAssetLoaded(UPrimaryDataAsset* Data);
+	virtual void PrimaryDataAssetLoaded(UPrimaryDataAsset* Data) ;
 	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data);
 	virtual void PrimaryDataAssetLoaded(UAnimationsPrimaryDataAsset* Data);
 	virtual void PrimaryDataAssetLoaded(UWeaponsPrimaryDataAsset* Data);
+	virtual void PrimaryDataAssetLoaded(UPDA_HUD* Data);
 	//template <typename T, typename = std::enable_if_t<std::is_base_of<UPrimaryDataAsset, T>::value>>
 	//void PrimaryDataAssetLoaded(T* Data);
 

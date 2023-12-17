@@ -25,7 +25,7 @@ struct FWeaponsData {
 	TSubclassOf<class AWeaponBase> ActorBlueprint;
 
 	UPROPERTY(EditAnywhere,Category= "Weapons")
-	uint8 SlotID;
+	uint8 SlotID = 1;
 
 	UPROPERTY(EditAnywhere, Category= "Weapons")
 	USoundWave* UseSound;
