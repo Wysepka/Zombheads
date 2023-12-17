@@ -35,7 +35,7 @@ enum class EPlayerMovingCoordinates : uint8
 };
 
 UCLASS()
-class ZOMBHEADS_API APlayerCharacterWrapper : public APlayerController , public ICharacterMovement
+class ZOMBHEADS_API APlayerCharacterWrapper : public APlayerController , public ICharacterMovement , public IAssetLoaderObserver
 {
 GENERATED_BODY()
 
@@ -80,6 +80,9 @@ private:
 	void SprintBegin();
 	void SprintEnd();
 
+	FDelegateHandle CharDataDelegate;
+	TWeakObjectPtr<UAssetLoader> AssetLoader;
+	
 	UPROPERTY(EditDefaultsOnly  , Category = "EnhancedInput" , meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputDataAsset> PlayerInputData;
 
@@ -129,8 +132,13 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	//ICharacterMovement Region
 	virtual float GetCharacterRunSpeed() const override;
 	virtual float GetCharacterWalkSpeed() const override;
 	virtual bool GetIfCharacterSprinting() const override;
 	virtual float GetCharacterMovementMagnitude() const override;
+	//End region
+
+	//Region IAssetLoaderObserver
+	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
 };

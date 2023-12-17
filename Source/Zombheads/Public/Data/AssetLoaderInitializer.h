@@ -26,6 +26,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	UAssetLoader* GetAssetLoader();
+	TWeakObjectPtr<UAssetLoader> GetAssetLoader();
 
 };

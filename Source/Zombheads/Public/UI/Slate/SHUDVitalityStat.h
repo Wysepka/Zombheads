@@ -6,7 +6,7 @@
 #include "SlateCore.h"
 #include "SlateExtras.h"
 #include "SlateBasics.h"
-#include "UI/HUDGameplay.h"
+#include "Data/Containers/Vitality/FHUDVitalityData.h"
 
 /**
  * 
@@ -21,7 +21,7 @@ class SHUDVitalityStat : public SHorizontalBox /* , public FChildren */
 	SLATE_ARGUMENT(TSharedPtr<FSlateImageBrush>, BackgroundBrushArg);
 	SLATE_ARGUMENT(TSharedPtr<FSlateImageBrush>, FillerBrushArg);
 	SLATE_ARGUMENT(FString, IconImgDirArg);
-	SLATE_ARGUMENT(TSharedPtr<AHUDGameplay>, OwningHUDArg);
+	SLATE_ARGUMENT(TSharedPtr<FHUDVitalityStatData>, VitalityStatDataArg);
 	
 	SLATE_END_ARGS()
 
@@ -57,8 +57,6 @@ class SHUDVitalityStat : public SHorizontalBox /* , public FChildren */
 	TArray<TSharedPtr<FSlotBase>> SlotContainer;
 	TSharedPtr<FSlotBase> Slot1;
 	TSharedPtr<FSlotBase> Slot2;
-
-	TSharedPtr<AHUDGameplay> OwningHUD;
 	
 	//TSharedPtr<SVerticalBox> LayoutGroup;
 	
@@ -67,6 +65,6 @@ class SHUDVitalityStat : public SHorizontalBox /* , public FChildren */
 	FString IconImgDir;
 
 public:
-	void SetGameplayHUD(TSharedPtr<AHUDGameplay> HUDGameplay);
+	void SetGameplayHUD(TSharedPtr<FHUDVitalityStatData> VitalityStatData);
 	//TPanelChildren<SVerticalBox::FSlot> ChildrenSlots;
 };

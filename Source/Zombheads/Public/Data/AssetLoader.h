@@ -10,6 +10,8 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 //#include "Data/WeaponsPrimaryDataAsset.h"
 //#include "AnimationsPrimaryDataAsset.h"
+#include "PDA_Character.h"
+#include "PDA_HUD.h"
 #include "Callbacks/AssetLoaderObserver.h"
 #include "Callbacks/IAssetLoaderObserverRaw.h"
 #include "Delegates/IDelegateInstance.h"
@@ -28,6 +30,7 @@ class UPDA_Character;
 DECLARE_MULTICAST_DELEGATE_OneParam(FWeaponDataAssetLoadedDelegate , UWeaponsPrimaryDataAsset*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FAnimationsDataAssetLoadedDelegate, UAnimationsPrimaryDataAsset*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FCharacterDataAssetLoadedDelegate, UPDA_Character*)
+DECLARE_MULTICAST_DELEGATE_OneParam(FHUDDataAssetLoadedDelegate, UPDA_HUD*)
 DECLARE_MULTICAST_DELEGATE_OneParam(FPrimaryDataLoadedDelegate , UPrimaryDataAsset*)
 DECLARE_DELEGATE(FStreamableDelegate);
 class UDataAsset;
@@ -39,12 +42,10 @@ class ZOMBHEADS_API UAssetLoader : public UObject
 private:
 	FStreamableDelegate AssetsLoadedDelegate;
 	
-	[[deprecated("Use GetPrimaryDataAsset or GetPrimaryDataAssetRaw")]]
 	void LoadWeaponsPrimaryDataAsset();
-	[[deprecated("Use GetPrimaryDataAsset or GetPrimaryDataAssetRaw")]]
 	void LoadAnimationsPrimaryDataAsset();
-	[[deprecated("Use GetPrimaryDataAsset or GetPrimaryDataAssetRaw")]]
 	void LoadCharacterPrimaryDataAsset();
+	void LoadHUDPrimaryDataAsset();
 	
 	void LoadAssets(UAssetManager* AssetManager);
 	void AssetsLoadedCallback(FPrimaryAssetId ID);
@@ -53,28 +54,38 @@ private:
 	FWeaponDataAssetLoadedDelegate WeaponsCallbacks;
 	FAnimationsDataAssetLoadedDelegate AnimationsCallbacks;
 	FCharacterDataAssetLoadedDelegate CharacterCallbacks;
+	FHUDDataAssetLoadedDelegate HUDCallbacks;
 	FPrimaryDataLoadedDelegate DataLoadedDelegate;
 
 	UWeaponsPrimaryDataAsset* WeaponsData;
 	UAnimationsPrimaryDataAsset* AnimationsData;
 	UPDA_Character* CharacterData;
+	UPDA_HUD* HUDData;
 	
 	bool bWeaponsDataLoaded;
 	bool bAnimationsDataLoaded;
 	bool bCharacterDataLoaded;
+	bool bHUDDataLoaded;
 	
 public:
+	
+	[[deprecated("Use GetPrimaryDataAsset or GetPrimaryDataAssetRaw")]]
 	FWeaponDataAssetLoadedDelegate* GetWeaponDataDelegate();
 	bool GetIfWeaponsDataInitialized() const;
 	UWeaponsPrimaryDataAsset* GetWeaponsData() const;
 
+	[[deprecated("Use GetPrimaryDataAsset or GetPrimaryDataAssetRaw")]]
 	FAnimationsDataAssetLoadedDelegate* GetAnimationsDataDelegate();
 	bool GetIfAnimationsDataInitialized() const;
 	UAnimationsPrimaryDataAsset* GetAnimationsData() const;
 
+	[[deprecated("Use GetPrimaryDataAsset or GetPrimaryDataAssetRaw")]]
 	FCharacterDataAssetLoadedDelegate* GetCharacterDataDelegate();
 	bool GetIfCharactersDataInitialized() const;
 	UPDA_Character* GetCharacterData() const;
+
+	bool GetIfHUDDataInitialized() const;
+	UPDA_HUD* GetHUDData() const;
 
     template <typename T, typename = std::enable_if_t<std::is_base_of<UPrimaryDataAsset, T>::value>>
 	TTuple<bool, FDelegateHandle> GetPrimaryDataAsset(const IAssetLoaderObserver& ObserverInstance ,UPrimaryDataAsset*& Data);
@@ -124,6 +135,15 @@ TTuple<bool , FDelegateHandle> UAssetLoader::GetPrimaryDataAsset(const IAssetLoa
 		}
 		return MakeTuple(false, DataLoadedDelegate.AddUObject(&ObserverInstance , &IAssetLoaderObserver::PrimaryDataAssetLoaded));
 	}
+	if(TIsSame<T , UPDA_Character>::Value)
+	{
+		if(GetIfHUDDataInitialized())
+		{
+			Data = Cast<UPDA_Character>(GetHUDData());
+			return MakeTuple(true, FDelegateHandle());
+		}
+		return MakeTuple(false, DataLoadedDelegate.AddUObject(&ObserverInstance , &IAssetLoaderObserver::PrimaryDataAssetLoaded));
+	}
 	return MakeTuple(false, nullptr);
 }
 
@@ -132,7 +152,7 @@ template <typename T, typename>
 TTuple<bool, FDelegateHandle> UAssetLoader::GetPrimaryDataAsset(IAssetLoaderObserver* ObserverInstance, T*& Data)
 {
 	
-	if (typeid(Data) == typeid(UPDA_Character*))
+	if (TIsSame<T, UPDA_Character>::Value)
 	{
 		if(GetIfCharactersDataInitialized())
 		{
@@ -146,7 +166,7 @@ TTuple<bool, FDelegateHandle> UAssetLoader::GetPrimaryDataAsset(IAssetLoaderObse
 		
 		return MakeTuple(false, CharacterCallbacks.AddRaw(ObserverInstance , &IAssetLoaderObserver::PrimaryDataAssetLoaded));
 	}
-	else if(TIsSame<T , UAnimationsPrimaryDataAsset>::Value)
+	if(TIsSame<T , UAnimationsPrimaryDataAsset>::Value)
 	{
 		if(GetIfAnimationsDataInitialized())
 		{
@@ -157,7 +177,7 @@ TTuple<bool, FDelegateHandle> UAssetLoader::GetPrimaryDataAsset(IAssetLoaderObse
 		
 		return MakeTuple(false, AnimationsCallbacks.AddRaw(ObserverInstance , &IAssetLoaderObserver::PrimaryDataAssetLoaded));
 	}
-	else if(TIsSame<T, UWeaponsPrimaryDataAsset>::Value)
+	if(TIsSame<T, UWeaponsPrimaryDataAsset>::Value)
 	{
 		if(GetIfWeaponsDataInitialized())
 		{
@@ -166,6 +186,15 @@ TTuple<bool, FDelegateHandle> UAssetLoader::GetPrimaryDataAsset(IAssetLoaderObse
 			return MakeTuple(true, FDelegateHandle());
 		}
 		return MakeTuple(false, WeaponsCallbacks.AddRaw(ObserverInstance , &IAssetLoaderObserver::PrimaryDataAssetLoaded));
+	}
+	if(TIsSame<T , UPDA_HUD>::Value)
+	{
+		if(GetIfHUDDataInitialized())
+		{
+			Data = reinterpret_cast<T*>(GetHUDData());
+			return MakeTuple(true, FDelegateHandle());
+		}
+		return MakeTuple(false, HUDCallbacks.AddRaw(ObserverInstance , &IAssetLoaderObserver::PrimaryDataAssetLoaded));
 	}
 	
 	return MakeTuple(false, FDelegateHandle());
@@ -201,6 +230,15 @@ TTuple<bool, FDelegateHandle> UAssetLoader::GetPrimaryDataAssetRaw(const IAssetL
 			return MakeTuple(true, FDelegateHandle());
 		}
 		return MakeTuple(false,	WeaponsCallbacks.AddUObject(&ObserverInstance ,  &ObserverInstance.PrimaryDataAssetLoadedRaw));
+	}
+	if(TIsSame<T , UPDA_Character>::Value)
+	{
+		if(GetIfHUDDataInitialized())
+		{
+			Data = reinterpret_cast<T*>(GetHUDData());
+			return MakeTuple(true, FDelegateHandle());
+		}
+		return MakeTuple(false, HUDCallbacks.AddUObject(&ObserverInstance , &ObserverInstance::PrimaryDataAssetLoadedRaw));
 	}
 	return MakeTuple(false, FDelegateHandle());
 }

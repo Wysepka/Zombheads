@@ -21,6 +21,7 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 	LoadWeaponsPrimaryDataAsset();
 	LoadAnimationsPrimaryDataAsset();
 	LoadCharacterPrimaryDataAsset();
+	LoadHUDPrimaryDataAsset();
 }
 
 void UAssetLoader::LoadWeaponsPrimaryDataAsset()
@@ -40,7 +41,7 @@ void UAssetLoader::LoadWeaponsPrimaryDataAsset()
 		LastAssetManager->LoadPrimaryAsset(WeaponId, Bundles, AssetsLoadedDelegate);
 
 		//AssetDataToParse.
-		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClass.ToString());
+		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClassPath.ToString());
 	}
 }
 
@@ -61,7 +62,7 @@ void UAssetLoader::LoadAnimationsPrimaryDataAsset()
 		LastAssetManager->LoadPrimaryAsset(AnimationID, Bundles, AssetsLoadedDelegate);
 
 		//AssetDataToParse.
-		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClass.ToString());
+		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClassPath.ToString());
 	}
 }
 
@@ -81,7 +82,27 @@ void UAssetLoader::LoadCharacterPrimaryDataAsset()
 		LastAssetManager->LoadPrimaryAsset(ID, Bundles, AssetsLoadedDelegate);
 
 		//AssetDataToParse.
-		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClass.ToString());
+		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClassPath.ToString());
+	}
+}
+
+void UAssetLoader::LoadHUDPrimaryDataAsset()
+{
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("HUD");
+	TArray<FPrimaryAssetId> IDList;
+	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, IDList);
+
+	for (const FPrimaryAssetId& ID : IDList)
+	{
+		FPrimaryAssetId AssetID = ID;
+		FAssetData AssetDataToParse;
+		LastAssetManager->GetPrimaryAssetData(ID, AssetDataToParse);
+		TArray<FName> Bundles;
+		AssetsLoadedDelegate.BindUObject(this, &UAssetLoader::AssetsLoadedCallback, ID);
+		LastAssetManager->LoadPrimaryAsset(ID, Bundles, AssetsLoadedDelegate);
+
+		//AssetDataToParse.
+		UE_LOG(LogTemp, Log, TEXT("AssetData ClassName %s"), *AssetDataToParse.AssetClassPath.ToString());
 	}
 }
 
@@ -122,6 +143,18 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 		if(CharacterCallbacks.IsBound())
 		{
 			CharacterCallbacks.Broadcast(CharacterData);
+		}
+	} else if(ID.PrimaryAssetType == FName("HUD"))
+	{
+		HUDData = LastAssetManager->GetPrimaryAssetObject<UPDA_HUD>(ID);
+		if (HUDData == nullptr) {
+			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ERROR: Could not load HUDData"));
+			return;
+		}
+		bHUDDataLoaded = true;
+		if(HUDCallbacks.IsBound())
+		{
+			HUDCallbacks.Broadcast(HUDData);
 		}
 	}
 }
@@ -169,5 +202,15 @@ bool UAssetLoader::GetIfCharactersDataInitialized() const
 UPDA_Character* UAssetLoader::GetCharacterData() const
 {
 	return CharacterData;
+}
+
+bool UAssetLoader::GetIfHUDDataInitialized() const
+{
+	return bHUDDataLoaded;
+}
+
+UPDA_HUD* UAssetLoader::GetHUDData() const
+{
+	return HUDData;
 }
 

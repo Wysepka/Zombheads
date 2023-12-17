@@ -58,12 +58,12 @@ void AWeaponBase::Initialize()
 	AAssetLoaderInitializer* LoaderInitializer = Cast<AAssetLoaderInitializer>(ActorInitializer);
 	AssetLoader = LoaderInitializer->GetAssetLoader();
 
-	if(!AssetLoader->GetIfWeaponsDataInitialized())
+	if(!AssetLoader.Get()->GetIfWeaponsDataInitialized())
 	{
-		AssetLoader->GetWeaponDataDelegate()->AddUObject(this , &AWeaponBase::WeaponAssetsLoaded);
+		AssetLoader.Get()->GetWeaponDataDelegate()->AddUObject(this , &AWeaponBase::WeaponAssetsLoaded);
 	} else
 	{
-		WeaponAssetsLoaded(AssetLoader->GetWeaponsData());
+		WeaponAssetsLoaded(AssetLoader.Get()->GetWeaponsData());
 	}
 }
 

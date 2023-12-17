@@ -24,7 +24,7 @@ class ZOMBHEADS_API AWeaponBase : public AActor , public IUsable
 
 private:
 	TArray<UStaticMeshComponent*> WeaponMeshVisuals;
-	UAssetLoader* AssetLoader;
+	TWeakObjectPtr<UAssetLoader> AssetLoader;
 	void WeaponAssetsLoaded(UWeaponsPrimaryDataAsset* DataAsset);
 
 	UPROPERTY(EditAnywhere)

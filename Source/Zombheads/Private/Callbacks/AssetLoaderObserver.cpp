@@ -29,3 +29,9 @@ void IAssetLoaderObserver::PrimaryDataAssetLoaded(UWeaponsPrimaryDataAsset* Data
 	UE_LOG(LogTemp , Log, TEXT("AssetLoadedOverver method not implemented"))
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("AssetLoadedOverver not implemented")));
 }
+
+void IAssetLoaderObserver::PrimaryDataAssetLoaded(UPDA_HUD* Data)
+{
+	UE_LOG(LogTemp , Log, TEXT("AssetLoadedOverver method not implemented"))
+	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("AssetLoadedOverver not implemented")));
+}
