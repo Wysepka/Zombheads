@@ -17,8 +17,9 @@ class ZOMBHEADS_API UPDA_HUD : public UPrimaryDataAsset
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	FHUDVitalityData VitalityData;
+
 public:
-	FHUDVitalityData* GetVitalityData();
+	const FHUDVitalityData& GetVitalityData();
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{

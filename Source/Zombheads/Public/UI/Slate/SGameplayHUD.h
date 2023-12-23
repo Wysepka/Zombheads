@@ -15,18 +15,17 @@
  */
 class SGameplayHUD : public SCompoundWidget
 {
-	TSharedPtr<AHUDGameplay> OwningHUD;
+	TWeakObjectPtr<AHUDGameplay> OwningHUD;
 	TSharedPtr<SHUDVitalityPanel> VitalityPanelChild;
 	TSharedPtr<SOverlay> ParentOverlaySlot;
 	
 	SLATE_BEGIN_ARGS(SGameplayHUD) {}
 
-	SLATE_ARGUMENT(TSharedPtr<AHUDGameplay>, OwningHUDArg);
+	SLATE_ARGUMENT(TWeakObjectPtr<AHUDGameplay>, OwningHUDArg);
 	
 	SLATE_END_ARGS()
 
 	SGameplayHUD();
 	
     void Construct(const FArguments& inArgs);
-
 };

@@ -13,7 +13,7 @@ class ZOMBHEADS_API AAssetLoaderInitializer : public AActor
 	GENERATED_BODY()
 
 private:
-	UAssetLoader* AssetLoader;
+	TWeakObjectPtr<UAssetLoader> AssetLoader;
 	
 public:	
 	// Sets default values for this actor's properties

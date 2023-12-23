@@ -15,9 +15,13 @@ AAssetLoaderInitializer::AAssetLoaderInitializer()
 void AAssetLoaderInitializer::BeginPlay()
 {
 	Super::BeginPlay();
-	AssetLoader = NewObject<UAssetLoader>(UAssetLoader::StaticClass());
+	if(AssetLoader == nullptr)
+	{
+		AssetLoader = NewObject<UAssetLoader>(UAssetLoader::StaticClass());
+	}
 	UAssetManager& AssetManager = UAssetManager::Get();
-	AssetLoader->LoadAssets(&AssetManager);
+	GetAssetLoader()->LoadAssets(&AssetManager);
+	//AssetLoader->LoadAssets(&AssetManager);
 }
 
 // Called every frame
@@ -32,9 +36,9 @@ TWeakObjectPtr<UAssetLoader> AAssetLoaderInitializer::GetAssetLoader()
 	if(AssetLoader == nullptr)
 	{
 		UE_LOG(LogTemp , Log, TEXT("AssetLoader is not initialized ! Creating new Instance"));
-		AssetLoader = NewObject<UAssetLoader>(UAssetLoader::StaticClass());
+		AssetLoader = TWeakObjectPtr<UAssetLoader>(NewObject<UAssetLoader>(UAssetLoader::StaticClass()));
 	}
-	return TWeakObjectPtr<UAssetLoader>(AssetLoader);
+	return AssetLoader;
 }
 
 

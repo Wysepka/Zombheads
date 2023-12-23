@@ -15,7 +15,7 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 	{
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Asset Manager is not valid"));
 		UE_LOG(LogTemp, Log, TEXT("AssetManager is not valid"));
-
+		return;
 	}
 	LastAssetManager = AssetManager;
 	LoadWeaponsPrimaryDataAsset();
@@ -88,7 +88,7 @@ void UAssetLoader::LoadCharacterPrimaryDataAsset()
 
 void UAssetLoader::LoadHUDPrimaryDataAsset()
 {
-	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("HUD");
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("HUDData");
 	TArray<FPrimaryAssetId> IDList;
 	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, IDList);
 
@@ -144,7 +144,7 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 		{
 			CharacterCallbacks.Broadcast(CharacterData);
 		}
-	} else if(ID.PrimaryAssetType == FName("HUD"))
+	} else if(ID.PrimaryAssetType == FName("HUDData"))
 	{
 		HUDData = LastAssetManager->GetPrimaryAssetObject<UPDA_HUD>(ID);
 		if (HUDData == nullptr) {

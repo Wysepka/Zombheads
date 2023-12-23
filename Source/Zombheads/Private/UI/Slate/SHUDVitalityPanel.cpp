@@ -72,14 +72,16 @@ void SHUDVitalityPanel::Construct(const FArguments& inArgs)
 	Slot1HZBase->SetVerticalAlignment(VAlign_Top);
 	Slot2HZBase->SetVerticalAlignment(VAlign_Bottom);
 
+	VitalityData = inArgs._VitalityDataArg;
+
 	//ChildrenSlots.AddSlot(Slot1HZ.StealSlot());
 	//SlotsContainer.Add(MakeShareable(Slot1HZ));
 	//SlotsContainer.Add(MakeShareable(Slot2HZ));
 	//Children.AddSlot(Slot1HZBase);
 	
-	StaminaStat = SNew(SHUDVitalityStat).VitalityStatDataArg(MakeShareable( inArgs._VitalityDataArg.Get()->GetStaminaData()));
+	StaminaStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetStaminaData());
 	StaminaStat->SetVisibility(EVisibility::Visible);
-	HealthStat = SNew(SHUDVitalityStat).VitalityStatDataArg(MakeShareable(inArgs._VitalityDataArg.Get()->GetHealthData()));
+	HealthStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetHealthData());
 	HealthStat->SetVisibility(EVisibility::Visible);
 
 	Slot1HZBase->AttachWidget(StaminaStat.ToSharedRef());

@@ -102,53 +102,30 @@ void SHUDVitalityStat::Construct(const FArguments& inArgs)
 
 	BackgroundBrush = inArgs._BackgroundBrushArg;
 	FillerBrush = inArgs._FillerBrushArg;
+
+	StatData = inArgs._VitalityStatDataArg;
 	
-	//LayoutGroup = SNew(SVerticalBox);
-	//SVerticalBox::FSlot* Slot1Base;
 	FScopedWidgetSlotArguments Slot1Arg = AddSlot();
-	
-	//LayoutGroup.Get()->AddSlot().Expose(Slot1Base);
-	//Slot1Base->SetHorizontalAlignment(HAlign_Left);
-	//Slot1 = MakeShareable(Slot1Base);
 
 	Slot1Arg.HAlign(HAlign_Left);
 
-	//ChildrenSlots.AddSlot(Slot1Arg.StealSlot());
-	//SlotContainer.Add(Slot1);
-
 	IconImg = SNew(SImage);
-	IconImg.Get()->SetImage(new FSlateImageBrush(IconImgDir , FVector2d(30 , 30)));
+	IconImg.Get()->SetImage(StatData.GetIconTextureBrush().Get());
 	
 	Slot1Arg.AttachWidget(IconImg.ToSharedRef());
-
-	/*
-	[
-		SNew(SImage)
-		.Image(new FSlateImageBrush(IconImgDir , FVector2d(30 , 30)))
-	]
-	*/
-	
-	/*
-	SVerticalBox::FSlot* Slot2Base;
-	LayoutGroup.Get()->AddSlot().Expose(Slot2Base);
-	Slot2Base->SetHorizontalAlignment(HAlign_Right);
-	Slot2 = MakeShareable(Slot2Base);
-	SlotContainer.Add(Slot2);
-	*/
 
 	FScopedWidgetSlotArguments Slot2Arg = AddSlot();
 	Slot2Arg.HAlign(HAlign_Right);
 
 	TSharedRef<SOverlay> BackgroundOverlay = SNew(SOverlay);
 	Slot2Arg.AttachWidget(BackgroundOverlay);
-
-	//ChildrenSlots.AddSlot(Slot2Arg.StealSlot());
-
+	
 	SOverlay::FOverlaySlot* Slot1OverlayBase;
 	BackgroundOverlay.Get().AddSlot().Expose(Slot1OverlayBase);
 	
 	BackgroundImg = SNew(SImage);
-	BackgroundImg.Get()->SetImage(BackgroundBrush.Get());
+	BackgroundImg.Get()->SetImage(StatData.GetBackgroundTextureBrush().Get());
+	//BackgroundImg.Get()->SetDesiredSizeOverride(FVector2d(30.f , 30.f));
 
 	Slot1OverlayBase->AttachWidget(BackgroundImg.ToSharedRef());
 
@@ -156,26 +133,10 @@ void SHUDVitalityStat::Construct(const FArguments& inArgs)
 	BackgroundOverlay.Get().AddSlot().Expose(Slot2OverlayBase);
 
 	FillerImg = SNew(SImage);
-	FillerImg.Get()->SetImage(FillerBrush.Get());
+	FillerImg.Get()->SetImage(StatData.GetFillerTextureBrush().Get());
+	//FillerImg.Get()->SetDesiredSizeOverride(FVector2d(30.f , 30.f));
 
 	Slot2OverlayBase->AttachWidget(FillerImg.ToSharedRef());
-
-	/*
-	+ SVerticalBox::Slot()
-	[
-		SNew(SOverlay)
-		+SOverlay::Slot()
-		[
-			SNew(SImage)
-			.Image(BackgroundBrush.Get())
-		]
-		+ SOverlay::Slot()
-		[
-			SNew(SImage)
-			.Image(FillerBrush.Get())
-		]
-	];
-	*/
 }
 
 

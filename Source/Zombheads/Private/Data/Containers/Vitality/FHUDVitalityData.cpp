@@ -43,12 +43,12 @@ FHUDVitalityData::~FHUDVitalityData()
 {
 }
 
-FHUDVitalityStatData* FHUDVitalityData::GetStaminaData()
+const FHUDVitalityStatData& FHUDVitalityData::GetStaminaData()
 {
-	return &StaminaData;
+	return StaminaData;
 }
 
-FHUDVitalityStatData* FHUDVitalityData::GetHealthData()
+const FHUDVitalityStatData& FHUDVitalityData::GetHealthData()
 {
-	return &HealthData;
+	return HealthData;
 }

@@ -6,6 +6,7 @@
 void AHUDGameplay::BeginPlay()
 {
 	Super::BeginPlay();
+	//return;
 
 	AActor* AssetLoaderInitializerActor = UGameplayStatics::GetActorOfClass(GetWorld() , AAssetLoaderInitializer::StaticClass());
 	AAssetLoaderInitializer* AssetLoaderInitializer = Cast<AAssetLoaderInitializer>(AssetLoaderInitializerActor);
@@ -22,19 +23,48 @@ void AHUDGameplay::BeginPlay()
 	{
 		HUDDataDelegate = arg.Value;
 	}
+	//FTimerHandle testDelegate;
+	//GetWorld()->GetTimerManager().SetTimer<AHUDGameplay>(testDelegate , this , &AHUDGameplay::DestroyWidgets , 5.f , false , 5.f);
 }
 
 void AHUDGameplay::BeginDestroy()
 {
 	Super::BeginDestroy();
-	if(HUDDataDelegate.IsValid())
+	DestroyWidgets();
+	return;
+	if(!this)
+	{
+		return;
+	}
+	return;
+	if(HUDDataDelegate.IsSet())
 	{
 		if(AssetLoader.IsValid())
 		{
-			AssetLoader.Get()->UnRegisterCallback<UPDA_HUD>(&HUDDataDelegate);
+			auto const AssetLoaderPin = AssetLoader.Get();
+			if(AssetLoaderPin == nullptr || !IsValid(AssetLoaderPin))
+			{
+				return;
+			}
+			AssetLoaderPin->UnRegisterCallback<UPDA_HUD>(&HUDDataDelegate.GetValue());
 		}
 	}
 }
+
+void AHUDGameplay::DestroyWidgets()
+{
+	auto const gengineLocal = GEngine;
+	
+	if(gengineLocal && gengineLocal->GameViewport)
+	{
+		//GEngine->GameViewport->AddViewportWidgetContent(TestContainer.ToSharedRef());
+		GEngine->GameViewport->RemoveViewportWidgetContent(HUDRoot.ToSharedRef());
+		GEngine->GameViewport->RemoveViewportWidgetContent(TestContainer.ToSharedRef());
+		
+		//GEngine->GameViewport->RemoveAllViewportWidgets();
+	}
+}
+
 
 void AHUDGameplay::PrimaryDataAssetLoaded(UPDA_HUD* Data)
 {
@@ -42,39 +72,21 @@ void AHUDGameplay::PrimaryDataAssetLoaded(UPDA_HUD* Data)
 	InitializeVitalityHUD();
 }
 
-FHUDVitalityData* AHUDGameplay::GetFHUDVitalityData()
+const FHUDVitalityData& AHUDGameplay::GetFHUDVitalityData()
 {
-	return HUDData.Get()->GetVitalityData();
+	return HUDData->GetVitalityData();
 }
 
 void AHUDGameplay::InitializeVitalityHUD()
 {
-	//StatTest = SNew(SHUDVitalityStat).
-	IconBrush = MakeShareable(new FSlateBrush( UWidgetBlueprintLibrary::MakeBrushFromTexture(IconTexture , 0 , 0)));
-	//IconBrush = MakeShareable()
-	//IconBrush = MakeShareable(new FSlateImageBrush("" , FVector2d(30 , 30)));
-
-	if(GEngine && GEngine->GameViewport && IconBrush != nullptr && IconBrush.IsValid())
+	//IconBrush = MakeShareable(new FSlateBrush( UWidgetBlueprintLibrary::MakeBrushFromTexture(IconTexture , 0 , 0)));
+	//return;
+	if(GEngine && GEngine->GameViewport)
 	{
-		FSlateImageBrush IconImgBrush = FSlateImageBrush("Icon" , FVector2d());
-		IconImgBrush.DrawAs = IconBrush->DrawAs;
-		IconImgBrush.TintColor = IconBrush->TintColor;
-		IconImgBrush.Margin = IconBrush->Margin;
-		IconImgBrush.Tiling = IconBrush->Tiling;
-		IconImgBrush.Mirroring = IconBrush->Mirroring;
-		IconImgBrush.ImageSize = IconBrush->ImageSize;
-		
-		//StatTest = SNew(SHUDVitalityStat).IconBrushArg(MakeShareable(&IconImgBrush));
-
-		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(MakeShareable(this));
+		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this));
 		HUDRoot->SetVisibility(EVisibility::Visible);
-
-		//TSharedPtr<SWidget> TestWidget = SNew(SCompoundWidget);
 
 		SAssignNew(TestContainer, SWeakWidget).PossiblyNullContent(HUDRoot);
 		GEngine->GameViewport->AddViewportWidgetContent(TestContainer.ToSharedRef());
-		//GEngine->GameViewport->AddViewportWidgetContent(SAssignNew(TestContainer , SWeakWidget).PossiblyNullContent(TestHud));
-		//GEngine->GameViewport->AddViewportWidgetContent(TestContainer).PossiblyNullContent(TestHud));
-		
 	}
 }

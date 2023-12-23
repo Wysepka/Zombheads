@@ -19,7 +19,7 @@ void SGameplayHUD::Construct(const FArguments& inArgs)
 	ParentSlotBase->SetHorizontalAlignment(HAlign_Right);
 	ParentSlotBase->SetVerticalAlignment(VAlign_Top);
 
-	SAssignNew(VitalityPanelChild , SHUDVitalityPanel).VitalityDataArg(MakeShareable(OwningHUD->GetFHUDVitalityData()));
+	SAssignNew(VitalityPanelChild , SHUDVitalityPanel).VitalityDataArg(OwningHUD->GetFHUDVitalityData());
 	VitalityPanelChild->SetVisibility(EVisibility::Visible);
 	
 	//VitalityPanelChild = SNew(SHUDVitalityPanel);

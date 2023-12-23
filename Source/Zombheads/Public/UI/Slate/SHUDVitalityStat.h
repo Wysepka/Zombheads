@@ -21,7 +21,7 @@ class SHUDVitalityStat : public SHorizontalBox /* , public FChildren */
 	SLATE_ARGUMENT(TSharedPtr<FSlateImageBrush>, BackgroundBrushArg);
 	SLATE_ARGUMENT(TSharedPtr<FSlateImageBrush>, FillerBrushArg);
 	SLATE_ARGUMENT(FString, IconImgDirArg);
-	SLATE_ARGUMENT(TSharedPtr<FHUDVitalityStatData>, VitalityStatDataArg);
+	SLATE_ARGUMENT(FHUDVitalityStatData, VitalityStatDataArg);
 	
 	SLATE_END_ARGS()
 
@@ -49,6 +49,8 @@ class SHUDVitalityStat : public SHorizontalBox /* , public FChildren */
 	TSharedPtr<FSlateBrush> IconBrush;
 	TSharedPtr<FSlateBrush> BackgroundBrush;
 	TSharedPtr<FSlateBrush> FillerBrush;
+
+	FHUDVitalityStatData StatData;
 	
 	TSharedPtr<SImage> IconImg;
 	TSharedPtr<SImage> BackgroundImg;
@@ -65,6 +67,5 @@ class SHUDVitalityStat : public SHorizontalBox /* , public FChildren */
 	FString IconImgDir;
 
 public:
-	void SetGameplayHUD(TSharedPtr<FHUDVitalityStatData> VitalityStatData);
 	//TPanelChildren<SVerticalBox::FSlot> ChildrenSlots;
 };

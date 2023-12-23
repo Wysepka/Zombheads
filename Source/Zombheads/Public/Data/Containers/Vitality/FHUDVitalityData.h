@@ -51,6 +51,6 @@ public:
 	FHUDVitalityData();
 	~FHUDVitalityData();
 
-	FHUDVitalityStatData* GetStaminaData();
-	FHUDVitalityStatData* GetHealthData();
+	const FHUDVitalityStatData& GetStaminaData();
+	const FHUDVitalityStatData& GetHealthData();
 };

@@ -30,9 +30,12 @@ protected:
 	void InitializeVitalityHUD();
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
+
+	void DestroyWidgets();
+	//virtual ~AHUDGameplay() override {  }
 	
 private:
-	FDelegateHandle HUDDataDelegate;
+	TOptional<FDelegateHandle> HUDDataDelegate;
 	TWeakObjectPtr<UAssetLoader> AssetLoader;
 	TSharedPtr<SWidget> TestContainer;
 	TSharedPtr<SGameplayHUD> HUDRoot;
@@ -49,6 +52,6 @@ private:
 
 public:
 	virtual void PrimaryDataAssetLoaded(UPDA_HUD* Data) override;
-	FHUDVitalityData* GetFHUDVitalityData();
+	const FHUDVitalityData& GetFHUDVitalityData();
 	
 };
