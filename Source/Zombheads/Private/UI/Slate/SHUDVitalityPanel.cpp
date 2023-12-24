@@ -41,11 +41,6 @@ SHUDVitalityPanel::SHUDVitalityPanel(SWidget* Owner, FName Name)
 	//this->Owner = Owner;
 }
 
-/*
-SHUDVitalityPanel::SHUDVitalityPanel() : FChildren(this)
-{
-}
-*/
 
 SHUDVitalityPanel::SHUDVitalityPanel()
 {
@@ -54,15 +49,6 @@ SHUDVitalityPanel::SHUDVitalityPanel()
 
 void SHUDVitalityPanel::Construct(const FArguments& inArgs)
 {
-	//LayoutGroup = SNew(SVerticalBox);
-	/*
-	SHorizontalBox::FSlot* Slot1HZ;
-	SHorizontalBox::FSlot* Slot2HZ;
-	LayoutGroup->AddSlot().Expose(Slot1HZ);
-	LayoutGroup->AddSlot().Expose(Slot2HZ);
-	*/
-	//SBoxPanel::FScopedWidgetSlotArguments Slot1HZ = LayoutGroup->AddSlot();
-	//SBoxPanel::FScopedWidgetSlotArguments Slot2HZ = LayoutGroup->AddSlot();
 	FSlot* Slot1HZBase;
 	FSlot* Slot2HZBase;
 
@@ -73,17 +59,15 @@ void SHUDVitalityPanel::Construct(const FArguments& inArgs)
 	Slot2HZBase->SetVerticalAlignment(VAlign_Bottom);
 
 	VitalityData = inArgs._VitalityDataArg;
-
-	//ChildrenSlots.AddSlot(Slot1HZ.StealSlot());
-	//SlotsContainer.Add(MakeShareable(Slot1HZ));
-	//SlotsContainer.Add(MakeShareable(Slot2HZ));
-	//Children.AddSlot(Slot1HZBase);
 	
 	StaminaStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetStaminaData());
 	StaminaStat->SetVisibility(EVisibility::Visible);
 	HealthStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetHealthData());
 	HealthStat->SetVisibility(EVisibility::Visible);
 
+	Slot1HZBase->SetMaxHeight(100.f);
+	Slot2HZBase->SetMaxHeight(100.f);
+	
 	Slot1HZBase->AttachWidget(StaminaStat.ToSharedRef());
 	Slot2HZBase->AttachWidget(HealthStat.ToSharedRef());
 }

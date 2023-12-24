@@ -24,5 +24,8 @@ void SGameplayHUD::Construct(const FArguments& inArgs)
 	
 	//VitalityPanelChild = SNew(SHUDVitalityPanel);
 	ParentSlotBase->AttachWidget(VitalityPanelChild.ToSharedRef());
+
+	ParentSlotBase->SetHorizontalAlignment(HAlign_Right);
+
 	//ParentSlotBase->AttachWidget(VitalityPanelChild.Pin().ToSharedRef());
 }

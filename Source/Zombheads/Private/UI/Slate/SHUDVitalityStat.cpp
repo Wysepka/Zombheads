@@ -70,29 +70,13 @@ FChildren::FWidgetRef SHUDVitalityStat::GetChildRefAt(int32 Index)
 
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 
-/*
-SHUDVitalityStat::SHUDVitalityStat(SWidget* Owner, FName Name): FChildren(this)
-{
-	//Children = MakeShareable(new FChildren(Owner));
-	this->Owner = Owner;
-}
-*/
 
 SHUDVitalityStat::SHUDVitalityStat(SWidget* Owner, FName Name)
 {
-	//ChildrenSlots = {this};
-	//Children = MakeShareable(new FChildren(Owner));
 }
-
-/*
-SHUDVitalityStat::SHUDVitalityStat() : FChildren(this)
-{
-}
-*/
 
 SHUDVitalityStat::SHUDVitalityStat()
 {
-	//ChildrenSlots = {this};
 }
 
 void SHUDVitalityStat::Construct(const FArguments& inArgs)
@@ -105,38 +89,54 @@ void SHUDVitalityStat::Construct(const FArguments& inArgs)
 
 	StatData = inArgs._VitalityStatDataArg;
 	
+	FScopedWidgetSlotArguments Slot2Arg = AddSlot();
+	Slot2Arg.MaxWidth(300.f);
+
+	TSharedRef<SBox> OverlayBox = SNew(SBox);
+	OverlayBox->SetWidthOverride(300.f);
+	
+	TSharedRef<SOverlay> BackgroundOverlay = SNew(SOverlay);
+	{
+		SOverlay::FOverlaySlot* Slot1OverlayBase;
+		BackgroundOverlay.Get().AddSlot().Expose(Slot1OverlayBase);
+		
+		BackgroundImg = SNew(SImage);
+		BackgroundImg.Get()->SetImage(StatData.GetBackgroundTextureBrush().Get());
+
+		Slot1OverlayBase->AttachWidget(BackgroundImg.ToSharedRef());
+		
+		SOverlay::FOverlaySlot* Slot2OverlayBase;
+		BackgroundOverlay.Get().AddSlot().Expose(Slot2OverlayBase);
+
+		FillerImg = SNew(SImage);
+		FillerImg.Get()->SetImage(StatData.GetFillerTextureBrush().Get());
+		
+		Slot2OverlayBase->AttachWidget(FillerImg.ToSharedRef());
+		
+	}
+	OverlayBox.Get().SetContent(BackgroundOverlay);
+	
+	Slot2Arg.AttachWidget(OverlayBox);
+	
 	FScopedWidgetSlotArguments Slot1Arg = AddSlot();
+	TSharedRef<SBox> OverlayIconBox = SNew(SBox);
+	OverlayIconBox->SetWidthOverride(100.f);
 
-	Slot1Arg.HAlign(HAlign_Left);
-
+	TSharedRef<SOverlay> OverlayIcon = SNew(SOverlay);
+	SOverlay::FOverlaySlot* Slot1OverlayIconBase;
+	OverlayIcon.Get().AddSlot().Expose(Slot1OverlayIconBase);
+	
 	IconImg = SNew(SImage);
 	IconImg.Get()->SetImage(StatData.GetIconTextureBrush().Get());
-	
-	Slot1Arg.AttachWidget(IconImg.ToSharedRef());
 
-	FScopedWidgetSlotArguments Slot2Arg = AddSlot();
+	Slot1OverlayIconBase->AttachWidget(IconImg.ToSharedRef());
+	OverlayIconBox->SetContent(OverlayIcon);
+
+	Slot1Arg.AttachWidget(OverlayIconBox);
+
+	Slot1Arg.HAlign(HAlign_Right);
+
 	Slot2Arg.HAlign(HAlign_Right);
-
-	TSharedRef<SOverlay> BackgroundOverlay = SNew(SOverlay);
-	Slot2Arg.AttachWidget(BackgroundOverlay);
-	
-	SOverlay::FOverlaySlot* Slot1OverlayBase;
-	BackgroundOverlay.Get().AddSlot().Expose(Slot1OverlayBase);
-	
-	BackgroundImg = SNew(SImage);
-	BackgroundImg.Get()->SetImage(StatData.GetBackgroundTextureBrush().Get());
-	//BackgroundImg.Get()->SetDesiredSizeOverride(FVector2d(30.f , 30.f));
-
-	Slot1OverlayBase->AttachWidget(BackgroundImg.ToSharedRef());
-
-	SOverlay::FOverlaySlot* Slot2OverlayBase;
-	BackgroundOverlay.Get().AddSlot().Expose(Slot2OverlayBase);
-
-	FillerImg = SNew(SImage);
-	FillerImg.Get()->SetImage(StatData.GetFillerTextureBrush().Get());
-	//FillerImg.Get()->SetDesiredSizeOverride(FVector2d(30.f , 30.f));
-
-	Slot2OverlayBase->AttachWidget(FillerImg.ToSharedRef());
 }
 
 

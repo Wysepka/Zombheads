@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/Image.h"
 #include "Engine/DataAsset.h"
 #include "Data/Containers/Vitality/FHUDVitalityData.h"
 #include "PDA_HUD.generated.h"
@@ -17,6 +18,9 @@ class ZOMBHEADS_API UPDA_HUD : public UPrimaryDataAsset
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	FHUDVitalityData VitalityData;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	UImage* Image;
 
 public:
 	const FHUDVitalityData& GetVitalityData();
