@@ -22,7 +22,6 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	FCoreDelegates::OnExit.AddUObject(this, &APlayerPawn::ExitingApplication);
-	VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
 }
 
 void APlayerPawn::DisposeInventoryDelegates()
@@ -121,11 +120,11 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(CharWrapper->GetLocalPlayer());
 	InputSubsystem->AddMappingContext(PlayerInputData->GetPlayerMappingContext().Get() , 0);
 
-	if(VitalityComponent.Get() != nullptr)
+	if(GetVitalityComponent().Get() != nullptr)
 	{
 		UEnhancedInputComponent* Eic = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-		Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Triggered , VitalityComponent.Get() , &UActorVitalityComponent::BeginSprint);
-		Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Completed , VitalityComponent.Get() , &UActorVitalityComponent::EndSprint);
+		Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Triggered , GetVitalityComponent_Internal().Get() , &UActorVitalityComponent::BeginSprint);
+		Eic->BindAction(PlayerInputData->GetPlayerSprintAction().Get() , ETriggerEvent::Completed , GetVitalityComponent_Internal().Get() , &UActorVitalityComponent::EndSprint);
 	}
 }
 
@@ -215,13 +214,22 @@ FPlayerPivotInitialized* APlayerPawn::GetPlayerPivotInitializedDelegate()
 	return &PlayerPawnInitializedDelegate;
 }
 
-TWeakInterfacePtr<IVitalityComponent> APlayerPawn::GetVitalityComponent()
+TSoftObjectPtr<UActorVitalityComponent> APlayerPawn::GetVitalityComponent_Internal()
 {
-	return VitalityComponentInterface;
+	if(!VitalityComponent)
+	{
+		VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
+	}
+	return VitalityComponent;
 }
 
-void APlayerPawn::Test()
+TWeakInterfacePtr<IVitalityComponent> APlayerPawn::GetVitalityComponent()
 {
+	if(!VitalityComponentInterface.IsValid())
+	{
+		VitalityComponentInterface = Cast<IVitalityComponent>(GetVitalityComponent_Internal().Get());
+	}
+	return VitalityComponentInterface;
 }
 
 void APlayerPawn::SetSkeletalMeshComponent_CPP(USkeletalMeshComponent* SkeletelMeshComp)
@@ -239,7 +247,7 @@ void APlayerPawn::AnimationsDataCallback(UAnimationsPrimaryDataAsset* Animations
 
 void APlayerPawn::PrimaryDataAssetLoaded(UPDA_Character* Data)
 {
-	const auto VitCompPin = VitalityComponent.Get();
+	const auto VitCompPin = GetVitalityComponent_Internal().Get();
 	if(VitCompPin != nullptr)
 	{
 		VitCompPin->LoadData(TSoftObjectPtr<UPDA_Character>(Data));
@@ -272,11 +280,8 @@ void APlayerPawn::HandleItemUsedAnim(const IUsable& WeaponBase)
 
 void APlayerPawn::OnWeaponShotAnimEvent()
 {
-	//UPlayerAnimInstance* AnimInstance = Cast<UPlayerAnimInstance>(SkeletalMeshComponent->GetAnimInstance());
 	AnimInstance->ShotValue = 1.f;
 }
-
-//{ Animation Montages
 
 void APlayerPawn::StartAnimationMontage(const FString& MontageID)
 {
@@ -345,4 +350,3 @@ void APlayerPawn::EndOfSingleAnimMontage(const FString& MontageID)
 		StartAnimationMontage(FString("Aim"));
 	}
 }
-//}

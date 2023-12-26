@@ -21,8 +21,11 @@ class ZOMBHEADS_API IVitalityComponent
 {
 	GENERATED_BODY()
 
+public:
 	virtual bool HasStaminaToSprint() const = 0;
 	virtual bool GetIfSprinting() const = 0;
+	virtual float CurrentStaminaPercentage() const = 0;
+	virtual float CurrentHealthPercentage() const = 0;
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 };

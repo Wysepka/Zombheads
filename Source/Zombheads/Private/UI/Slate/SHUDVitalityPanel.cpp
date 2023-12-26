@@ -3,37 +3,6 @@
 
 #include "UI/Slate/SHUDVitalityPanel.h"
 
-/*
-void SHUDVitalityPanel::OnArrangeChildren(const FGeometry& AllottedGeometry, FArrangedChildren& ArrangedChildren) const
-{
-}
-
-FVector2D SHUDVitalityPanel::ComputeDesiredSize(float LayoutScaleMultiplier) const
-{
-	return FVector2d(10 , 10);
-	//return StaminaStat->ComputeDesiredSize(LayoutScaleMultiplier) + HealthStat->ComputeDesiredSize(LayoutScaleMultiplier);
-}
-
-
-bool SHUDVitalityPanel::SupportsKeyboardFocus() const
-{
-	return false;
-}
-
-FChildren* SHUDVitalityPanel::GetChildren()
-{
-	return &ChildrenSlots;
-}
-*/
-
-/*
-SHUDVitalityPanel::SHUDVitalityPanel(SWidget* Owner, FName Name) : FChildren(this)
-{
-	//this->Owner = Owner;
-	this->Owner = Owner;
-}
-*/
-
 
 SHUDVitalityPanel::SHUDVitalityPanel(SWidget* Owner, FName Name)
 {
@@ -58,11 +27,18 @@ void SHUDVitalityPanel::Construct(const FArguments& inArgs)
 	Slot1HZBase->SetVerticalAlignment(VAlign_Top);
 	Slot2HZBase->SetVerticalAlignment(VAlign_Bottom);
 
-	VitalityData = inArgs._VitalityDataArg;
+	//-const auto worldLoc = GEngine->GetWorld();
 	
-	StaminaStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetStaminaData());
+	//auto VitalityComp = PlayerPawn->GetVitalityComponent();
+	VitalityData = inArgs._VitalityDataArg;
+	VitalityComp = inArgs._VitalityCompArg;
+
+	/* const TFunction<float()> */ StaminaPercentageFnc = [this](){return VitalityComp.Get()->CurrentStaminaPercentage();};
+	/* const TFunction<float()> */ HealthPercentageFnc = [this](){return VitalityComp.Get()->CurrentHealthPercentage();};
+	
+	StaminaStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetStaminaData()).StatPercentageFunctionArg(StaminaPercentageFnc);
 	StaminaStat->SetVisibility(EVisibility::Visible);
-	HealthStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetHealthData());
+	HealthStat = SNew(SHUDVitalityStat).VitalityStatDataArg(VitalityData.GetHealthData()).StatPercentageFunctionArg(HealthPercentageFnc);
 	HealthStat->SetVisibility(EVisibility::Visible);
 
 	Slot1HZBase->SetMaxHeight(100.f);
@@ -71,39 +47,3 @@ void SHUDVitalityPanel::Construct(const FArguments& inArgs)
 	Slot1HZBase->AttachWidget(StaminaStat.ToSharedRef());
 	Slot2HZBase->AttachWidget(HealthStat.ToSharedRef());
 }
-
-//Region below is FChildren derived abstract methods
-
-/*
-int32 SHUDVitalityPanel::Num() const
-{
-	return 1;
-}
-
-TSharedRef<const SWidget> SHUDVitalityPanel::GetChildAt(int32 Index) const
-{
-	return LayoutGroup.ToSharedRef();
-}
-
-TSharedRef<SWidget> SHUDVitalityPanel::GetChildAt(int32 Index)
-{
-	return LayoutGroup.ToSharedRef();
-}
-
-const FSlotBase& SHUDVitalityPanel::GetSlotAt(int32 ChildIndex) const
-{
-	return SlotsContainer[ChildIndex].ToSharedRef().Get();
-}
-
-FChildren::FConstWidgetRef SHUDVitalityPanel::GetChildRefAt(int32 Index) const
-{
-	return FConstWidgetRef(ECopyConstruct::CopyConstruct, LayoutGroup.ToSharedRef());
-}
-
-FChildren::FWidgetRef SHUDVitalityPanel::GetChildRefAt(int32 Index)
-{
-	return FWidgetRef(ECopyConstruct::CopyConstruct, LayoutGroup.ToSharedRef());
-}
-*/
-
-//Region above is FChildren derived abstract methods

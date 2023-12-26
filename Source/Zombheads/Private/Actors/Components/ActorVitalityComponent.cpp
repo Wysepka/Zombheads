@@ -98,3 +98,13 @@ bool UActorVitalityComponent::GetIfSprinting() const
 	return bIsSprintingApplied;
 }
 
+float UActorVitalityComponent::CurrentStaminaPercentage() const
+{
+	return CurrentStamina / MaxStamina;
+}
+
+float UActorVitalityComponent::CurrentHealthPercentage() const
+{
+	return CurrentHealth / MaxHealth; 
+}
+

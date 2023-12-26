@@ -22,6 +22,7 @@ class SGameplayHUD : public SCompoundWidget
 	SLATE_BEGIN_ARGS(SGameplayHUD) {}
 
 	SLATE_ARGUMENT(TWeakObjectPtr<AHUDGameplay>, OwningHUDArg);
+	SLATE_ARGUMENT(TWeakInterfacePtr<IVitalityComponent>, VitalityComponentArg);
 	
 	SLATE_END_ARGS()
 

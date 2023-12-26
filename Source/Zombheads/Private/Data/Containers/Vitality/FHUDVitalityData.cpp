@@ -11,7 +11,7 @@ TSharedPtr<FSlateBrush> FHUDVitalityStatData::GetIconTextureBrush()
 		return IconTextureBrush;
 	}
 	
-	IconTextureBrush = MakeShareable(new FSlateBrush( UWidgetBlueprintLibrary::MakeBrushFromTexture(IconTexture , 0 , 0)));
+	IconTextureBrush = MakeShareable(new FSlateBrush( UWidgetBlueprintLibrary::MakeBrushFromTexture(IconTexture , 100 , 100)));
 	return IconTextureBrush;
 }
 
@@ -21,7 +21,7 @@ TSharedPtr<FSlateBrush> FHUDVitalityStatData::GetBackgroundTextureBrush()
 	{
 		return BackgroundTextureBrush;
 	}
-	BackgroundTextureBrush = MakeShareable(new FSlateBrush(UWidgetBlueprintLibrary::MakeBrushFromTexture(BackgroundTexture, 0 , 0)));
+	BackgroundTextureBrush = MakeShareable(new FSlateBrush(UWidgetBlueprintLibrary::MakeBrushFromTexture(BackgroundTexture, 300 , 100)));
 	return BackgroundTextureBrush;
 }
 
@@ -31,8 +31,18 @@ TSharedPtr<FSlateBrush> FHUDVitalityStatData::GetFillerTextureBrush()
 	{
 		return FillerTextureBrush;
 	}
-	FillerTextureBrush = MakeShareable(new FSlateBrush(UWidgetBlueprintLibrary::MakeBrushFromTexture(FillerTexture, 0 , 0)));
+	FillerTextureBrush = MakeShareable(new FSlateBrush(UWidgetBlueprintLibrary::MakeBrushFromTexture(FillerTexture, 300 , 100)));
 	return FillerTextureBrush;
+}
+
+FSlateColor FHUDVitalityStatData::GetBackgroundTintColor()
+{
+	return BackgroundTextureTint;
+}
+
+FSlateColor FHUDVitalityStatData::GetFillerTintColor()
+{
+	return FillerTextureTint;
 }
 
 FHUDVitalityData::FHUDVitalityData()

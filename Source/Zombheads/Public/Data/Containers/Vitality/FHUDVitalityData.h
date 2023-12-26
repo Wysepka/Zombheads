@@ -24,6 +24,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTexture2D> FillerTexture;
 
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	FSlateColor BackgroundTextureTint;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	FSlateColor FillerTextureTint;
+
 	TSharedPtr<FSlateBrush> IconTextureBrush;
 	TSharedPtr<FSlateBrush> BackgroundTextureBrush;
 	TSharedPtr<FSlateBrush> FillerTextureBrush;
@@ -33,6 +39,9 @@ public:
 	TSharedPtr<FSlateBrush> GetIconTextureBrush();
 	TSharedPtr<FSlateBrush> GetBackgroundTextureBrush();
 	TSharedPtr<FSlateBrush> GetFillerTextureBrush();
+
+	FSlateColor GetBackgroundTintColor();
+	FSlateColor GetFillerTintColor();
 	
 };
 

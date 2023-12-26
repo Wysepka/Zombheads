@@ -45,4 +45,6 @@ public:
 	void LoadData(const TSoftObjectPtr<UPDA_Character>& CharData);
 	virtual bool HasStaminaToSprint() const override;
 	virtual bool GetIfSprinting() const override;
+	virtual float CurrentStaminaPercentage() const override;
+	virtual float CurrentHealthPercentage() const override;
 };

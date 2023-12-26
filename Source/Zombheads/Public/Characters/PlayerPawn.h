@@ -54,7 +54,7 @@ private:
 	UAnimBlueprint* AnimBlueprint;
 
 	TWeakInterfacePtr<ICharacterMovement> CharacterMovement;
-	TObjectPtr<UActorVitalityComponent> VitalityComponent;
+	TSoftObjectPtr<UActorVitalityComponent> VitalityComponent;
 	TWeakInterfacePtr<IVitalityComponent> VitalityComponentInterface;
 	
 	UFUNCTION(BlueprintCallable, Category = "Animation")
@@ -85,6 +85,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly  , Category = "EnhancedInput" , meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputDataAsset> PlayerInputData;
+
+	TSoftObjectPtr<UActorVitalityComponent> GetVitalityComponent_Internal();
 
 protected:
 	// Called when the game starts or when spawned
@@ -125,6 +127,4 @@ public:
 	FPlayerPivotInitialized* GetPlayerPivotInitializedDelegate();
 
 	TWeakInterfacePtr<IVitalityComponent> GetVitalityComponent();
-
-	void Test();
 };

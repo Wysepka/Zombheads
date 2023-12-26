@@ -31,12 +31,11 @@ void AHUDGameplay::BeginDestroy()
 {
 	Super::BeginDestroy();
 	DestroyWidgets();
-	return;
+	
 	if(!this)
 	{
 		return;
 	}
-	return;
 	if(HUDDataDelegate.IsSet())
 	{
 		if(AssetLoader.IsValid())
@@ -83,7 +82,25 @@ void AHUDGameplay::InitializeVitalityHUD()
 	//return;
 	if(GEngine && GEngine->GameViewport)
 	{
-		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this));
+		AActor* PlayerPawnActor = UGameplayStatics::GetActorOfClass(GetWorld() , APlayerPawn::StaticClass());
+		if(PlayerPawnActor == nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find PlayerPawn actor, VitalityStat HUD is not initialized"));
+			UE_LOG(LogTemp, Log, TEXT("Could not find PlayerPawn actor, VitalityStat HUD is not initialized"));
+			return;
+		}
+		APlayerPawn* PlayerPawn = Cast<APlayerPawn>(PlayerPawnActor);
+		//const auto VitalityComp = PlayerPawn->GetVitalityComponent();
+		const auto VitalityComp = PlayerPawn->GetVitalityComponent();
+
+		if(!VitalityComp.IsValid() || VitalityComp == nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find VitalityComponent, VitalityStat HUD is not initialized"));
+			UE_LOG(LogTemp, Log, TEXT("Could not find VitalityComponent, VitalityStat HUD is not initialized"));
+			return;
+		}
+		
+		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this)).VitalityComponentArg(VitalityComp);
 		HUDRoot->SetVisibility(EVisibility::Visible);
 
 		SAssignNew(TestContainer, SWeakWidget).PossiblyNullContent(HUDRoot);
