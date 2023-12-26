@@ -24,7 +24,7 @@ void AEnemyBase::BeginPlay()
 	}
 	
 	EnemyController = Cast<AEnemyController>(ThisController);
-	if(EnemyController == nullptr)
+	if(!EnemyController.IsValid() || EnemyController == nullptr)
 	{
 		UE_LOG(LogTemp , Log, TEXT("Could not cast EnemyController"));
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not cast EnemyController"));
@@ -33,7 +33,7 @@ void AEnemyBase::BeginPlay()
 	OnReachedDestHandle = EnemyController->OnReachedTarget.AddUObject(this , &AEnemyBase::Attack);
 }
 
-void AEnemyBase::Attack()
+void AEnemyBase::Attack(TSoftObjectPtr<APlayerPawn> PlayerPawn)
 {
 	UE_LOG(LogTemp , Log, TEXT("Attacking from: %s") , *GetName());
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red ,  FString::Printf(TEXT("Attacking from: %s") ,*GetName()));

@@ -23,19 +23,20 @@ void AEnemyController::BeginPlay()
 		return;
 	}
 
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(Target);
-	if(PlayerPawn == nullptr)
+	TargetPawn = Cast<APlayerPawn>(Target);
+	
+	if(TargetPawn == nullptr)
 	{
 		UE_LOG(LogTemp , Log , TEXT("Could not cast PlayerPawn: %s") , *(APlayerPawn::StaticClass()->GetName()))
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not cast PlayerPawn: %s") ,*(APlayerPawn::StaticClass()->GetName()) ));
 		return;
 	}
 	
-	TargetPivot = PlayerPawn->GetPlayerPivot();
+	TargetPivot = TargetPawn->GetPlayerPivot();
 
 	if(TargetPivot == nullptr)
 	{
-		PlayerPawn->GetPlayerPivotInitializedDelegate()->AddUObject(this, &AEnemyController::AssignTargetPivotCallback);
+		TargetPawn->GetPlayerPivotInitializedDelegate()->AddUObject(this, &AEnemyController::AssignTargetPivotCallback);
 		//UE_LOG(LogTemp , Log , TEXT("Could not find PlayerPivot on Obj: %s") , *(APlayerPawn::StaticClass()->GetName()))
 		//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find PlayerPivot on Obj: %s") ,*(APlayerPawn::StaticClass()->GetName()) ));
 	}
@@ -77,7 +78,7 @@ void AEnemyController::MoveToTarget(const FTransform& TargetTransform)
 	{
 		if(OnReachedTarget.IsBound())
 		{
-			OnReachedTarget.Broadcast();
+			OnReachedTarget.Broadcast(TargetPawn);
 		}
 	}
 }

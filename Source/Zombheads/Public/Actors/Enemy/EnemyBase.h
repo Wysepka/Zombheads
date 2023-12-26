@@ -13,7 +13,7 @@ class ZOMBHEADS_API AEnemyBase : public APawn
 	GENERATED_BODY()
 private:
 	FDelegateHandle OnReachedDestHandle;
-	AEnemyController* EnemyController;
+	TSoftObjectPtr<AEnemyController> EnemyController;
 
 public:
 	// Sets default values for this pawn's properties
@@ -22,7 +22,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Attack();
+	virtual void Attack(TSoftObjectPtr<APlayerPawn> PlayerPawn);
 	virtual void BeginDestroy() override;
 
 public:	

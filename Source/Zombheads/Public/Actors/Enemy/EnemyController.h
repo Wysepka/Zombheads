@@ -11,7 +11,7 @@
 /**
  * 
  */
-DECLARE_MULTICAST_DELEGATE(FOnReachedTarget);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnReachedTarget ,TSoftObjectPtr<APlayerPawn>);
 UCLASS()
 class ZOMBHEADS_API AEnemyController : public AAIController
 {
@@ -23,6 +23,7 @@ private:
 	float StoppingDistance;
 
 	USceneComponent* TargetPivot;
+	TSoftObjectPtr<APlayerPawn> TargetPawn;
 	void AssignTargetPivotCallback(USceneComponent* TargetPivot);
 	
 protected:
