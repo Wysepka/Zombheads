@@ -86,6 +86,7 @@ private:
 	UPROPERTY(EditDefaultsOnly  , Category = "EnhancedInput" , meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputDataAsset> PlayerInputData;
 
+	TWeakInterfacePtr<IVitalityComponent> VitalityComponent;
 public:
 
 	//UFUNCTION(BlueprintImplementableEvent)

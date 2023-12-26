@@ -48,6 +48,8 @@ void APlayerCharacterWrapper::BeginPlay() {
 		return;
 	}
 
+	VitalityComponent = PlayerPawn->GetVitalityComponent();
+
 	TWeakObjectPtr<UInventorySceneContainer> ActiveContainer = nullptr;
 	TWeakObjectPtr<UInventorySceneContainer> DisabledContainer = nullptr;
 	PlayerPawn->GetInventorySceneContainers(ActiveContainer, DisabledContainer);
@@ -120,8 +122,6 @@ void APlayerCharacterWrapper::FindPawnCharRepresentation(AActor* ActorPawn) {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("ERROR: Could not find PawnCharRepresentation Type: %s"), *PawnClassName));
 		return;
 	}
-
-	
 }
 
 void APlayerCharacterWrapper::BeginDestroy() {
@@ -293,6 +293,14 @@ void APlayerCharacterWrapper::SprintEnd()
 void APlayerCharacterWrapper::Tick(float delta) {
 	Super::Tick(delta);
 	LookAtMousePos();
+
+	if(bIsSprinting)
+	{
+		if(!VitalityComponent.Get()->HasStaminaToSprint())
+		{
+			bIsSprinting = false;
+		}
+	}
 
 	APawn* ControllerPawn = GetPawn();
 	if (ControllerPawn) 
