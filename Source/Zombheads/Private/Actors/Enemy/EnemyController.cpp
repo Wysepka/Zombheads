@@ -9,6 +9,8 @@
 void AEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CurrentEnemyState = IDLE;
 	
 	APawn* EnemyPawn = GetPawn();
 	if(EnemyPawn != nullptr)
@@ -62,43 +64,36 @@ void AEnemyController::MoveToTarget(const FTransform& TargetTransform)
 	{
 		return;
 	}
-	//FTransform TargetTranform = Target->GetTransform();
 	float DistToTarget = FVector::Distance(GetNavAgentLocation(),TargetTransform.GetLocation());
 	if(DistToTarget > StoppingDistance)
 	{
-		//if(!IsFollowingAPath())
-		//{
-			//MoveToActor(Target , StoppingDistance);
-			FAIMoveRequest MoveRequest;
-			//MoveToActor(Target , StoppingDistance);
-			MoveToLocation(TargetPivot->GetComponentLocation() , StoppingDistance);
-			//MoveToLocation(GetNavAgentLocation()  + FVector::ForwardVector * 1000.f);
-		//}
+		if(CurrentEnemyState == IDLE || CurrentEnemyState == ATTACKING)
+		{
+			CurrentEnemyState = TOWARD_TARGET;
+			if(OnStateChanged.IsBound())
+			{
+				OnStateChanged.Broadcast(FOnStateChangedData(CurrentEnemyState));
+			}
+		}
+
+		//Vell we need to update MoveToLocation each frame cuz Pivot position might be changing
+		FAIMoveRequest MoveRequest;
+		MoveToLocation(TargetPivot->GetComponentLocation() , StoppingDistance);
 	} else
 	{
-		if(OnReachedTarget.IsBound())
+		if(CurrentEnemyState == TOWARD_TARGET || CurrentEnemyState == IDLE)
 		{
-			OnReachedTarget.Broadcast(TargetPawn);
+			CurrentEnemyState = ATTACKING;
+			if(OnStateChanged.IsBound())
+			{
+				OnStateChanged.Broadcast(FOnStateChangedData(CurrentEnemyState , TargetPawn));
+			}
 		}
 	}
 }
 
 void AEnemyController::RotateToTarget(const FTransform& TargetTransform , const float DeltaTime) const
 {
-	/*
-	FVector DirToTarget = TargetTransform.GetLocation() - GetNavAgentLocation();
-	if(DirToTarget.Normalize())
-	{
-		//USceneComponent* RootComponent = GetRootComponent();
-		RootComponent->SetWorldRotation(DirToTarget.Rotation());
-		
-	}
-	else
-	{
-		UE_LOG(LogTemp , Warning , TEXT("Could not Normalize dir to Target for Agent: %s") , *GetName());
-	}
-	*/
-
 	APawn* ControlledPawn = GetPawn();
 	if(ControlledPawn != nullptr)
 	{

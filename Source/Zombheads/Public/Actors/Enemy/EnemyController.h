@@ -11,13 +11,40 @@
 /**
  * 
  */
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnReachedTarget ,TSoftObjectPtr<APlayerPawn>);
+UENUM(BlueprintType)
+enum EEnemyState : uint8
+{
+	IDLE = 0			UMETA(DisplayName = "IDLE"),
+	TOWARD_TARGET = 1	UMETA(DisplayName = "WALKING"),
+	ATTACKING = 2		UMETA(DisplayName = "ATTACKING"),
+};
+
+USTRUCT()
+struct FOnStateChangedData
+{
+	GENERATED_BODY()
+private:
+	EEnemyState State;
+	TSoftObjectPtr<APlayerPawn> Pawn;
+
+public:
+	FOnStateChangedData() { State = IDLE; }
+	FOnStateChangedData(EEnemyState State) { this->State = State; }
+	FOnStateChangedData(EEnemyState State ,const TSoftObjectPtr<APlayerPawn>& Pawn) { this->State = State , this->Pawn = Pawn	; }
+
+	EEnemyState GetState() const {  return State; }
+	TSoftObjectPtr<APlayerPawn> GetPawn() {return Pawn;}
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateChanged ,FOnStateChangedData);
 UCLASS()
 class ZOMBHEADS_API AEnemyController : public AAIController
 {
 	GENERATED_BODY()
 private:
 	AActor* Target;
+
+	EEnemyState CurrentEnemyState;
 
 	UPROPERTY(EditAnywhere , Category = "Settings")
 	float StoppingDistance;
@@ -34,6 +61,6 @@ protected:
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 public:
-	FOnReachedTarget OnReachedTarget;
+	FOnStateChanged OnStateChanged;
 	AEnemyController();
 };

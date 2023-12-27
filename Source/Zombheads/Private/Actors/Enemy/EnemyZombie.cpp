@@ -8,7 +8,7 @@ AEnemyZombie::AEnemyZombie()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -17,6 +17,14 @@ void AEnemyZombie::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
+/*
+void AEnemyZombie::OnControllerStateChanged(TSoftObjectPtr<APlayerPawn> PlayerPawn)
+{
+	Super::OnControllerStateChanged(PlayerPawn);
+	
+}
+*/
 
 // Called every frame
 void AEnemyZombie::Tick(float DeltaTime)

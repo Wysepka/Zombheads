@@ -3,16 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyAnimInstance.h"
 #include "Animation/AnimInstance.h"
-#include "ZombieAnimInstance.generated.h"
+#include "EnemyAnimInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZOMBHEADS_API UZombieAnimInstance : public UEnemyAnimInstance
+class ZOMBHEADS_API UEnemyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	UZombieAnimInstance(const FObjectInitializer& ObjectInitializer);
+public:
+
+	UEnemyAnimInstance(const FObjectInitializer& ObjectInitializer);
+
+	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "AnimData")
+	bool IsWalking;
+
+	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "AnimData")
+	bool IsAttacking;
 };

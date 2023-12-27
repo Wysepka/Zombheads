@@ -4,14 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "EnemyBase.h"
+#include "Animations/ZombieAnimInstance.h"
 #include "GameFramework/Pawn.h"
 #include "EnemyZombie.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class ZOMBHEADS_API AEnemyZombie : public AEnemyBase
 {
 	GENERATED_BODY()
-
+private:
+	TSoftObjectPtr<UZombieAnimInstance> AnimInstance;
 	
 public:
 	// Sets default values for this pawn's properties
@@ -20,6 +22,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	//virtual void OnControllerStateChanged(TSoftObjectPtr<APlayerPawn> PlayerPawn) override;
 
 public:	
 	// Called every frame

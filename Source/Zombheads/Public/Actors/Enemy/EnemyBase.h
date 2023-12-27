@@ -5,9 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Actors/Enemy/EnemyController.h"
+#include "Animations/EnemyAnimInstance.h"
 #include "EnemyBase.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable)
 class ZOMBHEADS_API AEnemyBase : public APawn
 {
 	GENERATED_BODY()
@@ -15,6 +16,12 @@ private:
 	FDelegateHandle OnReachedDestHandle;
 	TSoftObjectPtr<AEnemyController> EnemyController;
 
+	TObjectPtr<USkeletalMeshComponent> EnemyMesh;
+	TSoftObjectPtr<UEnemyAnimInstance> AnimInstance;
+
+	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true") , Category = "Enemy")
+	virtual void AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent);
+	
 public:
 	// Sets default values for this pawn's properties
 	AEnemyBase();
@@ -22,7 +29,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void Attack(TSoftObjectPtr<APlayerPawn> PlayerPawn);
+	virtual void OnControllerStateChanged(FOnStateChangedData StateData);
 	virtual void BeginDestroy() override;
 
 public:	

@@ -22,6 +22,7 @@ private:
 	void CalculateCameraDampPos(float DeltaTime);
 	USceneComponent* PawnCharRep;
 	FVector CurrentCameraPos;
+	FQuat StartRotation;
 
 public:
 	UPROPERTY(Category = "CameraMovement", BlueprintReadOnly)
@@ -45,6 +46,9 @@ public:
 	UPROPERTY(Category = "CameraMovement", EditAnywhere)
 		float InterpolationSpeed = 0.5f;
 
+	UPROPERTY(Category = "CameraMovement", EditAnywhere)
+		bool isLookingAtTarget;
+
 	UFUNCTION(BlueprintCallable, Category = "Comps")
 		void SetCharacterRepresentation(class USceneComponent* value);
 
@@ -52,6 +56,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Comps")
 		class USceneComponent* GetYourCharacterRepresentation() const;
 
+	void LookAtTarget();
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginPlay() override;

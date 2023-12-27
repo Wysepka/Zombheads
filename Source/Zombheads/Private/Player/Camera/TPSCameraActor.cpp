@@ -7,7 +7,16 @@
 
 void ATPSCameraActor::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
+	StartRotation = GetTransform().GetRotation();
 	CalculateCameraDampPos(DeltaTime);
+	if(isLookingAtTarget)
+	{
+		LookAtTarget();
+	}
+	else
+	{
+		SetActorRotation(StartRotation);
+	}
 }
 
 void ATPSCameraActor::BeginPlay() {
@@ -38,6 +47,19 @@ void ATPSCameraActor::CalculateCameraDampPos(float DeltaTime) {
 		FVector DeltaLocation = NewLocation - CurrentLocation;
 		FVector DampedLocation = CurrentLocation + DeltaLocation * DampingFactor * DeltaTime;
 		*/
+	}
+}
+
+void ATPSCameraActor::LookAtTarget()
+{
+	auto CharRep = GetYourCharacterRepresentation();
+	if(CharRep != nullptr)
+	{
+		FVector VecToChar = CharRep->GetComponentLocation() - GetActorLocation();
+		VecToChar.Normalize();
+		//const FQuat RotationToChar = FQuat::MakeFromRotationVector(VecToChar);
+		const auto RotationToChar = UKismetMathLibrary::FindLookAtRotation(GetActorLocation() , CharRep->GetComponentLocation());
+		SetActorRotation(RotationToChar);
 	}
 }
 

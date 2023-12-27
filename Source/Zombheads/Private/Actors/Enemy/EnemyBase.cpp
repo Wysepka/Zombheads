@@ -2,8 +2,6 @@
 
 
 #include "Actors/Enemy/EnemyBase.h"
-
-
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
@@ -30,13 +28,31 @@ void AEnemyBase::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not cast EnemyController"));
 	}
 	
-	OnReachedDestHandle = EnemyController->OnReachedTarget.AddUObject(this , &AEnemyBase::Attack);
+	OnReachedDestHandle = EnemyController->OnStateChanged.AddUObject(this , &AEnemyBase::OnControllerStateChanged);
 }
 
-void AEnemyBase::Attack(TSoftObjectPtr<APlayerPawn> PlayerPawn)
+void AEnemyBase::OnControllerStateChanged(FOnStateChangedData StateData)
 {
-	UE_LOG(LogTemp , Log, TEXT("Attacking from: %s") , *GetName());
-	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red ,  FString::Printf(TEXT("Attacking from: %s") ,*GetName()));
+	//UE_LOG(LogTemp , Log, TEXT("Attacking from: %s") , *GetName());
+	//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red ,  FString::Printf(TEXT("Attacking from: %s") ,*GetName()));
+
+	switch (StateData.GetState())
+	{
+	case ATTACKING:
+		AnimInstance.Get()->IsAttacking = true;
+		AnimInstance.Get()->IsWalking = false;
+		break;
+	case TOWARD_TARGET:
+		AnimInstance.Get()->IsAttacking = false;
+		AnimInstance.Get()->IsWalking = true;
+		break;
+	case IDLE:
+		AnimInstance.Get()->IsAttacking = false;
+		AnimInstance.Get()->IsWalking = false;
+		break;
+	default:
+		break;
+	}
 }
 
 void AEnemyBase::BeginDestroy()
@@ -44,7 +60,7 @@ void AEnemyBase::BeginDestroy()
 	Super::BeginDestroy();
 	if(EnemyController != nullptr)
 	{
-		EnemyController->OnReachedTarget.Remove(OnReachedDestHandle);
+		EnemyController->OnStateChanged.Remove(OnReachedDestHandle);
 	}
 }
 
@@ -60,5 +76,18 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent)
+{
+	EnemyMesh = SkeletalMeshComponent;
+	auto AnimInstanceRaw = EnemyMesh.Get()->GetAnimInstance();
+	if(AnimInstanceRaw == nullptr)
+	{
+		UE_LOG(LogTemp , Log , TEXT("Could not find AnimInstance on: %s") , *EnemyMesh.GetName());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find AnimInstance on: %s") ,*EnemyMesh.GetName()));
+		return;
+	}
+	AnimInstance = Cast<UEnemyAnimInstance>(AnimInstanceRaw);
 }
 
