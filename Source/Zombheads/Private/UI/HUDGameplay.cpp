@@ -8,6 +8,11 @@ void AHUDGameplay::BeginPlay()
 	Super::BeginPlay();
 	//return;
 
+	auto argName = GetClass()->GetFName();
+	if(argName.IsValid())
+	{
+		auto c = "c";
+	}
 	AActor* AssetLoaderInitializerActor = UGameplayStatics::GetActorOfClass(GetWorld() , AAssetLoaderInitializer::StaticClass());
 	AAssetLoaderInitializer* AssetLoaderInitializer = Cast<AAssetLoaderInitializer>(AssetLoaderInitializerActor);
 	AssetLoader = AssetLoaderInitializer->GetAssetLoader();

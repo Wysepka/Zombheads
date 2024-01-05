@@ -25,9 +25,24 @@ private:
 public:
 	const FHUDVitalityData& GetVitalityData();
 
+	//inline static FString DefinedAssetKey = "DA_HUD";
+	inline static FString DefinedAssetKey = "PDA_HUD";
+
+	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("HUDData");
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
+		FPrimaryAssetId PrimaryAssetId = FPrimaryAssetId(PrimaryAssetType , GetFName());
+
+		//PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
+
+		return PrimaryAssetId;
+	}
+	*/
+
+	static FPrimaryAssetId DefinedAssetID()
+	{
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
 		FPrimaryAssetId PrimaryAssetId;
 
 		PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;

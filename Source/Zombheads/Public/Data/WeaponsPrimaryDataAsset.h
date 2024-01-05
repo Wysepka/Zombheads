@@ -52,22 +52,27 @@ private:
 
 public:
 
+	//inline static FString DefinedAssetKey = "DA_Weapons";
+	inline static FString DefinedAssetKey = "WeaponsPrimaryDataAsset";
+
+	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Weapons");
-		FPrimaryAssetId PrimaryAssetId;
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
+		FPrimaryAssetId PrimaryAssetId = FPrimaryAssetId(PrimaryAssetType , GetFName());
 
-		PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
+		//PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
 
 		return PrimaryAssetId;
 	}
+	*/
 
 	TArray<FString> GetActiveWeaponsIDs();
 	TMap<FString, FWeaponsData> GetWeaponsDataMap();
 
-	static FPrimaryAssetId WeaponsAssetID()
+	static FPrimaryAssetId DefinedAssetID()
 	{
-		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Weapons");
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
 		FPrimaryAssetId PrimaryAssetId;
 
 		PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;

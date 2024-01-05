@@ -8,7 +8,7 @@ public class Zombheads : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "EnhancedInput" , "Slate" , "UMG" , "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "EnhancedInput" , "Slate" , "UMG" , "SlateCore" , "AIModule" });
 
 		//PrivateDependencyModuleNames.AddRange(new string[] { "SlateCore" , "Slate" ,"InputCore"});
 		PrivateDependencyModuleNames.AddRange(new string[] {});

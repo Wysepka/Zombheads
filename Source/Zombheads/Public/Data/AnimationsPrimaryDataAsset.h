@@ -41,16 +41,31 @@ public:
 	FPlayerAnimData PlayerAnimData;
 
 public:
+	//inline static FString DefinedAssetKey = "DA_Animations";
+	inline static FString DefinedAssetKey = "AnimationsPrimaryDataAsset";
+
+	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Animations");
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
+		FPrimaryAssetId PrimaryAssetId = FPrimaryAssetId(PrimaryAssetType , GetFName());
+
+		//PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
+
+		return PrimaryAssetId;
+	}
+	*/
+
+	FPlayerAnimData* GetPlayerAnimData();
+
+	static FPrimaryAssetId DefinedAssetID()
+	{
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
 		FPrimaryAssetId PrimaryAssetId;
 
 		PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
 
 		return PrimaryAssetId;
 	}
-
-	FPlayerAnimData* GetPlayerAnimData();
 	
 };

@@ -5,7 +5,6 @@
 
 #include "Characters/PlayerPawn.h"
 
-#include "Editor.h"
 #include "Data/AnimationsPrimaryDataAsset.h"
 #include "Player/PlayerCharacterWrapper.h"
 
@@ -54,12 +53,12 @@ void APlayerPawn::DisposeInventoryDelegates()
 
 void APlayerPawn::BeginDestroy()
 {
+	Super::BeginDestroy();
 	if(bExitingApplication)
 	{
 		return;
 	}
 	
-	Super::BeginDestroy();
 	DisposeInventoryDelegates();
 }
 

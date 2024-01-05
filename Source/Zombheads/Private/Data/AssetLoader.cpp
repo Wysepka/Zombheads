@@ -18,6 +18,7 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 		return;
 	}
 	LastAssetManager = AssetManager;
+	//LastAssetManager.getprim
 	LoadWeaponsPrimaryDataAsset();
 	LoadAnimationsPrimaryDataAsset();
 	LoadCharacterPrimaryDataAsset();
@@ -26,7 +27,7 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 
 void UAssetLoader::LoadWeaponsPrimaryDataAsset()
 {
-	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Weapons");
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*UWeaponsPrimaryDataAsset::DefinedAssetKey);
 	TArray<FPrimaryAssetId> WeaponIDList;
 	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, WeaponIDList);
 
@@ -47,7 +48,7 @@ void UAssetLoader::LoadWeaponsPrimaryDataAsset()
 
 void UAssetLoader::LoadAnimationsPrimaryDataAsset()
 {
-	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Animations");
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*UAnimationsPrimaryDataAsset::DefinedAssetKey);
 	TArray<FPrimaryAssetId> AnimationsIDList;
 	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, AnimationsIDList);
 	//LastAssetManager.getpri
@@ -68,7 +69,7 @@ void UAssetLoader::LoadAnimationsPrimaryDataAsset()
 
 void UAssetLoader::LoadCharacterPrimaryDataAsset()
 {
-	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Character");
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*UPDA_Character::DefinedAssetKey);
 	TArray<FPrimaryAssetId> IDList;
 	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, IDList);
 
@@ -88,7 +89,7 @@ void UAssetLoader::LoadCharacterPrimaryDataAsset()
 
 void UAssetLoader::LoadHUDPrimaryDataAsset()
 {
-	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("HUDData");
+	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*UPDA_HUD::DefinedAssetKey);
 	TArray<FPrimaryAssetId> IDList;
 	LastAssetManager->GetPrimaryAssetIdList(PrimaryAssetType, IDList);
 
@@ -108,7 +109,7 @@ void UAssetLoader::LoadHUDPrimaryDataAsset()
 
 void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 {
-	if(ID.PrimaryAssetType == FName("Weapons"))
+	if(ID.PrimaryAssetType == UWeaponsPrimaryDataAsset::DefinedAssetID().PrimaryAssetType)	
 	{
 		WeaponsData = LastAssetManager->GetPrimaryAssetObject<UWeaponsPrimaryDataAsset>(ID);
 		if (WeaponsData == nullptr) {
@@ -120,7 +121,7 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 		{
 			WeaponsCallbacks.Broadcast(WeaponsData);
 		}
-	} else if(ID.PrimaryAssetType == FName("Animations"))
+	} else if(ID.PrimaryAssetType == UAnimationsPrimaryDataAsset::DefinedAssetID().PrimaryAssetType)
 	{
 		AnimationsData = LastAssetManager->GetPrimaryAssetObject<UAnimationsPrimaryDataAsset>(ID);
 		if (AnimationsData == nullptr) {
@@ -132,7 +133,7 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 		{
 			AnimationsCallbacks.Broadcast(AnimationsData);
 		}
-	} else if(ID.PrimaryAssetType == FName("Character"))
+	} else if(ID.PrimaryAssetType == UPDA_Character::DefinedAssetID().PrimaryAssetType)
 	{
 		CharacterData = LastAssetManager->GetPrimaryAssetObject<UPDA_Character>(ID);
 		if (CharacterData == nullptr) {
@@ -144,7 +145,7 @@ void UAssetLoader::AssetsLoadedCallback(FPrimaryAssetId ID)
 		{
 			CharacterCallbacks.Broadcast(CharacterData);
 		}
-	} else if(ID.PrimaryAssetType == FName("HUDData"))
+	} else if(ID.PrimaryAssetType == UPDA_HUD::DefinedAssetID().PrimaryAssetType)
 	{
 		HUDData = LastAssetManager->GetPrimaryAssetObject<UPDA_HUD>(ID);
 		if (HUDData == nullptr) {

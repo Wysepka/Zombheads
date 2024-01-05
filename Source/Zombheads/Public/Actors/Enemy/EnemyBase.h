@@ -6,9 +6,10 @@
 #include "GameFramework/Pawn.h"
 #include "Actors/Enemy/EnemyController.h"
 #include "Animations/EnemyAnimInstance.h"
+#include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
 
-UCLASS(Blueprintable)
+UCLASS()
 class ZOMBHEADS_API AEnemyBase : public APawn
 {
 	GENERATED_BODY()

@@ -53,7 +53,7 @@ void PlayerInventory::PreloadInventory(AAssetLoaderInitializer* AssetInitializer
 
 void PlayerInventory::GetWeaponsFromData(UWeaponsPrimaryDataAsset* WeaponsData)
 {
-	FPrimaryAssetId WeaponsID = UWeaponsPrimaryDataAsset::WeaponsAssetID();
+	FPrimaryAssetId WeaponsID = UWeaponsPrimaryDataAsset::DefinedAssetID();
 	if (WeaponsData == nullptr) {
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("ERROR: Could not load WeaponsData"));
 		return;

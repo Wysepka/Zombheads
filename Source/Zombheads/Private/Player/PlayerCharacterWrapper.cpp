@@ -4,11 +4,7 @@
 //to permit persons to whom the Software is furnished to do so, subject to the following conditions
 #include "Player/PlayerCharacterWrapper.h"
 
-#include "AssetViewUtils.h"
 #include "Data/PDA_Character.h"
-#include "DSP/Encoders/OggVorbisEncoder.h"
-#include "DSP/Encoders/OggVorbisEncoder.h"
-#include "Evaluation/MovieSceneEvaluationKey.h"
 #include "UObject/WeakInterfacePtr.h"
 
 APlayerCharacterWrapper::APlayerCharacterWrapper() {

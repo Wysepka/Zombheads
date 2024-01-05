@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "DetourCrowdAIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Characters/PlayerPawn.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "EnemyController.generated.h"
 
 /**
@@ -49,18 +51,22 @@ private:
 	UPROPERTY(EditAnywhere , Category = "Settings")
 	float StoppingDistance;
 
+	UPROPERTY(EditInstanceOnly , Category = "Setttings")
+	TSoftObjectPtr<AActor> CustomTarget;
+
 	USceneComponent* TargetPivot;
 	TSoftObjectPtr<APlayerPawn> TargetPawn;
 	void AssignTargetPivotCallback(USceneComponent* TargetPivot);
+	TSoftObjectPtr<UCrowdFollowingComponent> CrowdFollowingComponent;
 	
 protected:
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 	void MoveToTarget(const FTransform& TargetTransform);
 	void RotateToTarget(const FTransform& TargetTransform , const float DeltaTime) const;
-	void Tick(float DeltaSeconds) override;
-	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 public:
 	FOnStateChanged OnStateChanged;
-	AEnemyController();
+	AEnemyController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 };

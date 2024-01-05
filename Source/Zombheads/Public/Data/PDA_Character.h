@@ -35,6 +35,9 @@ private:
 	
 public:
 
+	//inline static FString DefinedAssetKey = "DA_Character";
+	inline static FString DefinedAssetKey = "PDA_Character";
+	
 	float GetPlayerWalkingSpeed() const;
 	float GetPlayerRunningSpeed() const;
 	float GetCharacterMaxHealth() const;
@@ -42,15 +45,26 @@ public:
 	float GetCharacterStaminaDepletePerSec() const;
 	float GetCharacterStaminaIncreasePerSec() const;
 
+	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
-		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType("Character");
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
+		FPrimaryAssetId PrimaryAssetId = FPrimaryAssetId(PrimaryAssetType , GetFName());
+
+		//PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
+
+		return PrimaryAssetId;
+	}
+	*/
+
+	static FPrimaryAssetId DefinedAssetID()
+	{
+		FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*DefinedAssetKey);
 		FPrimaryAssetId PrimaryAssetId;
 
 		PrimaryAssetId.PrimaryAssetType = PrimaryAssetType;
 
 		return PrimaryAssetId;
 	}
-
 	//UPDA_Character& operator=(const UPDA_Character& other);
 };

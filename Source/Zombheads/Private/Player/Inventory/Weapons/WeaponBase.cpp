@@ -30,6 +30,12 @@ void AWeaponBase::Equip()
 	for (size_t i = 0; i < WeaponMeshVisuals.Num(); i++)
 	{
 		WeaponMeshVisuals[i]->SetVisibility(true);
+		WeaponMeshVisuals[i]->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	SetActorEnableCollision(true);
+	for (int i = 0; i < BoxColliders.Num(); i++)
+	{
+		BoxColliders[i].Get()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	}
 }
 
@@ -38,7 +44,13 @@ void AWeaponBase::DeEquip()
 	for (size_t i = 0; i < WeaponMeshVisuals.Num(); i++)
 	{
 		WeaponMeshVisuals[i]->SetVisibility(false);
+		WeaponMeshVisuals[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+	for (int i = 0; i < BoxColliders.Num(); i++)
+	{
+		BoxColliders[i]->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	SetActorEnableCollision(false);
 }
 
 void AWeaponBase::Initialize()
@@ -51,6 +63,14 @@ void AWeaponBase::Initialize()
 		{
 			WeaponMeshVisuals.Add(MeshComponent);
 			MeshComponent->SetVisibility(false);
+			MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		}
+
+		UBoxComponent* BoxComponent = Cast<UBoxComponent>(StaticMeshActors[i]);
+		if(BoxComponent != nullptr)
+		{
+			BoxColliders.Add(BoxComponent);
+			BoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
 	
@@ -65,6 +85,8 @@ void AWeaponBase::Initialize()
 	{
 		WeaponAssetsLoaded(AssetLoader.Get()->GetWeaponsData());
 	}
+	
+	SetActorEnableCollision(false);
 }
 
 void AWeaponBase::WeaponAssetsLoaded(UWeaponsPrimaryDataAsset* DataAsset)

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Usable.h"
+#include "Components/BoxComponent.h"
 #include "Data/AssetLoader.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/AssetManager.h"
@@ -24,6 +25,7 @@ class ZOMBHEADS_API AWeaponBase : public AActor , public IUsable
 
 private:
 	TArray<UStaticMeshComponent*> WeaponMeshVisuals;
+	TArray<TSoftObjectPtr<UBoxComponent>> BoxColliders;
 	TWeakObjectPtr<UAssetLoader> AssetLoader;
 	void WeaponAssetsLoaded(UWeaponsPrimaryDataAsset* DataAsset);
 
