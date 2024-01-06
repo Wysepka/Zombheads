@@ -3,6 +3,8 @@
 
 #include "Actors/Components/ActorVitalityComponent.h"
 
+#include "Characters/PlayerPawn.h"
+
 void UActorVitalityComponent::BeginSprint()
 {
 	if(HasStaminaToSprint())
@@ -106,5 +108,25 @@ float UActorVitalityComponent::CurrentStaminaPercentage() const
 float UActorVitalityComponent::CurrentHealthPercentage() const
 {
 	return CurrentHealth / MaxHealth; 
+}
+
+void UActorVitalityComponent::TakeDamage(int value)
+{
+	CurrentHealth -= value;
+	
+	if(TakenDamageDelegate.IsBound())
+	{
+		TakenDamageDelegate.Broadcast();
+	}
+}
+
+FDelegateHandle UActorVitalityComponent::RegisterToDamageTaken(DamageableReceiver* DamageableReceiver)
+{
+	return TakenDamageDelegate.AddRaw(DamageableReceiver , &DamageableReceiver::DamageTaken_Receiver);
+}
+
+void UActorVitalityComponent::UnregisterToDamageTaken(FDelegateHandle RegisterHandle)
+{
+	TakenDamageDelegate.Remove(RegisterHandle);
 }
 

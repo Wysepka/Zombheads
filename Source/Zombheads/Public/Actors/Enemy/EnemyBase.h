@@ -10,7 +10,7 @@
 #include "EnemyBase.generated.h"
 
 UCLASS()
-class ZOMBHEADS_API AEnemyBase : public APawn
+class ZOMBHEADS_API AEnemyBase : public APawn , public DamageableReceiver
 {
 	GENERATED_BODY()
 private:
@@ -39,5 +39,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	virtual void DamageTaken_Receiver() override;
 };

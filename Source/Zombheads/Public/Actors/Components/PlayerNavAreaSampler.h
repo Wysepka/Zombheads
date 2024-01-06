@@ -3,15 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NavigationSystem.h"
 #include "Components/ActorComponent.h"
 #include "PlayerNavAreaSampler.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ZOMBHEADS_API UPlayerNavAreaSampler : public UActorComponent
+class ZOMBHEADS_API UPlayerNavAreaSampler : public USceneComponent
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(EditDefaultsOnly)
+	uint32 AngleStep;
+
+	float PlayerPawnRadius;
+	
+	TSoftObjectPtr<UNavigationSystemV1> NavMesh;
+	
 public:	
 	// Sets default values for this component's properties
 	UPlayerNavAreaSampler();

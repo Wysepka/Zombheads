@@ -3,6 +3,11 @@
 
 #include "Actors/Components/PlayerNavAreaSampler.h"
 
+#include "NavigationSystem.h"
+#include "Characters/PlayerPawn.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values for this component's properties
 UPlayerNavAreaSampler::UPlayerNavAreaSampler()
 {
@@ -18,9 +23,36 @@ UPlayerNavAreaSampler::UPlayerNavAreaSampler()
 void UPlayerNavAreaSampler::BeginPlay()
 {
 	Super::BeginPlay();
+	NavMesh = UNavigationSystemV1::GetCurrent(GetWorld());
 
+	TSoftObjectPtr<AActor> PawnActor = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerPawn::StaticClass());
+	if(!PawnActor.IsValid())
+	{
+		UE_LOG(LogTemp , Log, TEXT("Could not find Actor of Class: %s") , *APlayerPawn::StaticClass()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find Actor of Class: %ls") , *APlayerPawn::StaticClass()->GetName()));
+		return;
+	}
+
+	TSoftObjectPtr<UCapsuleComponent> CapsuleComponent = PawnActor->FindComponentByClass(UCapsuleComponent::StaticClass());
+
+	if(!CapsuleComponent.IsValid())
+	{
+		UE_LOG(LogTemp , Log, TEXT("Could not find ActorComponent of Class: %s") , *UCapsuleComponent::StaticClass()->GetName());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find ActorComponent of Class: %ls") , *UCapsuleComponent::StaticClass()->GetName()));
+		return;
+	}
+
+	PlayerPawnRadius = CapsuleComponent->GetScaledCapsuleRadius();
+
+	for (int32 i = 0; i<= 360; i+= AngleStep)
+	{
+		auto ObjName = FString::Printf(TEXT("NavSampler_Angle:%d") , i);
+		TSoftObjectPtr<UBoxComponent> BoxComponent = NewObject<UBoxComponent>();
+		BoxComponent->SetupAttachment(this);
+		//FVector GetRelativeLocation = PawnActor->GetActorRotation() * (PlayerPawnRadius * PawnActor.Get()->GetActorForwardVector()) ;
+		//BoxComponent.Get()->SetRelativeLocation()
+	}
 	// ...
-	
 }
 
 
@@ -29,6 +61,7 @@ void UPlayerNavAreaSampler::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	
 	// ...
 }
 

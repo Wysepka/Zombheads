@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Damageable.h"
 #include "VitalityComponent.h"
 #include "Components/ActorComponent.h"
 #include "Data/PDA_Character.h"
@@ -10,7 +11,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class ZOMBHEADS_API UActorVitalityComponent : public UActorComponent , public IVitalityComponent
+class ZOMBHEADS_API UActorVitalityComponent : public UActorComponent , public IVitalityComponent , public IDamageable
 {
 	GENERATED_BODY()
 
@@ -47,4 +48,7 @@ public:
 	virtual bool GetIfSprinting() const override;
 	virtual float CurrentStaminaPercentage() const override;
 	virtual float CurrentHealthPercentage() const override;
+	virtual void TakeDamage(int value) override;
+	virtual FDelegateHandle RegisterToDamageTaken(DamageableReceiver* DamageableReceiver) override;
+	virtual void UnregisterToDamageTaken(FDelegateHandle RegisterHandle) override;
 };

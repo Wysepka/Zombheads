@@ -16,7 +16,10 @@ class ZOMBHEADS_API AWeaponFirearm : public AWeaponBase
 
 private:
 	UPROPERTY(EditAnywhere , Category = "Firearm")
-	USceneComponent* Muzzle;
+	TSoftObjectPtr<USceneComponent> Muzzle;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Firearm")
+	TSoftObjectPtr<USceneComponent> WeaponStartRaycast;
 
 public:
 	virtual void Use() override;
@@ -25,6 +28,12 @@ public:
 	void SetMuzzleSceneComponent(USceneComponent* value)
 	{
 		this->Muzzle = value;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "Firearm")
+	void SetWeaponStartRaycastSceneComponent(USceneComponent* value)
+	{
+		this->WeaponStartRaycast = value;
 	}
 
 	virtual EItemType GetUsableType() const override {return EItemType::Firearm;}

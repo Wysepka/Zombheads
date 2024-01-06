@@ -29,6 +29,25 @@ void AEnemyBase::BeginPlay()
 	}
 	
 	OnReachedDestHandle = EnemyController->OnStateChanged.AddUObject(this , &AEnemyBase::OnControllerStateChanged);
+
+	TSoftObjectPtr<UActorComponent> VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
+
+	if(!VitalityComponent.IsValid())
+	{
+		UE_LOG(LogTemp , Log, TEXT("Could not find IDamageable Interface Component"));
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find IDamageable Interface Component"));
+		return;
+	}
+	
+	TWeakInterfacePtr<IDamageable> DamageableInterface = Cast<IDamageable>(VitalityComponent.Get());
+	if(!DamageableInterface.IsValid())
+	{
+		UE_LOG(LogTemp , Log, TEXT("Could not cast IDamageable Interface Component"));
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not cast IDamageable Interface Component"));
+		return;
+	}
+
+	DamageableInterface.Get()->RegisterToDamageTaken(this);
 }
 
 void AEnemyBase::OnControllerStateChanged(FOnStateChangedData StateData)
@@ -69,13 +88,32 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(AnimInstance->IsHit)
+	{
+		float CurrentSeconds = GetWorld()->GetTimeSeconds();
+		float SeqLength = AnimInstance->HitSequence->GetPlayLength();
+		if(CurrentSeconds - AnimInstance->LastHitTime > SeqLength)
+		{
+			AnimInstance->IsHit = false;
+		}
+		else
+		{
+			AnimInstance->CurrentTime = GetWorld()->GetTimeSeconds();
+		}
+	}
 }
 
 // Called to bind functionality to input
 void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
 
+void AEnemyBase::DamageTaken_Receiver()
+{
+	AnimInstance->CurrentTime = GetWorld()->GetTimeSeconds();
+	AnimInstance->LastHitTime = GetWorld()->GetTimeSeconds();
+	AnimInstance->IsHit = true;
 }
 
 void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent)

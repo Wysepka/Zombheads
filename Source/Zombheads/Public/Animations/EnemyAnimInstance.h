@@ -22,4 +22,16 @@ public:
 
 	UPROPERTY(EditAnywhere , BlueprintReadWrite , Category = "AnimData")
 	bool IsAttacking;
+
+	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
+	bool IsHit;
+
+	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
+	float LastHitTime;
+
+	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
+	float CurrentTime;
+
+	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
+	TSoftObjectPtr<UAnimSequence> HitSequence;
 };

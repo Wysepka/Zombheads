@@ -58,6 +58,9 @@ private:
 	TSoftObjectPtr<APlayerPawn> TargetPawn;
 	void AssignTargetPivotCallback(USceneComponent* TargetPivot);
 	TSoftObjectPtr<UCrowdFollowingComponent> CrowdFollowingComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	float SomeFloat;
 	
 protected:
 	virtual void BeginPlay() override;
