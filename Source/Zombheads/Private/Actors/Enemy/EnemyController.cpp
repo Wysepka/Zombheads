@@ -45,26 +45,82 @@ void AEnemyController::BeginPlay()
 		//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find PlayerPivot on Obj: %s") ,*(APlayerPawn::StaticClass()->GetName()) ));
 	}
 
-	auto PathFollowComp = GetPathFollowingComponent();
+	//auto PathFollowComp = GetPathFollowingComponent();
+	//AddComponentByClass(UCrowdFollowingComponent::StaticClass(), false, GetTransformComponent()->GetComponentTransform() , true);
+	//SetupCrowdFollowCompNormal();
+	SetupCrowdFollowCompOverriden();
+	return;
+}
+
+void AEnemyController::SetupCrowdFollowCompOverriden()
+{
+	auto PathFollowComp = FindComponentByClass<UEnemyCrowdFollowingComponent>();
 	if(PathFollowComp != nullptr)
 	{
+		SetPathFollowingComponent(PathFollowComp);
+		CrowdFollowingComponentOverriden = Cast<UEnemyCrowdFollowingComponent>(PathFollowComp);
+		if(CrowdFollowingComponent != nullptr)
+		{
+			CrowdFollowingComponentOverriden.Get()->Initialize();
+			CrowdFollowingComponentOverriden.Get()->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
+			CrowdFollowingComponentOverriden.Get()->SetCrowdSeparationWeight(400.f);
+			CrowdFollowingComponentOverriden.Get()->SetCrowdSeparation(true );
+			CrowdFollowingComponentOverriden.Get()->SetCrowdSimulationState(ECrowdSimulationState::Enabled);
+			CrowdFollowingComponentOverriden.Get()->SetCrowdCollisionQueryRange(1000.f);
+			CrowdFollowingComponentOverriden.Get()->SetAvoidanceGroup(1 , true);
+			CrowdFollowingComponentOverriden.Get()->SetCrowdAnticipateTurns(true);
+			CrowdFollowingComponentOverriden.Get()->UpdateCrowdAgentParams();
+			//CrowdFollowingComponent->ApplyCrowdAgentPosition(GetTransformComponent()->GetComponentLocation());
+			//CrowdFollowComp.
+			auto CrowdManager = UCrowdManager::GetCurrent(GetWorld());
+			//CrowdManager->RegisterAgent(CrowdFollowingComponent.Get());
+			
+			UE_LOG(LogTemp , Log , TEXT("Found CrowdFollowComp: %s") , *(CrowdFollowingComponent->StaticClass()->GetName()))
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Found CrowdFollowComp: %s") ,*CrowdFollowingComponentOverriden->StaticClass()->GetName()));
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("IsCrowdSimulationActive: %hhd") ,CrowdFollowingComponentOverriden->IsCrowdSimulationActive()));
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("IsCrowdSimulationEnabled: %hhd") ,CrowdFollowingComponentOverriden->IsCrowdSimulationEnabled()));
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Current Active Agents: %i") ,CrowdManager->GetNumNearbyAgents(CrowdFollowingComponentOverriden.Get())));
+			return;
+		}
+		else
+		{
+			UE_LOG(LogTemp , Log , TEXT("Could not cast CrowdFollowComp, type is : %s") , *(PathFollowComp->GetName()))
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not cast CrowdFollowComp, type is : %s") ,*PathFollowComp->GetName()));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp , Log , TEXT("Could not get PathFollowComp on: %s") , *(this->GetName()))
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not get PathFollowComp on %s") ,*(this->GetName()) ));
+		return;
+	}
+}
+
+void AEnemyController::SetupCrowdFollowCompNormal()
+{
+	auto PathFollowComp = FindComponentByClass<UCrowdFollowingComponent>();
+	if(PathFollowComp != nullptr)
+	{
+		SetPathFollowingComponent(PathFollowComp);
 		CrowdFollowingComponent = Cast<UCrowdFollowingComponent>(PathFollowComp);
 		if(CrowdFollowingComponent != nullptr)
 		{
-			CrowdFollowingComponent->Initialize();
+			CrowdFollowingComponent.Get()->Initialize();
 			CrowdFollowingComponent.Get()->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
 			CrowdFollowingComponent.Get()->SetCrowdSeparationWeight(400.f);
 			CrowdFollowingComponent.Get()->SetCrowdSeparation(true );
 			CrowdFollowingComponent.Get()->SetCrowdSimulationState(ECrowdSimulationState::Enabled);
 			CrowdFollowingComponent.Get()->SetCrowdCollisionQueryRange(1000.f);
 			CrowdFollowingComponent.Get()->SetAvoidanceGroup(1 , true);
+			CrowdFollowingComponent.Get()->UpdateCrowdAgentParams();
 			//CrowdFollowingComponent->ApplyCrowdAgentPosition(GetTransformComponent()->GetComponentLocation());
 			//CrowdFollowComp.
 			auto CrowdManager = UCrowdManager::GetCurrent(GetWorld());
 			//CrowdManager->RegisterAgent(CrowdFollowingComponent.Get());
 			
-			UE_LOG(LogTemp , Log , TEXT("Found CrowdFollowComp: %s") , *(CrowdFollowingComponent->GetName()))
-			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Found CrowdFollowComp: %s") ,*CrowdFollowingComponent->GetName()));
+			UE_LOG(LogTemp , Log , TEXT("Found CrowdFollowComp: %s") , *(CrowdFollowingComponent->StaticClass()->GetName()))
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Found CrowdFollowComp: %s") ,*CrowdFollowingComponent->StaticClass()->GetName()));
 			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("IsCrowdSimulationActive: %hhd") ,CrowdFollowingComponent->IsCrowdSimulationActive()));
 			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("IsCrowdSimulationEnabled: %hhd") ,CrowdFollowingComponent->IsCrowdSimulationEnabled()));
 			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Current Active Agents: %i") ,CrowdManager->GetNumNearbyAgents(CrowdFollowingComponent.Get())));
@@ -101,7 +157,7 @@ void AEnemyController::Tick(float DeltaSeconds)
 	RotateToTarget(TargetTranform ,DeltaSeconds);
 
 	auto CrowdManager = UCrowdManager::GetCurrent(GetWorld());
-	//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Current Active Agents: %i") ,CrowdManager->GetNumNearbyAgents(CrowdFollowingComponent.Get())));
+	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Current Active Agents: %i") ,CrowdManager->GetNumNearbyAgents(CrowdFollowingComponent.Get())));
 }
 
 void AEnemyController::MoveToTarget(const FTransform& TargetTransform)
@@ -127,8 +183,8 @@ void AEnemyController::MoveToTarget(const FTransform& TargetTransform)
 		MoveToLocation(TargetPivot->GetComponentLocation() , StoppingDistance / 3);
 		//CrowdFollowingComponent->ApplyCrowdAgentPosition(TargetPivot->GetComponentLocation());
 		//CrowdFollowingComponent->ApplyCrowdAgentPosition(GetTransformComponent()->GetComponentLocation());
-		UCrowdManager::GetCurrent(GetWorld())->UpdateAgentParams(CrowdFollowingComponent.Get());
-		UCrowdManager::GetCurrent(GetWorld())->UpdateAgentState(CrowdFollowingComponent.Get());
+		//UCrowdManager::GetCurrent(GetWorld())->UpdateAgentParams(CrowdFollowingComponent.Get());
+		//UCrowdManager::GetCurrent(GetWorld())->UpdateAgentState(CrowdFollowingComponent.Get());
 	} else
 	{
 		if(CurrentEnemyState == TOWARD_TARGET || CurrentEnemyState == IDLE)
@@ -187,7 +243,7 @@ void AEnemyController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollow
 	
 }
 
-AEnemyController::AEnemyController(const FObjectInitializer& ObjectInitializer)  : Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
+AEnemyController::AEnemyController(const FObjectInitializer& ObjectInitializer)  : Super(ObjectInitializer.SetDefaultSubobjectClass<UEnemyCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 }

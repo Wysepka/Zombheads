@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Characters/PlayerPawn.h"
 #include "Navigation/CrowdFollowingComponent.h"
+#include "EnemyCrowdFollowingComponent.h"
 #include "EnemyController.generated.h"
 
 /**
@@ -58,11 +59,14 @@ private:
 	TSoftObjectPtr<APlayerPawn> TargetPawn;
 	void AssignTargetPivotCallback(USceneComponent* TargetPivot);
 	TSoftObjectPtr<UCrowdFollowingComponent> CrowdFollowingComponent;
+	TSoftObjectPtr<UEnemyCrowdFollowingComponent> CrowdFollowingComponentOverriden;
 
 	UPROPERTY(VisibleAnywhere)
 	float SomeFloat;
 	
 protected:
+	void SetupCrowdFollowCompNormal();
+	void SetupCrowdFollowCompOverriden();
 	virtual void BeginPlay() override;
 	void MoveToTarget(const FTransform& TargetTransform);
 	void RotateToTarget(const FTransform& TargetTransform , const float DeltaTime) const;
