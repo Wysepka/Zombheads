@@ -32,6 +32,9 @@ private:
 
 	UPROPERTY(EditAnywhere , Category = "Player" , meta=(AllowPrivateAccess = "true"))
 	float StaminaIncreasePerSec;
+
+	UPROPERTY(EditAnywhere , Category = "Zombie" , meta=(AllowPrivateAccess = "true"))
+	float ZombieMaxHealth;
 	
 public:
 
@@ -44,6 +47,7 @@ public:
 	float GetCharacterMaxStamina() const;
 	float GetCharacterStaminaDepletePerSec() const;
 	float GetCharacterStaminaIncreasePerSec() const;
+	float GetZombieMaxHealth() const;
 
 	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override

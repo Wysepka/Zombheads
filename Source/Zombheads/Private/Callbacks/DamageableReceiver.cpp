@@ -2,6 +2,8 @@
 
 
 #include "Callbacks/DamageableReceiver.h"
+
+#include "Utility/DebugUtility.h"
 /*
 DamageableReceiver::DamageableReceiver()
 {
@@ -11,7 +13,7 @@ DamageableReceiver::~DamageableReceiver()
 {
 }
 */
-void DamageableReceiver::DamageTaken_Receiver()
+void DamageableReceiver::DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> VitalityComponent)
 {
 	UE_LOG(LogTemp , Log, TEXT("DamageableReceiver method not implemented"))
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("DamageableReceiver not implemented")));

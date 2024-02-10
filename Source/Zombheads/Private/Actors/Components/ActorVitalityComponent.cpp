@@ -4,6 +4,7 @@
 #include "Actors/Components/ActorVitalityComponent.h"
 
 #include "Characters/PlayerPawn.h"
+#include "Utility/DebugUtility.h"
 
 void UActorVitalityComponent::BeginSprint()
 {
@@ -80,14 +81,25 @@ void UActorVitalityComponent::SetupPlayerInputComponent(UInputComponent* PlayerI
 	}
 }
 
-void UActorVitalityComponent::LoadData(const TSoftObjectPtr<UPDA_Character>& CharData)
+void UActorVitalityComponent::LoadData(EActorType ActorType, const TSoftObjectPtr<UPDA_Character>& CharData)
 {
-	MaxHealth = CharData.Get()->GetCharacterMaxHealth();
-	CurrentHealth = MaxHealth;
-	MaxStamina = CharData.Get()->GetCharacterMaxStamina();
-	CurrentStamina = MaxStamina;
-	StaminaDepletePerSec = CharData.Get()->GetCharacterStaminaDepletePerSec();
-	StaminaIncreasePerSec = CharData.Get()->GetCharacterStaminaIncreasePerSec();
+	if(ActorType == EActorType::Player)
+	{
+		MaxHealth = CharData.Get()->GetCharacterMaxHealth();
+		CurrentHealth = MaxHealth;
+		MaxStamina = CharData.Get()->GetCharacterMaxStamina();
+		CurrentStamina = MaxStamina;
+		StaminaDepletePerSec = CharData.Get()->GetCharacterStaminaDepletePerSec();
+		StaminaIncreasePerSec = CharData.Get()->GetCharacterStaminaIncreasePerSec();
+	} else if(ActorType == EActorType::Zombie)
+	{
+		MaxHealth = CharData.Get()->GetZombieMaxHealth();
+		CurrentHealth = MaxHealth;
+	}
+	else
+	{
+		LOG_MISSING_COMPONENT("Invalid Actor Type in %s, define new type of Actor in %s" ,*this, *UActorVitalityComponent::GetName());
+	}
 }
 
 bool UActorVitalityComponent::HasStaminaToSprint() const
@@ -110,13 +122,13 @@ float UActorVitalityComponent::CurrentHealthPercentage() const
 	return CurrentHealth / MaxHealth; 
 }
 
-void UActorVitalityComponent::TakeDamage(int value)
+void UActorVitalityComponent::TakeDamage(float value)
 {
 	CurrentHealth -= value;
 	
 	if(TakenDamageDelegate.IsBound())
 	{
-		TakenDamageDelegate.Broadcast();
+		TakenDamageDelegate.Broadcast(TWeakInterfacePtr<IVitalityComponent>(this));
 	}
 }
 

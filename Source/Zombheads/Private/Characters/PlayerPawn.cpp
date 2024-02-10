@@ -249,7 +249,7 @@ void APlayerPawn::PrimaryDataAssetLoaded(UPDA_Character* Data)
 	const auto VitCompPin = GetVitalityComponent_Internal().Get();
 	if(VitCompPin != nullptr)
 	{
-		VitCompPin->LoadData(TSoftObjectPtr<UPDA_Character>(Data));
+		VitCompPin->LoadData(EActorType::Player, TSoftObjectPtr<UPDA_Character>(Data));
 	}
 }
 

@@ -95,6 +95,7 @@ void AWeaponBase::WeaponAssetsLoaded(UWeaponsPrimaryDataAsset* DataAsset)
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Weapon Data Asset loaded")));
 
 	UseSound = DataAsset->GetWeaponsDataMap()[WeaponID].UseSound;
+	WeaponDamage = DataAsset->GetWeaponsDataMap()[WeaponID].Damage;
 }
 
 void AWeaponBase::Use()

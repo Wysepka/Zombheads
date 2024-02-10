@@ -52,7 +52,7 @@ void AWeaponFirearm::Use()
 			return;
 		}
 
-		DamageableComp->TakeDamage(10.f);
+		DamageableComp->TakeDamage(WeaponDamage);
 	}
 	
 	//Super::Use();

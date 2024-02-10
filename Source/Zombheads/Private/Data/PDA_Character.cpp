@@ -32,3 +32,8 @@ float UPDA_Character::GetCharacterStaminaIncreasePerSec() const
 {
 	return StaminaIncreasePerSec;
 }
+
+float UPDA_Character::GetZombieMaxHealth() const
+{
+	return ZombieMaxHealth;
+}

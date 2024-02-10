@@ -29,6 +29,9 @@ struct FWeaponsData {
 
 	UPROPERTY(EditAnywhere, Category= "Weapons")
 	USoundWave* UseSound;
+
+	UPROPERTY(EditAnywhere , Category = "Weapons")
+	float Damage;
 };
 
 UCLASS()

@@ -156,8 +156,8 @@ void AEnemyController::Tick(float DeltaSeconds)
 	MoveToTarget(TargetTranform);
 	RotateToTarget(TargetTranform ,DeltaSeconds);
 
-	auto CrowdManager = UCrowdManager::GetCurrent(GetWorld());
-	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Current Active Agents: %i") ,CrowdManager->GetNumNearbyAgents(CrowdFollowingComponent.Get())));
+	//auto CrowdManager = UCrowdManager::GetCurrent(GetWorld());
+	//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Current Active Agents: %i") ,CrowdManager->GetNumNearbyAgents(CrowdFollowingComponent.Get())));
 }
 
 void AEnemyController::MoveToTarget(const FTransform& TargetTransform)

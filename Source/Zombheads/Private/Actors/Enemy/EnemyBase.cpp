@@ -2,6 +2,8 @@
 
 
 #include "Actors/Enemy/EnemyBase.h"
+
+#include "Utility/DebugUtility.h"
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
@@ -19,6 +21,18 @@ void AEnemyBase::BeginPlay()
 	{
 		UE_LOG(LogTemp , Log, TEXT("Could not find Controller for: %s") , *GetName());
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find Controller for: %s") , *GetName()));
+	}
+
+	AActor* AssetLoaderInitializerActor = UGameplayStatics::GetActorOfClass(GetWorld() , AAssetLoaderInitializer::StaticClass());
+	AAssetLoaderInitializer* AssetLoaderInitializer = Cast<AAssetLoaderInitializer>(AssetLoaderInitializerActor);
+	TWeakObjectPtr<UAssetLoader> AssetLoaderPin = AssetLoaderInitializer->GetAssetLoader();
+	if(!AssetLoaderPin.IsValid())
+	{
+		LOG_MISSING_COMPONENT("Could not find AssetLoader in %s" , *this , *this->GetName());
+	}
+	else
+	{
+		AssetLoaderPin.Get()->GetPrimaryDataAsset<UPDA_Character>(this, CharData);
 	}
 	
 	EnemyController = Cast<AEnemyController>(ThisController);
@@ -38,8 +52,10 @@ void AEnemyBase::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find IDamageable Interface Component"));
 		return;
 	}
-	
+
 	TWeakInterfacePtr<IDamageable> DamageableInterface = Cast<IDamageable>(VitalityComponent.Get());
+	TSoftObjectPtr<UActorVitalityComponent> ActorVitalityComponent = Cast<UActorVitalityComponent>(VitalityComponent.Get());
+	
 	if(!DamageableInterface.IsValid())
 	{
 		UE_LOG(LogTemp , Log, TEXT("Could not cast IDamageable Interface Component"));
@@ -109,11 +125,19 @@ void AEnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AEnemyBase::DamageTaken_Receiver()
+void AEnemyBase::DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> VitalityComponent)
 {
 	AnimInstance->CurrentTime = GetWorld()->GetTimeSeconds();
 	AnimInstance->LastHitTime = GetWorld()->GetTimeSeconds();
 	AnimInstance->IsHit = true;
+	if(!VitalityComponent.IsValid())
+	{
+		UE_LOG(LogTemp , Log , TEXT("Vitality Component received on: %s is null !") , *EnemyMesh.GetName());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Vitality Component received on: %s is null !") ,*EnemyMesh.GetName()));
+		return;
+	}
+	float value = VitalityComponent.Get()->CurrentHealthPercentage();
+	DynamicEnemyMaterial->SetScalarParameterValue(FName("HealthOverlayOpacity") , 1.f - value);
 }
 
 void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent)
@@ -127,5 +151,37 @@ void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMe
 		return;
 	}
 	AnimInstance = Cast<UEnemyAnimInstance>(AnimInstanceRaw);
+	TSoftObjectPtr<UMaterialInterface> EnemyMaterial = EnemyMesh.Get()->GetMaterial(0);
+	if(!EnemyMaterial.IsValid())
+	{
+		UE_LOG(LogTemp , Log , TEXT("Could not find Material on: %s") , *EnemyMesh.GetName());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Could not find Material on: %s") ,*EnemyMesh.GetName()));
+		return;
+	}
+
+	DynamicEnemyMaterial = UMaterialInstanceDynamic::Create(EnemyMaterial.Get(), this);
+	EnemyMesh->SetMaterial(0 ,DynamicEnemyMaterial.Get());
+}
+
+void AEnemyBase::LoadVitalityData(TSoftObjectPtr<UActorVitalityComponent> VitalityComponent)
+{
+	
+}
+
+EActorType AEnemyBase::GetActorType()
+{
+	return EActorType::Invalid;
+}
+
+void AEnemyBase::PrimaryDataAssetLoaded(UPDA_Character* Data)
+{
+	CharData = Data;
+	TSoftObjectPtr<UActorVitalityComponent> VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
+	if(!VitalityComponent.IsValid())
+	{
+		LOG_MISSING_COMPONENT("Missing Component: %hs in %s" ,this, typeid(UActorVitalityComponent).name() , *this->GetName());
+		return;
+	}
+	LoadVitalityData(VitalityComponent);
 }
 

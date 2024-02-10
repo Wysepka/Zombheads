@@ -9,6 +9,13 @@
 #include "Data/PDA_Character.h"
 #include "ActorVitalityComponent.generated.h"
 
+UENUM()
+enum class EActorType : uint8
+{
+	Invalid = 0		UMETA(DisplayName = "Invalid"),
+	Player = 1		UMETA(DisplayName = "Player"),
+	Zombie = 2		UMETA(DisplayName = "Zombie"),
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZOMBHEADS_API UActorVitalityComponent : public UActorComponent , public IVitalityComponent , public IDamageable
@@ -25,7 +32,7 @@ private:
 
 	bool bIsSprintingInput;
 	bool bIsSprintingApplied;
-	
+
 public:	
 	// Sets default values for this component's properties
 	UActorVitalityComponent();
@@ -41,14 +48,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
-	
-	
-	void LoadData(const TSoftObjectPtr<UPDA_Character>& CharData);
+
+	void LoadData(EActorType ActorType, const TSoftObjectPtr<UPDA_Character>& CharData);
 	virtual bool HasStaminaToSprint() const override;
 	virtual bool GetIfSprinting() const override;
 	virtual float CurrentStaminaPercentage() const override;
 	virtual float CurrentHealthPercentage() const override;
-	virtual void TakeDamage(int value) override;
+	virtual void TakeDamage(float value) override;
 	virtual FDelegateHandle RegisterToDamageTaken(DamageableReceiver* DamageableReceiver) override;
 	virtual void UnregisterToDamageTaken(FDelegateHandle RegisterHandle) override;
 };

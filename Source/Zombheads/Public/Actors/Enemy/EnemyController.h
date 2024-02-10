@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Characters/PlayerPawn.h"
 #include "Navigation/CrowdFollowingComponent.h"
-#include "EnemyCrowdFollowingComponent.h"
+#include "AI/EnemyCrowdFollowingComponent.h"
 #include "EnemyController.generated.h"
 
 /**

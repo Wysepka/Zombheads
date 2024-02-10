@@ -3,6 +3,16 @@
 
 #include "Actors/Enemy/EnemyZombie.h"
 
+void AEnemyZombie::LoadVitalityData(TSoftObjectPtr<UActorVitalityComponent> VitalityComponent)
+{
+	VitalityComponent.Get()->LoadData(GetActorType() , CharData);
+}
+
+EActorType AEnemyZombie::GetActorType()
+{
+	return EActorType::Zombie;
+}
+
 // Sets default values
 AEnemyZombie::AEnemyZombie()
 {

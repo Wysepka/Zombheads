@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "VitalityComponent.h"
 #include "Callbacks/DamageableReceiver.h"
 #include "UObject/Interface.h"
 #include "Damageable.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FActorTakenDamage);
+DECLARE_MULTICAST_DELEGATE_OneParam(FActorTakenDamage , TWeakInterfacePtr<IVitalityComponent>);
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UDamageable : public UInterface
@@ -27,7 +28,7 @@ protected:
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void TakeDamage(int value) = 0;
+	virtual void TakeDamage(float value) = 0;
 	virtual FDelegateHandle RegisterToDamageTaken(DamageableReceiver* DamageableReceiver) = 0;
 	virtual void UnregisterToDamageTaken(FDelegateHandle RegisterHandle) = 0;
 };

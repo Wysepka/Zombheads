@@ -31,6 +31,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	FString WeaponID;
+
 	
 public:	
 	// Sets default values for this actor's properties
@@ -40,6 +41,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	USoundWave* UseSound;
+	float WeaponDamage;
 	
 public:	
 	// Called every frame

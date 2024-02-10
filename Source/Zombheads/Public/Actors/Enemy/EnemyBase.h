@@ -10,24 +10,32 @@
 #include "EnemyBase.generated.h"
 
 UCLASS()
-class ZOMBHEADS_API AEnemyBase : public APawn , public DamageableReceiver
+class ZOMBHEADS_API AEnemyBase : public APawn , public DamageableReceiver , public IAssetLoaderObserver
 {
 	GENERATED_BODY()
 private:
+	
 	FDelegateHandle OnReachedDestHandle;
 	TSoftObjectPtr<AEnemyController> EnemyController;
 
 	TObjectPtr<USkeletalMeshComponent> EnemyMesh;
 	TSoftObjectPtr<UEnemyAnimInstance> AnimInstance;
+	TSoftObjectPtr<UMaterialInstanceDynamic> DynamicEnemyMaterial;
 
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true") , Category = "Enemy")
 	virtual void AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent);
+	virtual void LoadVitalityData(TSoftObjectPtr<UActorVitalityComponent> VitalityComponent);
+
+	virtual EActorType GetActorType();
+	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
 	
 public:
 	// Sets default values for this pawn's properties
 	AEnemyBase();
 
 protected:
+	UPDA_Character* CharData;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void OnControllerStateChanged(FOnStateChangedData StateData);
@@ -39,5 +47,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void DamageTaken_Receiver() override;
+	virtual void DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> VitalityComponent) override;
 };

@@ -14,6 +14,8 @@ class ZOMBHEADS_API AEnemyZombie : public AEnemyBase
 	GENERATED_BODY()
 private:
 	TSoftObjectPtr<UZombieAnimInstance> AnimInstance;
+	virtual void LoadVitalityData(TSoftObjectPtr<UActorVitalityComponent> VitalityComponent) override;
+	virtual EActorType GetActorType() override;
 	
 public:
 	// Sets default values for this pawn's properties
