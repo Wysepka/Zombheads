@@ -160,6 +160,7 @@ void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMe
 	}
 
 	DynamicEnemyMaterial = UMaterialInstanceDynamic::Create(EnemyMaterial.Get(), this);
+	DynamicEnemyMaterial.Get()->SetScalarParameterValue(FName("NoiseOffset") , FMath::FRand());
 	EnemyMesh->SetMaterial(0 ,DynamicEnemyMaterial.Get());
 }
 
