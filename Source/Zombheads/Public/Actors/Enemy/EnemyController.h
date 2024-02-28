@@ -60,9 +60,12 @@ private:
 	void AssignTargetPivotCallback(USceneComponent* TargetPivot);
 	TSoftObjectPtr<UCrowdFollowingComponent> CrowdFollowingComponent;
 	TSoftObjectPtr<UEnemyCrowdFollowingComponent> CrowdFollowingComponentOverriden;
+	//TSoftObjectPtr<AEnemyBase> EnemyBasePtr;
 
 	UPROPERTY(VisibleAnywhere)
 	float SomeFloat;
+
+	bool IsDisabled;
 	
 protected:
 	void SetupCrowdFollowCompNormal();
@@ -76,4 +79,5 @@ protected:
 public:
 	FOnStateChanged OnStateChanged;
 	AEnemyController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	void Disable();
 };

@@ -3,6 +3,7 @@
 
 #include "Actors/Enemy/EnemyBase.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Utility/DebugUtility.h"
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -10,6 +11,43 @@ AEnemyBase::AEnemyBase()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+}
+
+void AEnemyBase::GetDamageableComponent(TSoftObjectPtr<UActorComponent> VitalityComponent)
+{
+	TWeakInterfacePtr<IDamageable> DamageableInterface = Cast<IDamageable>(VitalityComponent.Get());
+	TSoftObjectPtr<UActorVitalityComponent> ActorVitalityComponent = Cast<UActorVitalityComponent>(VitalityComponent.Get());
+	
+	if(!DamageableInterface.IsValid())
+	{
+		UE_LOG(LogTemp , Log, TEXT("Could not cast IDamageable Interface Component"));
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not cast IDamageable Interface Component"));
+		return;
+	}
+
+	DamageableInterface.Get()->RegisterToDamageTaken(this);
+}
+
+void AEnemyBase::GetVitalityComponent(TSoftObjectPtr<UActorComponent>& VitalityComponent)
+{
+	VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
+
+	if(!VitalityComponent.IsValid())
+	{
+		UE_LOG(LogTemp , Log, TEXT("Could not find IDamageable Interface Component"));
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find IDamageable Interface Component"));
+		return;
+	}
+}
+
+void AEnemyBase::GetCapsuleComponent()
+{
+	CapsuleCompPtr = FindComponentByClass<UCapsuleComponent>();
+	if(!CapsuleCompPtr.IsValid())
+	{
+		LOG_MISSING_COMPONENT("Could not find CapsuleComponent in: %s" , *this, *this->GetName());
+		return;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -44,26 +82,16 @@ void AEnemyBase::BeginPlay()
 	
 	OnReachedDestHandle = EnemyController->OnStateChanged.AddUObject(this , &AEnemyBase::OnControllerStateChanged);
 
-	TSoftObjectPtr<UActorComponent> VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
-
-	if(!VitalityComponent.IsValid())
-	{
-		UE_LOG(LogTemp , Log, TEXT("Could not find IDamageable Interface Component"));
-		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find IDamageable Interface Component"));
-		return;
-	}
-
-	TWeakInterfacePtr<IDamageable> DamageableInterface = Cast<IDamageable>(VitalityComponent.Get());
-	TSoftObjectPtr<UActorVitalityComponent> ActorVitalityComponent = Cast<UActorVitalityComponent>(VitalityComponent.Get());
+	TSoftObjectPtr<UActorComponent> VitalityComponent;
 	
-	if(!DamageableInterface.IsValid())
+	GetVitalityComponent(VitalityComponent);
+
+	if(VitalityComponent.IsValid())
 	{
-		UE_LOG(LogTemp , Log, TEXT("Could not cast IDamageable Interface Component"));
-		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not cast IDamageable Interface Component"));
-		return;
+		GetDamageableComponent(VitalityComponent);
 	}
 
-	DamageableInterface.Get()->RegisterToDamageTaken(this);
+	GetCapsuleComponent();
 }
 
 void AEnemyBase::OnControllerStateChanged(FOnStateChangedData StateData)
@@ -71,6 +99,10 @@ void AEnemyBase::OnControllerStateChanged(FOnStateChangedData StateData)
 	//UE_LOG(LogTemp , Log, TEXT("Attacking from: %s") , *GetName());
 	//GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red ,  FString::Printf(TEXT("Attacking from: %s") ,*GetName()));
 
+	if(IsDead)
+	{
+		return;
+	}
 	switch (StateData.GetState())
 	{
 	case ATTACKING:
@@ -138,6 +170,21 @@ void AEnemyBase::DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> Vita
 	}
 	float value = VitalityComponent.Get()->CurrentHealthPercentage();
 	DynamicEnemyMaterial->SetScalarParameterValue(FName("HealthOverlayOpacity") , 1.f - value);
+
+	if(VitalityComponent->CurrentHealthPercentage() <= 0.f)
+	{
+		IsDead = true;
+		AnimInstance.Get()->IsDead = true;
+		Controller.Get()->StopMovement();
+		EnemyController.Get()->Disable();
+		CapsuleCompPtr.Get()->Deactivate();
+		CapsuleCompPtr.Get()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+bool AEnemyBase::GetIsDead()
+{
+	return IsDead;
 }
 
 void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent)

@@ -21,6 +21,7 @@ private:
 	TObjectPtr<USkeletalMeshComponent> EnemyMesh;
 	TSoftObjectPtr<UEnemyAnimInstance> AnimInstance;
 	TSoftObjectPtr<UMaterialInstanceDynamic> DynamicEnemyMaterial;
+	TSoftObjectPtr<UCapsuleComponent> CapsuleCompPtr;
 
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true") , Category = "Enemy")
 	virtual void AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent);
@@ -28,10 +29,14 @@ private:
 
 	virtual EActorType GetActorType();
 	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
+	bool IsDead;
 	
 public:
 	// Sets default values for this pawn's properties
 	AEnemyBase();
+	void GetDamageableComponent(TSoftObjectPtr<UActorComponent> VitalityComponent);
+	void GetVitalityComponent(TSoftObjectPtr<UActorComponent>& VitalityComponent);
+	void GetCapsuleComponent();
 
 protected:
 	UPDA_Character* CharData;
@@ -48,4 +53,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> VitalityComponent) override;
+	bool GetIsDead();
+	
 };

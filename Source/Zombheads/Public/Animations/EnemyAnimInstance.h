@@ -27,6 +27,9 @@ public:
 	bool IsHit;
 
 	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
+	bool IsDead;
+
+	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
 	float LastHitTime;
 
 	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")

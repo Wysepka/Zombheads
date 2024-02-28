@@ -5,7 +5,6 @@
 
 #include <string>
 
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Navigation/CrowdManager.h"
 
@@ -19,6 +18,7 @@ void AEnemyController::BeginPlay()
 	{
 		//Possess(EnemyPawn);
 	}
+	
 	Target = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerPawn::StaticClass());
 	if(Target == nullptr)
 	{
@@ -151,6 +151,12 @@ void AEnemyController::AssignTargetPivotCallback(USceneComponent* TargetPivotCal
 
 void AEnemyController::Tick(float DeltaSeconds)
 {
+	if(IsDisabled)
+	{
+		StopMovement();
+		return;
+	}
+	
 	Super::Tick(DeltaSeconds);
 	FTransform TargetTranform = Target->GetTransform();
 	MoveToTarget(TargetTranform);
@@ -246,6 +252,12 @@ void AEnemyController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollow
 AEnemyController::AEnemyController(const FObjectInitializer& ObjectInitializer)  : Super(ObjectInitializer.SetDefaultSubobjectClass<UEnemyCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AEnemyController::Disable()
+{
+	IsDisabled = true;
+	CrowdFollowingComponentOverriden.Get()->Cleanup();
 }
 
 

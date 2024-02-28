@@ -16,8 +16,8 @@ public:
 
 #define LOG_MISSING_COMPONENT(Description, Object, ...) \
 do { \
-FString FormattedMessage = FString::Printf(TEXT(Description), ##__VA_ARGS__); \
-FString FullMessage = FString::Printf(TEXT("%s:%d - %s"), TEXT(__FILE__), __LINE__, *FormattedMessage); \
-GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("%s in %s"), *FullMessage, *Object->GetName())); \
-UE_LOG(LogTemp, Log, TEXT("%s in: %s"), *FullMessage, *Object->GetName()); \
+	FString FormattedMessage = FString::Printf(TEXT(Description), ##__VA_ARGS__); \
+	FString FullMessage = FString::Printf(TEXT("%s:%d - %s"), TEXT(__FILE__), __LINE__, *FormattedMessage); \
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("%s in %s"), *FullMessage, *Object->GetName())); \
+	UE_LOG(LogTemp, Log, TEXT("%s in: %s"), *FullMessage, *Object->GetName()); \
 } while (false)
