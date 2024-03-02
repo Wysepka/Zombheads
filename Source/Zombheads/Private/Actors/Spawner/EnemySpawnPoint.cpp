@@ -7,8 +7,16 @@
 AEnemySpawnPoint::AEnemySpawnPoint()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	if (WITH_EDITOR)
+	{
+		PrimaryActorTick.bCanEverTick = true;
+		PrimaryActorTick.bStartWithTickEnabled = true;
+	}
+}
 
+bool AEnemySpawnPoint::ShouldTickIfViewportsOnly() const
+{
+	return true;
 }
 
 // Called when the game starts or when spawned
@@ -23,5 +31,20 @@ void AEnemySpawnPoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+#if WITH_EDITOR
+	DrawDebugCubeAtActorLocation();
+#endif
+	
+}
+
+void AEnemySpawnPoint::DrawDebugCubeAtActorLocation() const
+{
+	FVector ActorLocation = GetActorLocation();
+	FVector BoxExtent(50.f, 50.f, 50.f); // Size of the box (X, Y, Z)
+	FColor Color(255, 0, 0); // Red color, you can customize it
+	FRotator ActorRotation = GetActorRotation();
+
+	// Draw the debug box
+	DrawDebugBox(GetWorld(), ActorLocation, BoxExtent, ActorRotation.Quaternion(), Color, false, -1, 0, 2.f);
 }
 

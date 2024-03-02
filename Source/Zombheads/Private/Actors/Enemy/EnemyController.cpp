@@ -59,7 +59,7 @@ void AEnemyController::SetupCrowdFollowCompOverriden()
 	{
 		SetPathFollowingComponent(PathFollowComp);
 		CrowdFollowingComponentOverriden = Cast<UEnemyCrowdFollowingComponent>(PathFollowComp);
-		if(CrowdFollowingComponent != nullptr)
+		if(PathFollowComp != nullptr)
 		{
 			CrowdFollowingComponentOverriden.Get()->Initialize();
 			CrowdFollowingComponentOverriden.Get()->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);

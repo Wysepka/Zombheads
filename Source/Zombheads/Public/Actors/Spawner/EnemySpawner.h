@@ -4,20 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "EnemySpawnPoint.generated.h"
+#include "EnemySpawner.generated.h"
 
 UCLASS()
-class ZOMBHEADS_API AEnemySpawnPoint : public AActor
+class ZOMBHEADS_API AEnemySpawner : public AActor
 {
 	GENERATED_BODY()
-
-private:
-	void DrawDebugCubeAtActorLocation() const;
 	
 public:	
 	// Sets default values for this actor's properties
-	AEnemySpawnPoint();
-	virtual bool ShouldTickIfViewportsOnly() const override;
+	AEnemySpawner();
 
 protected:
 	// Called when the game starts or when spawned

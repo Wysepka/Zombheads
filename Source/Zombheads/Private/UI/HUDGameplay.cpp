@@ -62,9 +62,14 @@ void AHUDGameplay::DestroyWidgets()
 	if(gengineLocal && gengineLocal->GameViewport)
 	{
 		//GEngine->GameViewport->AddViewportWidgetContent(TestContainer.ToSharedRef());
-		GEngine->GameViewport->RemoveViewportWidgetContent(HUDRoot.ToSharedRef());
-		GEngine->GameViewport->RemoveViewportWidgetContent(TestContainer.ToSharedRef());
-		
+		if(HUDRoot.IsValid())
+		{
+			GEngine->GameViewport->RemoveViewportWidgetContent(HUDRoot.ToSharedRef());
+		}
+		if(TestContainer.IsValid())
+		{
+			GEngine->GameViewport->RemoveViewportWidgetContent(TestContainer.ToSharedRef());
+		}
 		//GEngine->GameViewport->RemoveAllViewportWidgets();
 	}
 }
