@@ -6,9 +6,13 @@ public class Zombheads : ModuleRules
 {
 	public Zombheads(ReadOnlyTargetRules Target) : base(Target)
 	{
+		//bLegacyPublicIncludePaths = false;
+
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		
+		//PublicIncludePaths.Add("Zombheads");
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "EnhancedInput" , "Slate" , "UMG" , "SlateCore" , "AIModule", "NavigationSystem" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "EnhancedInput" , "Slate" , "UMG" , "SlateCore" , "AIModule", "NavigationSystem"});
 
 		//PrivateDependencyModuleNames.AddRange(new string[] { "SlateCore" , "Slate" ,"InputCore"});
 		PrivateDependencyModuleNames.AddRange(new string[] {});

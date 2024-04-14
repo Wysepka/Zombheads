@@ -3,13 +3,46 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actors/Enemy/EnemyBase.h"
 #include "GameFramework/Actor.h"
 #include "EnemySpawner.generated.h"
+
+USTRUCT(BlueprintType)
+struct FEnemySpawnData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	TSubclassOf<AEnemyBase> EnemyBP;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	int EnemyCount;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	float InBetweenSpawnDelay;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
+	float DelayBeforeSpawning;
+	
+	// Constructor
+	FEnemySpawnData()
+		: EnemyBP(nullptr),
+		  EnemyCount(0),
+		  InBetweenSpawnDelay(0),
+		  DelayBeforeSpawning(0)
+	{
+	}
+};
 
 UCLASS()
 class ZOMBHEADS_API AEnemySpawner : public AActor
 {
 	GENERATED_BODY()
+	
+private:
+	UPROPERTY(EditInstanceOnly , meta = (AllowPrivateAccess = "true"))
+	TArray<FEnemySpawnData> SpawnerDatas;
 	
 public:	
 	// Sets default values for this actor's properties

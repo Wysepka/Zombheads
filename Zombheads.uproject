@@ -13,6 +13,11 @@
 				"CoreUObject",
 				"AIModule"
 			]
+		},
+		{
+			"Name": "ZombheadsEditorModule",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
