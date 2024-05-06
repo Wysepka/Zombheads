@@ -19,7 +19,8 @@ public:
 
 private:
 	// Callback for when the button is clicked
-	FReply OnButtonClick();
+	FReply OnStandaloneEditorButtonClick();
+	FReply OnClearSpawnDatasButtonClick();
 
 	// Reference to the detail layout builder to access actor properties
 	IDetailLayoutBuilder* DetailBuilderRef;

@@ -56,4 +56,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	TArray<FEnemySpawnData>& GetSpawnerDatas();
+	FEnemySpawnData& GetSpawnData(int ID);
+	bool DeleteSpawnData(int ID);
+
+	void AddSpawnData();
+	int GetSpawnDatasCount();
+
+	void ClearSpawnerDatas();
+
 };

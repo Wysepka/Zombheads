@@ -10,55 +10,31 @@
 
 void SEnemySpawnerEditor::Construct(const FArguments& InArgs)
 {
-	/*
-	ChildSlot
-	[
-		// Example content, replace with your actual editor UI components
-		SNew(SBorder)
-		.BorderBackgroundColor(FLinearColor::White)
-		.Padding(15)
-		[
-			SNew(STextBlock)
-			.Text(NSLOCTEXT("StandaloneEditorWindow", "ExampleText", "Actor Details"))
-		]
-	];
-	*/
-
-	//SAssignNew(Parent, SOverlay);
-	
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-	Items.Add(MakeShareable(new FEnemySpawnData_Slate));
-
 	EnemySpawnerPtr = InArgs._EnemySpawnerArg;
+
+	RefreshListSource();
 	
 	SAssignNew(ListView, SListView<TSharedPtr<FEnemySpawnData_Slate>>)
 	.ListItemsSource(&Items)
 	.OnGenerateRow(this, &SEnemySpawnerEditor::OnGenerateRowForList)
-	.ItemHeight(150.f)
 	.OnFinishedScrolling(FOnFinishedScrolling::CreateLambda([this](){OnFinishedScrolling();}))
-	.ScrollbarVisibility(EVisibility::Visible);
+	.ScrollbarVisibility(EVisibility::Visible)
+	.OnSelectionChanged(this, &SEnemySpawnerEditor::OnListRowSelectionChanged);
+
+	ListView->RequestListRefresh();
 	
 	TSharedPtr<SVerticalBox> VerticalBox = SNew(SVerticalBox);
-	//ChildSlot.AttachWidget(ListView.ToSharedRef());
 	
 	ChildSlot.AttachWidget(VerticalBox.ToSharedRef());
 	
 	SVerticalBox::FSlot* VerticalBox1Slot;
 	SVerticalBox::FSlot* VerticalBox2Slot;
 	SVerticalBox::FSlot* VerticalBox3Slot;
-	//SVerticalBox::FSlot* VerticalBox15Slot;
 	VerticalBox->AddSlot().Expose(VerticalBox1Slot);
 	VerticalBox->AddSlot().Expose(VerticalBox2Slot);
 	VerticalBox->AddSlot().Expose(VerticalBox3Slot);
 
-	VerticalBox1Slot->SetAutoHeight();
+	VerticalBox1Slot->SetFillHeight(1.f);
 	VerticalBox2Slot->SetAutoHeight();
 	VerticalBox3Slot->SetAutoHeight();
 	
@@ -69,8 +45,6 @@ void SEnemySpawnerEditor::Construct(const FArguments& InArgs)
 	FOnClicked OnAddNewBtnClickedDelegate;
 
 	TSharedPtr<STextBlock> AddBtnText = SNew(STextBlock);
-	//TAttribute<FText> AddBtnText;
-	//AddBtnText.Set(FText("Add New"));
 	SAssignNew(AddNewButton, SButton).OnClicked(FOnClicked::CreateRaw(this , &SEnemySpawnerEditor::OnAddNewItem))
 	[
 		SAssignNew(ButtonAddContentBox, SBox)
@@ -102,10 +76,9 @@ void SEnemySpawnerEditor::Construct(const FArguments& InArgs)
 	];
 	
 	VerticalBox3Slot->AttachWidget(RemoveButton.ToSharedRef());
-
-	RefreshList();
-
+	
 	ListView->RequestListRefresh();
+	ListView->AddScrollOffset(1.f , true);
 }
 
 void SEnemySpawnerEditor::OpenWindow(const TArray<TWeakObjectPtr<UObject>>& SelectedActors)
@@ -124,7 +97,7 @@ void SEnemySpawnerEditor::OpenWindow(const TArray<TWeakObjectPtr<UObject>>& Sele
 				return;
 			}
 			EnemySpawnerTemp = EnemySpawnerPtr;
-			//EditorWindow->EnemySpawnerPtr = EnemySpawnerPtr;
+			EnemySpawnerPtr->Modify();
 			break;
 		}
 	}
@@ -156,28 +129,50 @@ void SEnemySpawnerEditor::CloseWindow()
 	auto ItemsCache = Instance.Get()->ListView->GetItems();
 	for (size_t i = 0; i < ItemsCache.Num(); i++)
 	{
-		auto Binding = Instance.Get()->Items[i].Get()->HolderBinding;
+		auto Binding = ItemsCache[i]->HolderBinding;
 		if(!Binding.IsValid())
 		{
 			continue;;
 		}
-		Binding.Get()->RemoveFromRoot();
-		Binding.Get()->MarkAsGarbage();
+		ItemsCache[i]->HolderBinding->Dispose();
+		Binding.Reset();
 	}
+
+	UPackage* Package = Instance.Get()->EnemySpawnerPtr->GetOutermost();
+	if(Package)
+	{
+		Package->MarkPackageDirty();
+	}
+
+	GEditor->RedrawAllViewports();
+}
+
+void SEnemySpawnerEditor::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+{
+	SCompoundWidget::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
+	ListView->RequestListRefresh();
 }
 
 TSharedPtr<SWindow> SEnemySpawnerEditor::EnemySpawnerEditorWindow = nullptr;
 TSharedPtr<SEnemySpawnerEditor> SEnemySpawnerEditor::Instance = nullptr;
 
-void SEnemySpawnerEditor::RefreshList()
+void SEnemySpawnerEditor::RefreshListSource()
 {
-	// Populate the Items array with your FEnemySpawnData instances
+	auto EnemySpawnDataSource = EnemySpawnerPtr.Get()->GetSpawnerDatas();
+	for (size_t i = 0; i < EnemySpawnDataSource.Num(); i++)
+	{
+		FEnemySpawnData SpawnData = EnemySpawnDataSource[i];
+		Items.Add(MakeShareable(new FEnemySpawnData_Slate(i, SpawnData.EnemyBP , SpawnData.EnemyCount , SpawnData.InBetweenSpawnDelay , SpawnData.DelayBeforeSpawning)));
+	}
 }
 
 FReply SEnemySpawnerEditor::OnAddNewItem()
 {
-	
 	UE_LOG(LogTemp , Log, TEXT("Adding new item in SEnemySpawnerEditor"));
+	EnemySpawnerPtr.Get()->AddSpawnData();
+	Items.Add(MakeShareable(new FEnemySpawnData_Slate(EnemySpawnerPtr.Get()->GetSpawnDatasCount() - 1)));
+	ListView->RequestListRefresh();
+	//ListView.Get()->SetItemsSource(&Items);
 	
 	// Logic for adding a new item to your list and refreshing the view
 	return FReply::Handled();
@@ -185,6 +180,25 @@ FReply SEnemySpawnerEditor::OnAddNewItem()
 
 FReply SEnemySpawnerEditor::OnDeleteItem()
 {
+	auto Binding = SelectedData.Get()->HolderBinding;
+	if(!Binding.IsValid())
+	{
+		return FReply::Handled();
+	}
+	
+	Binding.Get()->RemoveFromRoot();
+	Binding.Get()->MarkAsGarbage();
+	EnemySpawnerPtr.Get()->DeleteSpawnData(SelectedData->ID);
+	Items.Remove(SelectedData);
+
+	auto SpawnerDatas = EnemySpawnerPtr.Get()->GetSpawnerDatas();
+	for (size_t i = SelectedData.Get()->ID; i < Items.Num(); i++)
+	{
+		Items[i]->ID = i;
+		Items[i].Get()->HolderBinding.Get()->ID = i;
+	}
+	
+	ListView->RequestListRefresh();
 	// Logic for deleting an item from your list and refreshing the view
 	return FReply::Handled();
 }
@@ -195,10 +209,16 @@ void SEnemySpawnerEditor::OnItemSelected(TSharedPtr<FEnemySpawnData_Slate> Item,
 }
 
 TSharedRef<ITableRow> SEnemySpawnerEditor::OnGenerateRowForList(TSharedPtr<FEnemySpawnData_Slate> Item, const TSharedRef<STableViewBase>& OwnerTable) {
-	UUEnemyTypeSubclassHolder* MyHolder = NewObject<UUEnemyTypeSubclassHolder>();
-	MyHolder->AddToRoot(); // Prevent garbage collection
+	Item->HolderBinding = TStrongObjectPtr(NewObject<UUEnemyTypeSubclassHolder>());
+	Item->HolderBinding->AddToRoot(); // Prevent garbage collection
+	Item->HolderBinding->ID = Item->ID;
+	Item->HolderBinding->EnemyBPHolder = Item->EnemyBP;
+	Item->HolderBinding->EnemyCount = Item->EnemyCount;
+	Item->HolderBinding->InBetweenSpawnDelay = Item->InBetweenSpawnDelay;
+	Item->HolderBinding->DelayBeforeSpawning = Item->DelayBeforeSpawning;
 
-	Item->HolderBinding = TWeakObjectPtr<UUEnemyTypeSubclassHolder>(MyHolder);
+	TSharedPtr<FEnemySpawnData> SpawnData = MakeShareable(&EnemySpawnerPtr.Get()->GetSpawnData(Item->ID)); 
+	Item->HolderBinding.Get()->Init(SpawnData , TStrongObjectPtr<AEnemySpawner>(EnemySpawnerPtr.Get()));
 	
 	FAssetPickerConfig AssetPickerConfig;
 	TSharedPtr<SWidget> ContentPicker;
@@ -212,33 +232,19 @@ TSharedRef<ITableRow> SEnemySpawnerEditor::OnGenerateRowForList(TSharedPtr<FEnem
 	TSharedPtr<IDetailsView> DetailsView;
 
 	DetailsView = PropertyModule.CreateDetailView(Args);
-	DetailsView->SetObject(MyHolder);
-
+	DetailsView->SetObject(Item->HolderBinding.Get());
 	//return ListTable.ToSharedRef();
 	return SNew(STableRow<TSharedPtr<FEnemySpawnData>>, OwnerTable)
 		.Content()
 		[
 			DetailsView->AsShared()
-			/*
-			SNew(SVerticalBox)
-			+ SVerticalBox::Slot()
-			[
-				DetailsView->AsShared()
-			]
-			*/
 		];
-		
 }
 
-void SEnemySpawnerEditor::OnTableRowClicked_Custom(TSharedPtr<UUEnemyTypeSubclassHolder>) const
+void SEnemySpawnerEditor::OnListRowSelectionChanged(TSharedPtr<FEnemySpawnData_Slate> Item,
+	ESelectInfo::Type SelectInfo)
 {
-	auto s = 's';
-	//return FReply::Handled();
-}
-
-void SEnemySpawnerEditor::OnFinishedScrolling()
-{
-	auto s = 's';
+	SelectedData = Item;
 }
 
 

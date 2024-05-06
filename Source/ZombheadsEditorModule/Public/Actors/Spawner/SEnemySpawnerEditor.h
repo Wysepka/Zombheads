@@ -21,6 +21,9 @@ struct FEnemySpawnData_Slate
 	GENERATED_USTRUCT_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere)
+	uint32 ID;
+	
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	TSubclassOf<AEnemyBase> EnemyBP;
 
@@ -33,16 +36,41 @@ public:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite)
 	float DelayBeforeSpawning;
 
-	TWeakObjectPtr<UUEnemyTypeSubclassHolder> HolderBinding;
+	TStrongObjectPtr<UUEnemyTypeSubclassHolder> HolderBinding;
+
+	FEnemySpawnData_Slate() :
+		ID(0),
+		EnemyBP(nullptr),
+		EnemyCount(0),
+		InBetweenSpawnDelay(0),
+		DelayBeforeSpawning(0),
+		HolderBinding(nullptr)
+	{
+		
+	}
 	
 	// Constructor
-	FEnemySpawnData_Slate()
-		: EnemyBP(nullptr),
+	FEnemySpawnData_Slate(uint32 ID)
+		:
+		  ID(ID),
+	      EnemyBP(nullptr),
 		  EnemyCount(0),
 		  InBetweenSpawnDelay(0),
 		  DelayBeforeSpawning(0),
 			HolderBinding(nullptr)	
 	{
+	}
+
+	FEnemySpawnData_Slate(uint32 ID, TSubclassOf<AEnemyBase> EnemyBP , int EnemyCount, float InBetweenDelay , float DelayBeforeSpawn)
+		:
+			ID(ID),
+			EnemyBP(EnemyBP),
+			EnemyCount(EnemyCount),
+			InBetweenSpawnDelay(InBetweenDelay),
+			DelayBeforeSpawning(DelayBeforeSpawn),
+			HolderBinding(nullptr)
+	{
+		
 	}
 };
 
@@ -59,6 +87,8 @@ public:
 	static void OpenWindow(const TArray<TWeakObjectPtr<UObject>>& SelectedActors);
 	static void CloseWindow();
 
+	void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+
 	static TSharedPtr<SWindow> EnemySpawnerEditorWindow;
 	static TSharedPtr<SEnemySpawnerEditor> Instance;
 
@@ -70,14 +100,13 @@ private:
 	TWeakObjectPtr<AEnemySpawner> EnemySpawnerPtr;
 	TSharedPtr<SOverlay> Parent;
 
-	void RefreshList();
+	TSharedPtr<FEnemySpawnData_Slate> SelectedData;
+
+	void RefreshListSource();
 	FReply OnAddNewItem();
-	FReply OnDeleteItem(TSharedPtr<FEnemySpawnData_Slate> Item);
 	FReply OnDeleteItem();
 	void OnItemSelected(TSharedPtr<FEnemySpawnData_Slate> Item, ESelectInfo::Type SelectInfo);
 
 	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FEnemySpawnData_Slate> Item, const TSharedRef<STableViewBase>& OwnerTable);
-
-	void OnTableRowClicked_Custom(TSharedPtr<UUEnemyTypeSubclassHolder>) const;
-	void OnFinishedScrolling();
+	void OnListRowSelectionChanged(TSharedPtr<FEnemySpawnData_Slate> Item, ESelectInfo::Type SelectInfo);
 };

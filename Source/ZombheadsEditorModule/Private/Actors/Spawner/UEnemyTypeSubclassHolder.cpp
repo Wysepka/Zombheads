@@ -29,6 +29,11 @@ void UUEnemyTypeSubclassHolder::PostEditChangeProperty(FPropertyChangedEvent& Pr
 		{
 			ValidateDelayBeforeSpawning();
 		}
+
+		if(EnemySpawnerPtr.IsValid())
+		{
+			EnemySpawnerPtr->PostEditChangeProperty(PropertyChangedEvent);
+		}
 	}
 }
 
@@ -36,23 +41,32 @@ void UUEnemyTypeSubclassHolder::ValidateEnemyBlueprint()
 {
 	if (EnemyBPHolder != nullptr)
 	{
-		auto s = 's';
-		// Perform validation logic here, for example:
-		//UE_LOG(LogTemp, Warning, TEXT("WidgetBlueprint has been changed to %s"), *WidgetBlueprint->GetName());
+		BindedData.Get()->EnemyBP = EnemyBPHolder;
 	}
 }
 
 void UUEnemyTypeSubclassHolder::ValidateEnemyCount()
 {
-	auto s = 's';
+	BindedData.Get()->EnemyCount = EnemyCount;
 }
 
 void UUEnemyTypeSubclassHolder::ValidateInBetweenSpawnDelay()
 {
-	auto s = 's';
+	BindedData.Get()->InBetweenSpawnDelay = InBetweenSpawnDelay;
 }
 
 void UUEnemyTypeSubclassHolder::ValidateDelayBeforeSpawning()
 {
-	auto s = 's';
+	BindedData.Get()->DelayBeforeSpawning = DelayBeforeSpawning;
+}
+
+void UUEnemyTypeSubclassHolder::Init(TSharedPtr<FEnemySpawnData> Data , TStrongObjectPtr<AEnemySpawner> EnemySpawnerPtrOther)
+{
+	BindedData = Data;
+	EnemySpawnerPtr = EnemySpawnerPtrOther;
+}
+
+void UUEnemyTypeSubclassHolder::Dispose()
+{
+	EnemySpawnerPtr.Reset();
 }

@@ -32,11 +32,24 @@ void FCustomEnemySpawnerExtension::CustomizeDetails(IDetailLayoutBuilder& Detail
 			SNew(SButton)
 			.Text(FText::FromString("Open Standalone Editor"))
 			.ToolTipText(FText::FromString("Click to open the standalone editor window for this actor."))
-			.OnClicked(this, &FCustomEnemySpawnerExtension::OnButtonClick)
+			.OnClicked(this, &FCustomEnemySpawnerExtension::OnStandaloneEditorButtonClick)
 		];
+
+	CustomCategory.AddCustomRow(FText::FromString("Clear Data"))
+	.ValueContent()
+	// Provide enough space for the button
+	.HAlign(HAlign_Left)
+	.VAlign(VAlign_Center)
+	.MaxDesiredWidth(250)
+	[
+		SNew(SButton)
+		.Text(FText::FromString("Clear Spawner Datas"))
+		.ToolTipText(FText::FromString("Click to clear Spawner Datas in EnemySpawner."))
+		.OnClicked(this, &FCustomEnemySpawnerExtension::OnClearSpawnDatasButtonClick)
+	];
 }
 
-FReply FCustomEnemySpawnerExtension::OnButtonClick()
+FReply FCustomEnemySpawnerExtension::OnStandaloneEditorButtonClick()
 {
 	// Logic to open the standalone editor window goes here
 	// For now, we'll just print a log message
@@ -45,5 +58,26 @@ FReply FCustomEnemySpawnerExtension::OnButtonClick()
 	//SEnemySpawnerEditor::OpenWindow(DetailBuilderRef->GetSelectedObjects());
 	SEnemySpawnerEditor::OpenWindow(DetailBuilderRef->GetSelectedObjects());
 	
+	return FReply::Handled();
+}
+
+FReply FCustomEnemySpawnerExtension::OnClearSpawnDatasButtonClick()
+{
+	for (const TWeakObjectPtr<UObject>& Actor : DetailBuilderRef->GetSelectedObjects())
+	{
+		if (Actor.IsValid())
+		{
+			UE_LOG(LogTemp, Log, TEXT("Selected Actor: %s"), *Actor->GetName());
+			TSoftObjectPtr<AEnemySpawner> EnemySpawnerPtr = Cast<AEnemySpawner>(Actor);
+			if(!EnemySpawnerPtr.IsValid())
+			{
+				//LOG_MISSING_COMPONENT("Opened Element In Outliner %s is not EnemySpawner blueprint instance !" , *Actor , *Actor->GetName());
+				return FReply::Handled();
+			}
+			EnemySpawnerPtr.Get()->ClearSpawnerDatas();
+			return FReply::Handled();
+			//EditorWindow->EnemySpawnerPtr = EnemySpawnerPtr;
+		}
+	}
 	return FReply::Handled();
 }

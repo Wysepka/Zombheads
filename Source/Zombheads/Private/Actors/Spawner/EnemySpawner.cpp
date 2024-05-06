@@ -25,3 +25,51 @@ void AEnemySpawner::Tick(float DeltaTime)
 
 }
 
+TArray<FEnemySpawnData>& AEnemySpawner::GetSpawnerDatas()
+{
+	return SpawnerDatas;
+}
+
+FEnemySpawnData& AEnemySpawner::GetSpawnData(int ID)
+{
+	if(ID >= SpawnerDatas.Num() || ID < 0)
+	{
+		//TO DO Fix this ugly return :(
+		UE_LOG(LogTemp , Log , TEXT("Trying to aquire SpawnerDatas ID: %d but SpawnerDatas Count is: %d") , ID , SpawnerDatas.Num());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Trying to obtain ID: %d , which is greater than SpawnerDatas Count: %d") , ID , SpawnerDatas.Num()));
+		return *new FEnemySpawnData();
+	}
+
+	return SpawnerDatas[ID];
+}
+
+bool AEnemySpawner::DeleteSpawnData(int ID)
+{
+	if(ID >= SpawnerDatas.Num() || ID < 0)
+	{
+		UE_LOG(LogTemp , Log , TEXT("Trying to aquire SpawnerDatas ID: %d but SpawnerDatas Count is: %d") , ID , SpawnerDatas.Num());
+		GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("Trying to obtain ID: %d , which is greater than SpawnerDatas Count: %d") , ID , SpawnerDatas.Num()));
+		return false;
+	}
+
+	SpawnerDatas.RemoveAt(ID);
+	return true;
+}
+
+void AEnemySpawner::AddSpawnData()
+{
+	SpawnerDatas.Add(FEnemySpawnData());
+}
+
+int AEnemySpawner::GetSpawnDatasCount()
+{
+	return SpawnerDatas.Num();
+}
+
+void AEnemySpawner::ClearSpawnerDatas()
+{
+	SpawnerDatas = TArray<FEnemySpawnData>();
+}
+
+
+

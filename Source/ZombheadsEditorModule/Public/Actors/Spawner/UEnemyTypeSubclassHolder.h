@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
 #include "Zombheads/Public/Actors/Enemy/EnemyBase.h"
+#include "Zombheads/Public/Actors/Spawner/EnemySpawner.h"
 #include "UEnemyTypeSubclassHolder.generated.h"
 
 /**
@@ -22,6 +23,15 @@ public:
 	void ValidateEnemyCount();
 	void ValidateInBetweenSpawnDelay();
 	void ValidateDelayBeforeSpawning();
+
+	void Init(TSharedPtr<FEnemySpawnData> Data , TStrongObjectPtr<AEnemySpawner> EnemySpawnerPtrOther);
+	void Dispose();
+
+	TSharedPtr<FEnemySpawnData> BindedData;
+	TStrongObjectPtr<AEnemySpawner> EnemySpawnerPtr;
+
+	UPROPERTY(VisibleAnywhere, Category="EnemyData")
+	uint32 ID;
 	
 	UPROPERTY(EditAnywhere , Category="EnemyData")
 	TSubclassOf<AEnemyBase> EnemyBPHolder;
