@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "Actors/Enemy/EnemyBase.h"
 #include "GameFramework/Actor.h"
+#include "EnemySpawnPoint.h"
+#include <future>
 #include "EnemySpawner.generated.h"
+
+DECLARE_MULTICAST_DELEGATE(FOnEveryWaveCleared)
 
 USTRUCT(BlueprintType)
 struct FEnemySpawnData
@@ -44,6 +48,16 @@ private:
 	UPROPERTY(EditInstanceOnly , meta = (AllowPrivateAccess = "true"))
 	TArray<FEnemySpawnData> SpawnerDatas;
 	
+	TArray<TWeakObjectPtr<AEnemySpawnPoint>> SpawnPoints;
+	int CurrentWave;
+	int CurrentSpawnPoint;
+	int SpawnedEnemies;
+
+	int CurrentWaveEnemiesDied;
+
+	void OnEnemyDied(TWeakObjectPtr<AEnemyBase> EnemyDied);
+	FTimerHandle SpawnHandle;
+	
 public:	
 	// Sets default values for this actor's properties
 	AEnemySpawner();
@@ -62,7 +76,12 @@ public:
 
 	void AddSpawnData();
 	int GetSpawnDatasCount();
-
 	void ClearSpawnerDatas();
+	void PreInitializeComponents() override;
+	void SpawnWave();
+	void StartSpawning();
 
+	FOnEveryWaveCleared OnEveryWaveCleared;
+	
+	FActorSpawnParameters SpawnParams;
 };

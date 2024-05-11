@@ -3,6 +3,9 @@
 
 #include "Actors/Spawner/EnemySpawner.h"
 
+#include "Actors/Spawner/EnemySpawnPoint.h"
+#include "Managers/GameModeFacade.h"
+
 // Sets default values
 AEnemySpawner::AEnemySpawner()
 {
@@ -70,6 +73,83 @@ void AEnemySpawner::ClearSpawnerDatas()
 {
 	SpawnerDatas = TArray<FEnemySpawnData>();
 }
+
+void AEnemySpawner::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	TArray<AActor*> SpawnPointsTemp;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld() , AEnemySpawnPoint::StaticClass() , SpawnPointsTemp);
+	
+	for (size_t i = 0; i < SpawnPointsTemp.Num(); i++)
+	{
+		SpawnPoints.Add(Cast<AEnemySpawnPoint>(SpawnPointsTemp[i]));
+	}
+	
+ 	TWeakObjectPtr<AGameModeFacade> GameMode = Cast<AGameModeFacade>(GetWorld()->GetAuthGameMode());
+
+	if(GameMode.IsValid())
+	{
+		GameMode->OnAllSystemsInitialized.AddUObject(this, &AEnemySpawner::StartSpawning);
+	}
+}
+
+void AEnemySpawner::StartSpawning()
+{
+	CurrentWave = 0;
+
+	GetWorld()->GetTimerManager().SetTimer(
+		SpawnHandle,
+		this,
+		&AEnemySpawner::SpawnWave,
+		SpawnerDatas[CurrentWave].InBetweenSpawnDelay,
+		true,
+		SpawnerDatas[CurrentWave].DelayBeforeSpawning
+	);
+}
+
+void AEnemySpawner::SpawnWave()
+{
+	int EnemiesToSpawn = SpawnerDatas[CurrentWave].EnemyCount;
+
+	if(SpawnedEnemies == EnemiesToSpawn)
+	{
+		GetWorldTimerManager().ClearTimer(SpawnHandle);
+		SpawnedEnemies = 0;
+	}
+	if(CurrentSpawnPoint >= SpawnPoints.Num())
+	{
+		CurrentSpawnPoint = 0;
+	}
+
+	TWeakObjectPtr<AEnemySpawnPoint> SpawnPoint = SpawnPoints[CurrentSpawnPoint];
+	AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(SpawnerDatas[CurrentWave].EnemyBP, SpawnPoint->GetTransform(), SpawnParams);
+	SpawnedEnemy->OnActorDied.AddUObject(this, &AEnemySpawner::OnEnemyDied);
+	SpawnedEnemies++;
+	CurrentSpawnPoint++;
+}
+
+void AEnemySpawner::OnEnemyDied(TWeakObjectPtr<AEnemyBase> EnemyDied)
+{
+	CurrentWaveEnemiesDied++;
+	if(CurrentWaveEnemiesDied == SpawnerDatas[CurrentWave].EnemyCount)
+	{
+		SpawnedEnemies = 0;
+		CurrentWave++;
+		CurrentWaveEnemiesDied = 0;
+		GetWorld()->GetTimerManager().SetTimer(
+			SpawnHandle,
+			this,
+			&AEnemySpawner::SpawnWave,
+			SpawnerDatas[CurrentWave].InBetweenSpawnDelay,
+			true,
+			SpawnerDatas[CurrentWave].DelayBeforeSpawning
+		);
+	}
+}
+
 
 
 

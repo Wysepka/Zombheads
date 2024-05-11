@@ -70,7 +70,11 @@ void AEnemyBase::BeginPlay()
 	}
 	else
 	{
-		AssetLoaderPin.Get()->GetPrimaryDataAsset<UPDA_Character>(this, CharData);
+		auto CharDataTuple = AssetLoaderPin.Get()->GetPrimaryDataAsset<UPDA_Character>(this, CharData);
+		if(CharDataTuple.Key)
+		{
+			PrimaryDataAssetLoaded(CharData);
+		}
 	}
 	
 	EnemyController = Cast<AEnemyController>(ThisController);
@@ -179,6 +183,11 @@ void AEnemyBase::DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> Vita
 		EnemyController.Get()->Disable();
 		CapsuleCompPtr.Get()->Deactivate();
 		CapsuleCompPtr.Get()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		if(OnActorDied.IsBound())
+		{
+			OnActorDied.Broadcast(TWeakObjectPtr<AEnemyBase>(this));
+		}
 	}
 }
 
@@ -224,7 +233,7 @@ EActorType AEnemyBase::GetActorType()
 void AEnemyBase::PrimaryDataAssetLoaded(UPDA_Character* Data)
 {
 	CharData = Data;
-	TSoftObjectPtr<UActorVitalityComponent> VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
+	const TSoftObjectPtr<UActorVitalityComponent> VitalityComponent = FindComponentByClass<UActorVitalityComponent>();
 	if(!VitalityComponent.IsValid())
 	{
 		LOG_MISSING_COMPONENT("Missing Component: %hs in %s" ,this, typeid(UActorVitalityComponent).name() , *this->GetName());

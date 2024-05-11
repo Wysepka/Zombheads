@@ -9,6 +9,9 @@
 #include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnemyDied , TWeakObjectPtr<AEnemyBase>)
+
+
 UCLASS()
 class ZOMBHEADS_API AEnemyBase : public APawn , public DamageableReceiver , public IAssetLoaderObserver
 {
@@ -54,5 +57,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> VitalityComponent) override;
 	bool GetIsDead();
+
+	FOnEnemyDied OnActorDied;
 	
 };

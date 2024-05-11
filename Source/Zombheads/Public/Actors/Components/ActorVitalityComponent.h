@@ -57,4 +57,5 @@ public:
 	virtual void TakeDamage(float value) override;
 	virtual FDelegateHandle RegisterToDamageTaken(DamageableReceiver* DamageableReceiver) override;
 	virtual void UnregisterToDamageTaken(FDelegateHandle RegisterHandle) override;
+
 };

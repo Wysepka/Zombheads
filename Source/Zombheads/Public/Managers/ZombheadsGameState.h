@@ -3,25 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
-#include "Utility/LogClearer.h"
-#include "GameModeFacade.generated.h"
+#include "GameFramework/GameState.h"
+#include "ZombheadsGameState.generated.h"
 
 /**
  * 
  */
-DECLARE_MULTICAST_DELEGATE(FOnAllSystemsInitialized);
 UCLASS()
-class ZOMBHEADS_API AGameModeFacade : public AGameModeBase
+class ZOMBHEADS_API AZombheadsGameState : public AGameState
 {
 	GENERATED_BODY()
-
-public:
-	void StartPlay() override;
-	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	FOnAllSystemsInitialized OnAllSystemsInitialized;
-
-private:
-	TUniquePtr<LogClearer> LogClearerPtr;
+	
 };

@@ -40,8 +40,8 @@ public:
 	uint32 EnemyCount;
 
 	UPROPERTY(EditAnywhere , Category = "EnemyData")
-	uint32 InBetweenSpawnDelay;
+	float InBetweenSpawnDelay;
 	
 	UPROPERTY(EditAnywhere , Category = "EnemyData")
-	uint32 DelayBeforeSpawning;
+	float DelayBeforeSpawning;
 };

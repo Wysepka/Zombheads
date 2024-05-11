@@ -17,7 +17,6 @@ void SEnemySpawnerEditor::Construct(const FArguments& InArgs)
 	SAssignNew(ListView, SListView<TSharedPtr<FEnemySpawnData_Slate>>)
 	.ListItemsSource(&Items)
 	.OnGenerateRow(this, &SEnemySpawnerEditor::OnGenerateRowForList)
-	.OnFinishedScrolling(FOnFinishedScrolling::CreateLambda([this](){OnFinishedScrolling();}))
 	.ScrollbarVisibility(EVisibility::Visible)
 	.OnSelectionChanged(this, &SEnemySpawnerEditor::OnListRowSelectionChanged);
 
