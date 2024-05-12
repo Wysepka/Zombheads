@@ -101,11 +101,24 @@ void AWeaponBase::WeaponAssetsLoaded(UWeaponsPrimaryDataAsset* DataAsset)
 
 	UseSound = DataAsset->GetWeaponsDataMap()[WeaponID].UseSound;
 	WeaponDamage = DataAsset->GetWeaponsDataMap()[WeaponID].Damage;
+
+	MaxAmmo = DataAsset->GetWeaponsDataMap()[WeaponID].MaxAmmo;
+	CurrentAmmo = MaxAmmo;
 }
 
 void AWeaponBase::Use()
 {
 
+}
+
+int AWeaponBase::GetMaxAmmmo()
+{
+	return MaxAmmo;
+}
+
+int AWeaponBase::GetCurrentAmmo()
+{
+	return CurrentAmmo;
 }
 
 

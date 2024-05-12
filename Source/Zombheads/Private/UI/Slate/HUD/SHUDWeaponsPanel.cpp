@@ -3,6 +3,7 @@
 
 #include "UI/Slate/HUD/SHUDWeaponsPanel.h"
 
+#include "Commandlets/GatherTextCommandlet.h"
 #include "Player/Inventory/Weapons/WeaponFirearm.h"
 
 SHUDWeaponsPanel::SHUDWeaponsPanel()
@@ -26,6 +27,7 @@ SHUDWeaponsPanel::~SHUDWeaponsPanel()
 
 void SHUDWeaponsPanel::Construct(const FArguments& inArgs)
 {
+	SetCanTick(true);
 	PlayerInventoryPtr = inArgs._PlayerInventoryArg;
 	WeaponsDataPtr = inArgs._WeaponsDataArg;
 	VitalityData = inArgs._VitalityDataArg;
@@ -55,45 +57,72 @@ void SHUDWeaponsPanel::Construct(const FArguments& inArgs)
 	AddSlot().Expose(Slot2HZBase);
 
 	Slot1HZBase->AttachWidget(WeaponIconContainer.ToSharedRef());
+
+	FSlateFontInfo FontInfo = FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32);
 	
 	SAssignNew(WeaponAmmoContainer , SBox)
 	.HeightOverride(200.f)
+	.WidthOverride(200.f)
+	.HAlign(HAlign_Center)
+	.VAlign(VAlign_Center)
 	[
 		SAssignNew(WeaponAmmoText , STextBlock)
+		.Visibility(EVisibility::Visible)
+		.ColorAndOpacity(FSlateColor(FLinearColor::White))
+		.ShadowColorAndOpacity(FLinearColor::Black)
+		.ShadowOffset(FIntPoint(-1, 1))
+		.Font(FontInfo)
 	];
 	
 	Slot2HZBase->AttachWidget(WeaponAmmoContainer.ToSharedRef());
 }
 
-void SHUDWeaponsPanel::OnPlayerWeaponChanged(const FString& WeaponID)
+void SHUDWeaponsPanel::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime)
+{
+	if(!CurrentWeaponUsed.IsValid())
+	{
+		return;
+	}
+	FString FormattedText;
+	
+	if(CurrentWeaponUsed.Get()->GetUsableType() == EItemType::Firearm)
+	{
+		FormattedText = FString::Printf(TEXT("%d/%d") , CurrentWeaponUsed->GetCurrentAmmo() , CurrentWeaponUsed->GetMaxAmmmo());
+	}
+	else
+	{
+		FormattedText = FString(TEXT("Infinity"));
+	}
+
+	FText ToWrite = FText::FromString(FormattedText);
+	WeaponAmmoText.Get()->SetText(ToWrite);
+}
+
+void SHUDWeaponsPanel::OnPlayerWeaponChanged(TWeakObjectPtr<UObject> WeaponInstance)
 {
 	
 	TSharedPtr<FSlateBrush> IconBrush;
-	
-	for (int i = 0; i < WeaponEntries.Num(); i++)
+
+	CurrentWeaponUsed = Cast<AWeaponBase>(WeaponInstance.Get());
+	if(CurrentWeaponUsed.IsValid())
 	{
-		if(WeaponEntries[i].GetWeaponID() == WeaponID)
+		for (int i = 0; i < WeaponEntries.Num(); i++)
 		{
-			IconBrush = WeaponEntries[i].GetIconTextureBrush();
+			if(WeaponEntries[i].GetWeaponID() == CurrentWeaponUsed.Get()->GetWeaponID())
+			{
+				IconBrush = WeaponEntries[i].GetIconTextureBrush();
+			}
 		}
 	}
 	
-	if(IconBrush.IsValid())
+	if(CurrentWeaponUsed.IsValid() && IconBrush.IsValid())
 	{
 		WeaponIconImgPtr->SetImage(IconBrush.Get());
 	}
 	else
 	{
 		WeaponIconImgPtr->SetImage(nullptr);
-		auto s = 's';
 	}
-	
-	
-	/*
-	auto WeaponEntry = WeaponsDataPtr.GetWeaponEntry(WeaponID);
-	auto WeaponIconBrush = WeaponEntry.GetIconTextureBrush();
-	WeaponIconImgPtr.Get()->SetImage(WeaponIconBrush.Get());
-	*/
 }
 
 void SHUDWeaponsPanel::OnInventoryItemUsed(const IUsable& Usable)

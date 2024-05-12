@@ -15,7 +15,7 @@
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FChangedSlotDelegate , int);
 DECLARE_MULTICAST_DELEGATE_OneParam(FInventoryItemUsedDelegate, const IUsable&)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponChanged , const FString&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponChanged , TWeakObjectPtr<UObject>);
 class ZOMBHEADS_API IPlayerInventory
 {
 private:

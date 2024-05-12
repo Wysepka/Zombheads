@@ -32,6 +32,9 @@ struct FWeaponsData {
 
 	UPROPERTY(EditAnywhere , Category = "Weapons")
 	float Damage;
+
+	UPROPERTY(EditAnywhere , Category = "Weapons")
+	int MaxAmmo;
 };
 
 UCLASS()

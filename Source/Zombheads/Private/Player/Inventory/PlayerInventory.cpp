@@ -190,7 +190,7 @@ void PlayerInventory::TryInvokeOnWeaponChangedDelegate()
 			TWeakObjectPtr<AWeaponBase> WeaponBase = Cast<AWeaponBase>(WeaponCache[CurrentSlotEquiped]);
 			if(WeaponBase.IsValid())
 			{
-				WeaponChangedDelegate.Broadcast(WeaponBase->GetWeaponID());
+				WeaponChangedDelegate.Broadcast(TWeakObjectPtr<AWeaponBase>(WeaponBase));
 			}
 			else
 			{
@@ -199,7 +199,7 @@ void PlayerInventory::TryInvokeOnWeaponChangedDelegate()
 		}
 		else
 		{
-			WeaponChangedDelegate.Broadcast("None");
+			WeaponChangedDelegate.Broadcast(TWeakObjectPtr<UObject>(nullptr));
 		}
 	}
 }

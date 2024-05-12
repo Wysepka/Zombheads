@@ -43,6 +43,8 @@ protected:
 	virtual void BeginPlay() override;
 	USoundWave* UseSound;
 	float WeaponDamage;
+	int MaxAmmo;
+	int CurrentAmmo;
 	
 public:	
 	// Called every frame
@@ -51,4 +53,7 @@ public:
 	virtual void DeEquip() override;
 	virtual void Initialize() override;
 	virtual void Use() override;
+
+	int GetMaxAmmmo();
+	int GetCurrentAmmo();
 };

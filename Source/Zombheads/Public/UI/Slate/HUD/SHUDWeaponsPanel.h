@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Player/Inventory/IPlayerInventory.h"
+#include "Player/Inventory/Weapons/WeaponBase.h"
 
 /**
  * 
@@ -22,7 +23,9 @@ class ZOMBHEADS_API SHUDWeaponsPanel: public SHorizontalBox
 	SHUDWeaponsPanel();
 	~SHUDWeaponsPanel();
 	void Construct(const FArguments& inArgs);
+	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
+	
 private:
 	TSharedPtr<SBox> WeaponIconContainer;
 	TSharedPtr<SImage> WeaponIconImgPtr;
@@ -38,6 +41,8 @@ private:
 	FDelegateHandle WeaponChangedHandle;
 	FDelegateHandle InventoryItemUsedHandle;
 
-	void OnPlayerWeaponChanged(const FString& WeaponID);
+	TWeakObjectPtr<AWeaponBase> CurrentWeaponUsed;
+
+	void OnPlayerWeaponChanged(TWeakObjectPtr<UObject> WeaponUsed);
 	void OnInventoryItemUsed(const IUsable& Usable);
 };

@@ -66,4 +66,5 @@ void AWeaponFirearm::Use()
 		OnWeaponShotDelegate.Broadcast(TWeakObjectPtr<AWeaponFirearm>(this));
 	}
 	*/
+	CurrentAmmo--;
 }
