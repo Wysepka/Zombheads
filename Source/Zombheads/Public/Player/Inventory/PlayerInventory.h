@@ -10,7 +10,7 @@
 #include "Data/WeaponsPrimaryDataAsset.h"
 #include "Engine/StaticMeshActor.h"
 #include "GameFramework/Actor.h"
-#include "Player/Inventory/Weapons/WeaponBase.h"
+#include "Utility/DebugUtility.h"
 #include "Player/Inventory/Weapons/Usable.h"
 #include "Components/SceneComponent.h"
 #include "CoreMinimal.h"
@@ -40,12 +40,14 @@ private:
 	USkeletalMeshComponent* SkeletalMeshComp;
 	FChangedSlotDelegate ChangedSlotDelegate;
 	FInventoryItemUsedDelegate InventoryItemUsedDelegate;
+	FOnWeaponChanged WeaponChangedDelegate;
 
 public:
 	PlayerInventory(const TWeakObjectPtr<USceneComponent>& ActiveContainer, const TWeakObjectPtr<USceneComponent>& DisabledContainer ,const TWeakObjectPtr<AActor>& Owner , UWorld* World);
 	~PlayerInventory();
 
 	virtual void Equip1Slot() override;
+	void TryInvokeOnWeaponChangedDelegate();
 	virtual void Equip2Slot() override;
 	virtual void PreloadInventory(AAssetLoaderInitializer* AssetInitializer) override;
 	virtual void GetWeaponsFromData(UWeaponsPrimaryDataAsset* WeaponsData) override;
@@ -55,6 +57,7 @@ public:
 
 	virtual FChangedSlotDelegate* GetChangedSlotDelegate() override;
 	virtual FInventoryItemUsedDelegate* GetInventoryItemUsedDelegate() override;
+	virtual FOnWeaponChanged* GetWeaponChangedDelegate() override;
 
 	inline const static FString WeaponSocketRightID = FString("Socket_Weapon_Right");
 };

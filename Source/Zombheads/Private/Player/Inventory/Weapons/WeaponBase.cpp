@@ -11,6 +11,11 @@ AWeaponBase::AWeaponBase()
 
 }
 
+const FString& AWeaponBase::GetWeaponID()
+{
+	return WeaponID;
+}
+
 // Called when the game starts or when spawned
 void AWeaponBase::BeginPlay()
 {

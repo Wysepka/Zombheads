@@ -36,6 +36,7 @@ private:
 public:	
 	// Sets default values for this actor's properties
 	AWeaponBase();
+	const FString& GetWeaponID();
 
 protected:
 	// Called when the game starts or when spawned

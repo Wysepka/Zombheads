@@ -1,6 +1,8 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 #include "UI/HUDGameplay.h"
+
+#include "Player/PlayerCharacterWrapper.h"
 #include "UI/Slate/HUD/SGameplayHUD.h"
 
 void AHUDGameplay::BeginPlay()
@@ -28,6 +30,7 @@ void AHUDGameplay::BeginPlay()
 	{
 		HUDDataDelegate = arg.Value;
 	}
+	
 	//FTimerHandle testDelegate;
 	//GetWorld()->GetTimerManager().SetTimer<AHUDGameplay>(testDelegate , this , &AHUDGameplay::DestroyWidgets , 5.f , false , 5.f);
 }
@@ -86,6 +89,11 @@ const FHUDVitalityData& AHUDGameplay::GetFHUDVitalityData()
 	return HUDData->GetVitalityData();
 }
 
+const FHUDWeaponsData& AHUDGameplay::GetFHUDWeaponsData()
+{
+	return HUDData->GetWeaponsData();
+}
+
 void AHUDGameplay::InitializeVitalityHUD()
 {
 	//IconBrush = MakeShareable(new FSlateBrush( UWidgetBlueprintLibrary::MakeBrushFromTexture(IconTexture , 0 , 0)));
@@ -109,8 +117,18 @@ void AHUDGameplay::InitializeVitalityHUD()
 			UE_LOG(LogTemp, Log, TEXT("Could not find VitalityComponent, VitalityStat HUD is not initialized"));
 			return;
 		}
+
+		TWeakObjectPtr<AActor> CharWrapperActor = TWeakObjectPtr<AActor>(UGameplayStatics::GetActorOfClass(GetWorld() , APlayerCharacterWrapper::StaticClass()));
+		TWeakObjectPtr<APlayerCharacterWrapper> CharWrapper = Cast<APlayerCharacterWrapper>(CharWrapperActor);
+
+		if(!CharWrapper.IsValid())
+		{
+			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find PlayerCharacterWrapper, WeaponsHUD is not initialized"));
+			UE_LOG(LogTemp, Log, TEXT("Could not find PlayerCharacterWrappers, Players HUD is not initialized"));
+			return;
+		}
 		
-		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this)).VitalityComponentArg(VitalityComp);
+		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this)).VitalityComponentArg(VitalityComp).PlayerInventoryArg(CharWrapper->GetPlayerInventoryInterface());
 		HUDRoot->SetVisibility(EVisibility::Visible);
 
 		SAssignNew(TestContainer, SWeakWidget).PossiblyNullContent(HUDRoot);

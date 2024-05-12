@@ -60,4 +60,10 @@ void AWeaponFirearm::Use()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this , UseSound , Muzzle->GetComponentLocation());
 	}
+	/*
+	if(OnWeaponShotDelegate.IsBound())
+	{
+		OnWeaponShotDelegate.Broadcast(TWeakObjectPtr<AWeaponFirearm>(this));
+	}
+	*/
 }

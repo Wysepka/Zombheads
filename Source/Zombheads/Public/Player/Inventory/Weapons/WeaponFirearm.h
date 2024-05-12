@@ -37,5 +37,4 @@ public:
 	}
 
 	virtual EItemType GetUsableType() const override {return EItemType::Firearm;}
-	
 };

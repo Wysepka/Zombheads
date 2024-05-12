@@ -60,6 +60,14 @@ FInventoryItemUsedDelegate* IPlayerInventory::GetInventoryItemUsedDelegate()
 	return nullptr;
 }
 
+FOnWeaponChanged* IPlayerInventory::GetWeaponChangedDelegate()
+{
+	UE_LOG(LogTemp, Log, TEXT("Returning nullptr from GetWeaponChangedDelegate"));
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("Returning nullptr from GetWeaponChangedDelegate"));
+		
+	return nullptr;
+}
+
 bool IPlayerInventory::IsValid()
 {
 	return bIsValid;

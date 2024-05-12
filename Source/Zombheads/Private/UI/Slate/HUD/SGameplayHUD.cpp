@@ -14,18 +14,28 @@ void SGameplayHUD::Construct(const FArguments& inArgs)
 	ParentOverlaySlot = SNew(SOverlay);
 	ChildSlot.AttachWidget(ParentOverlaySlot.ToSharedRef());
 	
-	SOverlay::FOverlaySlot* ParentSlotBase;
-	ParentOverlaySlot->AddSlot().Expose(ParentSlotBase);
-	ParentSlotBase->SetHorizontalAlignment(HAlign_Right);
-	ParentSlotBase->SetVerticalAlignment(VAlign_Top);
+	SOverlay::FOverlaySlot* VitalityParentSlot;
+	ParentOverlaySlot->AddSlot().Expose(VitalityParentSlot);
+	VitalityParentSlot->SetHorizontalAlignment(HAlign_Right);
+	VitalityParentSlot->SetVerticalAlignment(VAlign_Top);
 
 	SAssignNew(VitalityPanelChild , SHUDVitalityPanel).VitalityDataArg(OwningHUD->GetFHUDVitalityData()).VitalityCompArg(inArgs._VitalityComponentArg);
 	VitalityPanelChild->SetVisibility(EVisibility::Visible);
 	
 	//VitalityPanelChild = SNew(SHUDVitalityPanel);
-	ParentSlotBase->AttachWidget(VitalityPanelChild.ToSharedRef());
+	VitalityParentSlot->AttachWidget(VitalityPanelChild.ToSharedRef());
 
-	ParentSlotBase->SetHorizontalAlignment(HAlign_Right);
+	VitalityParentSlot->SetHorizontalAlignment(HAlign_Right);
+
+	SOverlay::FOverlaySlot* WeaponsParentSlot;
+	ParentOverlaySlot->AddSlot().Expose(WeaponsParentSlot);
+	WeaponsParentSlot->SetHorizontalAlignment(HAlign_Right);
+	WeaponsParentSlot->SetVerticalAlignment(VAlign_Bottom);
+
+	SAssignNew(WeaponPanelChild , SHUDWeaponsPanel).PlayerInventoryArg(inArgs._PlayerInventoryArg.Pin()).WeaponsDataArg(OwningHUD->GetFHUDWeaponsData()).VitalityDataArg(OwningHUD->GetFHUDVitalityData());
+	WeaponPanelChild->SetVisibility(EVisibility::Visible);
+	
+	WeaponsParentSlot->AttachWidget(WeaponPanelChild.ToSharedRef());
 
 	//ParentSlotBase->AttachWidget(VitalityPanelChild.Pin().ToSharedRef());
 }

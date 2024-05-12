@@ -100,6 +100,11 @@ void APlayerCharacterWrapper::PrimaryDataAssetLoaded(UPDA_Character* Data)
 	ApplyBaseSpeed(Data);
 }
 
+TSharedPtr<IPlayerInventory> APlayerCharacterWrapper::GetPlayerInventoryInterface()
+{
+	return Inventory;
+}
+
 void APlayerCharacterWrapper::ApplyBaseSpeed(UPDA_Character* Data)
 {
 	WalkSpeedMultiplier = Data->GetPlayerWalkingSpeed();

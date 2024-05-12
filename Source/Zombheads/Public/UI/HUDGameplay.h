@@ -14,6 +14,7 @@
 #include "Data/AssetLoader.h"
 //#include "Data/AssetLoaderInitializer.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/Inventory/IPlayerInventory.h"
 #include "HUDGameplay.generated.h"
 
 /**
@@ -39,6 +40,7 @@ private:
 	TWeakObjectPtr<UAssetLoader> AssetLoader;
 	TSharedPtr<SWidget> TestContainer;
 	TSharedPtr<SGameplayHUD> HUDRoot;
+	TSharedPtr<IPlayerInventory> PlayerInventory;
 
 	UPROPERTY(EditDefaultsOnly , Category = "Textures" , meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconTexture;
@@ -53,5 +55,6 @@ private:
 public:
 	virtual void PrimaryDataAssetLoaded(UPDA_HUD* Data) override;
 	const FHUDVitalityData& GetFHUDVitalityData();
+	const FHUDWeaponsData& GetFHUDWeaponsData();
 	
 };

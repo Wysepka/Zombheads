@@ -142,4 +142,6 @@ public:
 
 	//Region IAssetLoaderObserver
 	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
+
+	TSharedPtr<IPlayerInventory> GetPlayerInventoryInterface();
 };

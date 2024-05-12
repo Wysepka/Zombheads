@@ -15,6 +15,7 @@
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FChangedSlotDelegate , int);
 DECLARE_MULTICAST_DELEGATE_OneParam(FInventoryItemUsedDelegate, const IUsable&)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeaponChanged , const FString&);
 class ZOMBHEADS_API IPlayerInventory
 {
 private:
@@ -35,6 +36,7 @@ public:
 	virtual bool IsAiming();
 	virtual FChangedSlotDelegate* GetChangedSlotDelegate();
 	virtual FInventoryItemUsedDelegate* GetInventoryItemUsedDelegate();
+	virtual FOnWeaponChanged* GetWeaponChangedDelegate();
 	
 	virtual bool IsValid();
 };

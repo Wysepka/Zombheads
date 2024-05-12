@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/Image.h"
+#include "Containers/Weapons/FHUDWeaponsData.h"
 #include "Engine/DataAsset.h"
 #include "Data/Containers/Vitality/FHUDVitalityData.h"
 #include "PDA_HUD.generated.h"
@@ -22,8 +23,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	UImage* Image;
 
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	FHUDWeaponsData WeaponsData;
+
 public:
 	const FHUDVitalityData& GetVitalityData();
+	const FHUDWeaponsData& GetWeaponsData();
 
 	//inline static FString DefinedAssetKey = "DA_HUD";
 	inline static FString DefinedAssetKey = "PDA_HUD";

@@ -89,6 +89,7 @@ void SHUDVitalityStat::Tick(const FGeometry& AllottedGeometry, const double InCu
 	//return;
 	const float currPercentage = StatPercentageFunction();
 	FillerImg.Get()->SetPercent(currPercentage);
+	IconImg.Get()->SetImage(StatData.GetIconTextureBrush().Get());
 }
 
 

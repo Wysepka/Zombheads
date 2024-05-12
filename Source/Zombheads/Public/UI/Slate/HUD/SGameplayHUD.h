@@ -8,6 +8,7 @@
 //#include "SlateBasics.h"
 #include "SlateCore.h"
 //#include "SlateExtras.h"
+#include "SHUDWeaponsPanel.h"
 #include "UI/HUDGameplay.h"
 
 /**
@@ -18,11 +19,14 @@ class SGameplayHUD : public SCompoundWidget
 	TWeakObjectPtr<AHUDGameplay> OwningHUD;
 	TSharedPtr<SHUDVitalityPanel> VitalityPanelChild;
 	TSharedPtr<SOverlay> ParentOverlaySlot;
+
+	TSharedPtr<SHUDWeaponsPanel> WeaponPanelChild;
 	
 	SLATE_BEGIN_ARGS(SGameplayHUD) {}
 
 	SLATE_ARGUMENT(TWeakObjectPtr<AHUDGameplay>, OwningHUDArg);
 	SLATE_ARGUMENT(TWeakInterfacePtr<IVitalityComponent>, VitalityComponentArg);
+	SLATE_ARGUMENT(TWeakPtr<IPlayerInventory> , PlayerInventoryArg)
 	
 	SLATE_END_ARGS()
 

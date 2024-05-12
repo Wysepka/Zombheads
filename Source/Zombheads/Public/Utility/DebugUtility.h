@@ -21,3 +21,15 @@ do { \
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("%s in %s"), *FullMessage, *Object->GetName())); \
 	UE_LOG(LogTemp, Log, TEXT("%s in: %s"), *FullMessage, *Object->GetName()); \
 } while (false)
+
+#define LOG_MISSING_DATA_ENTRY(Description, ID) \
+	FString FormattedMessage = FString::Printf(TEXT(Description) , ID);\
+	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red, FormattedMessage);\
+	UE_LOG(LogTemp, Log,TEXT("%s"), *FormattedMessage); \
+
+#define LOG_INCORRECT_CAST(Description, FromTypeInstance, ToType) \
+	FString FromTypeString = FString(typeid(FromTypeInstance).name()); \
+	FString ToTypeString = FString(ToType); \
+	FString FormattedMessage = FString::Printf(TEXT(Description) , *FromTypeString , *ToTypeString); \
+	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red, FormattedMessage);\
+	UE_LOG(LogTemp, Log,TEXT("%s"), *FormattedMessage); \

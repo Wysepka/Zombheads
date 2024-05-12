@@ -3,8 +3,8 @@
 //the rights to use, copy, modify, merge, publish, distribute, sublicense, and /or sell copies of the Software, and 
 //to permit persons to whom the Software is furnished to do so, subject to the following conditions
 
+#include "Player/Inventory/Weapons/WeaponFirearm.h"
 #include "Player/Inventory/PlayerInventory.h"
-
 #include "Engine/SkeletalMeshSocket.h"
 
 //const FString PlayerInventory::WeaponSocketRightID = FString("Socket_Weapon_Right");
@@ -130,6 +130,10 @@ void PlayerInventory::Use()
 		{
 			InventoryItemUsedDelegate.Broadcast(*WeaponCache[CurrentSlotEquiped]);
 		}
+		if(WeaponCache[CurrentSlotEquiped]->GetUsableType() == EItemType::Firearm)
+		{
+			
+		}
 	}
 }
 
@@ -146,6 +150,11 @@ FChangedSlotDelegate* PlayerInventory::GetChangedSlotDelegate()
 FInventoryItemUsedDelegate* PlayerInventory::GetInventoryItemUsedDelegate()
 {
 	return &InventoryItemUsedDelegate;
+}
+
+FOnWeaponChanged* PlayerInventory::GetWeaponChangedDelegate()
+{
+	return &WeaponChangedDelegate;
 }
 
 
@@ -167,6 +176,31 @@ void PlayerInventory::Equip1Slot() {
 	if(ChangedSlotDelegate.IsBound())
 	{
 		ChangedSlotDelegate.Broadcast(CurrentSlotEquiped);
+	}
+
+	TryInvokeOnWeaponChangedDelegate();
+}
+
+void PlayerInventory::TryInvokeOnWeaponChangedDelegate()
+{
+	if(WeaponChangedDelegate.IsBound())
+	{
+		if(WeaponCache.Contains(CurrentSlotEquiped) && WeaponCache[CurrentSlotEquiped]->GetUsableType() == EItemType::Firearm)
+		{
+			TWeakObjectPtr<AWeaponBase> WeaponBase = Cast<AWeaponBase>(WeaponCache[CurrentSlotEquiped]);
+			if(WeaponBase.IsValid())
+			{
+				WeaponChangedDelegate.Broadcast(WeaponBase->GetWeaponID());
+			}
+			else
+			{
+				//LOG_INCORRECT_CAST("Could not cast from %s to %s" , *WeaponCache[CurrentSlotEquiped] , AWeaponBase::StaticClass()->GetName());
+			}
+		}
+		else
+		{
+			WeaponChangedDelegate.Broadcast("None");
+		}
 	}
 }
 
@@ -190,5 +224,6 @@ void PlayerInventory::Equip2Slot()
 	{
 		ChangedSlotDelegate.Broadcast(CurrentSlotEquiped);
 	}
+	TryInvokeOnWeaponChangedDelegate();
 }
 

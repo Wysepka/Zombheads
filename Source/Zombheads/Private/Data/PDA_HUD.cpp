@@ -13,3 +13,8 @@ const FHUDVitalityData& UPDA_HUD::GetVitalityData()
 	*/
 	return VitalityData;
 }
+
+const FHUDWeaponsData& UPDA_HUD::GetWeaponsData()
+{
+	return WeaponsData;
+}
