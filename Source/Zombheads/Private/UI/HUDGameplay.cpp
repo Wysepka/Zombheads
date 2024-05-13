@@ -2,6 +2,7 @@
 
 #include "UI/HUDGameplay.h"
 
+#include "Actors/Spawner/IEnemySpawnerInfo.h"
 #include "Player/PlayerCharacterWrapper.h"
 #include "UI/Slate/HUD/SGameplayHUD.h"
 
@@ -127,6 +128,17 @@ void AHUDGameplay::InitializeVitalityHUD()
 			UE_LOG(LogTemp, Log, TEXT("Could not find PlayerCharacterWrappers, Players HUD is not initialized"));
 			return;
 		}
+
+		TArray<AActor*> EnemySpawnerActors;
+		UGameplayStatics::GetAllActorsWithInterface(GetWorld() , UIEnemySpawnerInfo::StaticClass(), EnemySpawnerActors);
+
+		if(EnemySpawnerActors.Num() <= 0)
+		{
+			LOG_EMPTY_ARRAY(FString("EnemySpawnerActors are empty ! Try Another interface lookout"))
+			return;
+		}
+		TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfo = Cast<IIEnemySpawnerInfo>(EnemySpawnerActors[0]);
+			
 		
 		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this)).VitalityComponentArg(VitalityComp).PlayerInventoryArg(CharWrapper->GetPlayerInventoryInterface());
 		HUDRoot->SetVisibility(EVisibility::Visible);
