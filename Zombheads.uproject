@@ -11,12 +11,18 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"CoreUObject",
-				"AIModule"
+				"AIModule",
+				"UMGEditor"
 			]
 		},
 		{
 			"Name": "ZombheadsEditorModule",
 			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "ZombheadsUIModule",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
 	],

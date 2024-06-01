@@ -9,7 +9,7 @@
 /**
  * 
  */
-class ZOMBHEADS_API SHUDWavePanel : SOverlay
+class ZOMBHEADS_API SHUDWavePanel : public SOverlay
 {
 public:
 	SHUDWavePanel();
@@ -17,11 +17,21 @@ public:
 
 	SLATE_BEGIN_ARGS(SHUDWavePanel) {}
 	SLATE_ARGUMENT(TWeakInterfacePtr<IIEnemySpawnerInfo> , EnemySpawnerInfoArg);
+	SLATE_ARGUMENT(TSharedPtr<const FSlateBrush>, BackgroundWaveBrushArg);
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& inArgs);
+	void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
 private:
 	TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfoPtr;
+	TSharedPtr<SImage> ContainerBackgroundImg;
+	TSharedPtr<SHorizontalBox> HorizontalLayout;
 	
+	TSharedPtr<STextBlock> WaveLocTextBlock;
+	TSharedPtr<STextBlock> WaveNumTextBlock;
+	TSharedPtr<const FSlateBrush> BrushBackgroundNew;
+
+	TSharedPtr<SHorizontalBox::FSlot> Layout1Slot;
+	TSharedPtr<SHorizontalBox::FSlot> Layout2Slot;
 };

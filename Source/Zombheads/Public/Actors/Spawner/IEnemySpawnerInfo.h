@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actors/Enemy/EnemyBase.h"
 #include "UObject/Interface.h"
 #include "IEnemySpawnerInfo.generated.h"
 
@@ -22,6 +23,7 @@ class ZOMBHEADS_API IIEnemySpawnerInfo
 
 public:
 	virtual int GetCurrentWave() {return 0;}
+	virtual TSharedPtr<FOnEnemyDied> GetOnEnemyDiedDelegate() {return MakeShareable(new FOnEnemyDied());}
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 };

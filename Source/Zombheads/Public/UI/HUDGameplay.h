@@ -3,18 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidgetBlueprint.h"
 #include "GameFramework/HUD.h"
-//#include "Blueprint/WidgetBlueprintLibrary.h"
-#include "SlateCore.h"
-#include "SlateBasics.h"
-#include "SlateExtras.h"
 #include "Callbacks/AssetLoaderObserver.h"
-#include "Data/AssetLoaderInitializer.h"
 #include "Data/AssetLoader.h"
-//#include "Data/AssetLoaderInitializer.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/Inventory/IPlayerInventory.h"
+#include "ComponentUtility.h"
+#include "Player/PlayerCharacterWrapper.h"
 #include "HUDGameplay.generated.h"
 
 /**
@@ -56,5 +50,6 @@ public:
 	virtual void PrimaryDataAssetLoaded(UPDA_HUD* Data) override;
 	const FHUDVitalityData& GetFHUDVitalityData();
 	const FHUDWeaponsData& GetFHUDWeaponsData();
+	TSharedPtr<const FSlateBrush> GetBackgroundWaveBrush();
 	
 };

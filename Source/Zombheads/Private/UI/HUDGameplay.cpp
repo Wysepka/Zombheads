@@ -1,10 +1,8 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 #include "UI/HUDGameplay.h"
-
-#include "Actors/Spawner/IEnemySpawnerInfo.h"
-#include "Player/PlayerCharacterWrapper.h"
 #include "UI/Slate/HUD/SGameplayHUD.h"
+#include "Zombheads/ZombheadsGameModeBase.h"
 
 void AHUDGameplay::BeginPlay()
 {
@@ -95,6 +93,11 @@ const FHUDWeaponsData& AHUDGameplay::GetFHUDWeaponsData()
 	return HUDData->GetWeaponsData();
 }
 
+TSharedPtr<const FSlateBrush> AHUDGameplay::GetBackgroundWaveBrush()
+{
+	return HUDData->GetBackgroundWaveBrush();
+}
+
 void AHUDGameplay::InitializeVitalityHUD()
 {
 	//IconBrush = MakeShareable(new FSlateBrush( UWidgetBlueprintLibrary::MakeBrushFromTexture(IconTexture , 0 , 0)));
@@ -128,19 +131,28 @@ void AHUDGameplay::InitializeVitalityHUD()
 			UE_LOG(LogTemp, Log, TEXT("Could not find PlayerCharacterWrappers, Players HUD is not initialized"));
 			return;
 		}
-
-		TArray<AActor*> EnemySpawnerActors;
-		UGameplayStatics::GetAllActorsWithInterface(GetWorld() , UIEnemySpawnerInfo::StaticClass(), EnemySpawnerActors);
-
-		if(EnemySpawnerActors.Num() <= 0)
+		
+		
+		TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfo = ComponentUtility::FindActorWithInterface<IIEnemySpawnerInfo , UIEnemySpawnerInfo>(GetWorld());
+		if(!EnemySpawnerInfo.IsValid())
 		{
-			LOG_EMPTY_ARRAY(FString("EnemySpawnerActors are empty ! Try Another interface lookout"))
 			return;
 		}
-		TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfo = Cast<IIEnemySpawnerInfo>(EnemySpawnerActors[0]);
-			
+
+		TWeakObjectPtr<AZombheadsGameModeBase> GameState = ComponentUtility::FindActorOfType<AZombheadsGameModeBase>(GetWorld());
+		if(!GameState.IsValid())
+		{
+			return;
+		}
+
+		TWeakObjectPtr<AZombheadsGameModeBase> ZombheadsGameState = Cast<AZombheadsGameModeBase>(GameState);
+		if(!ZombheadsGameState.IsValid())
+		{
+			return;
+		}
 		
-		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this)).VitalityComponentArg(VitalityComp).PlayerInventoryArg(CharWrapper->GetPlayerInventoryInterface());
+		HUDRoot = SNew(SGameplayHUD).OwningHUDArg(TWeakObjectPtr<AHUDGameplay>(this)).VitalityComponentArg(VitalityComp).PlayerInventoryArg(CharWrapper->GetPlayerInventoryInterface()).EnemySpawnerInfoArg(EnemySpawnerInfo)
+		.StateStatInfoArg(GameState->GetStateStatInfo());
 		HUDRoot->SetVisibility(EVisibility::Visible);
 
 		SAssignNew(TestContainer, SWeakWidget).PossiblyNullContent(HUDRoot);

@@ -19,22 +19,22 @@ struct FWeaponsData {
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Weapons")
-	FString WeaponID;
+	FString WeaponID = "None";
 
 	UPROPERTY(EditAnywhere, Category = "Weapons")
-	TSubclassOf<class AWeaponBase> ActorBlueprint;
+	TSubclassOf<class AWeaponBase> ActorBlueprint = nullptr;
 
 	UPROPERTY(EditAnywhere,Category= "Weapons")
 	uint8 SlotID = 1;
 
 	UPROPERTY(EditAnywhere, Category= "Weapons")
-	USoundWave* UseSound;
+	USoundWave* UseSound = nullptr;
 
 	UPROPERTY(EditAnywhere , Category = "Weapons")
-	float Damage;
+	float Damage = 0.0f;
 
 	UPROPERTY(EditAnywhere , Category = "Weapons")
-	int MaxAmmo;
+	int MaxAmmo = 0;
 };
 
 UCLASS()

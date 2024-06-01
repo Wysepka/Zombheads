@@ -26,9 +26,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	FHUDWeaponsData WeaponsData;
 
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTexture2D> BackgroundWaveTexture;
+
+
+	TSharedPtr<FSlateBrush>  BackgroundWaveBrush;
+
 public:
 	const FHUDVitalityData& GetVitalityData();
 	const FHUDWeaponsData& GetWeaponsData();
+	TSharedPtr<const FSlateBrush> GetBackgroundWaveBrush();
 
 	//inline static FString DefinedAssetKey = "DA_HUD";
 	inline static FString DefinedAssetKey = "PDA_HUD";

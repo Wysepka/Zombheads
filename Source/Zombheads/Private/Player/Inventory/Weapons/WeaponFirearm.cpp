@@ -58,7 +58,7 @@ void AWeaponFirearm::Use()
 	//Super::Use();
 	if(UseSound != nullptr)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this , UseSound , Muzzle->GetComponentLocation());
+		//UGameplayStatics::PlaySoundAtLocation(this , UseSound , Muzzle->GetComponentLocation());
 	}
 	/*
 	if(OnWeaponShotDelegate.IsBound())
