@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/Image.h"
 #include "Containers/Weapons/FHUDWeaponsData.h"
 #include "Engine/DataAsset.h"
+#include "Components/Image.h"
 #include "Data/Containers/Vitality/FHUDVitalityData.h"
 #include "PDA_HUD.generated.h"
 

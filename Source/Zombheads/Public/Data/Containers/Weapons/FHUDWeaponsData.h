@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Utility/DebugUtility.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "FHUDWeaponsData.generated.h"
 
 /**
