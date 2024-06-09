@@ -9,6 +9,13 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Zombie		UMETA(DisplayName = "Zombie"),
+};
+
 UCLASS()
 class ZOMBHEADS_API UPDA_Character : public UPrimaryDataAsset
 {
@@ -35,6 +42,9 @@ private:
 
 	UPROPERTY(EditAnywhere , Category = "Zombie" , meta=(AllowPrivateAccess = "true"))
 	float ZombieMaxHealth;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie" , meta = (AllowPrivateAccess = "true"))
+	TMap<EEnemyType , int32> EnemyKillingPoints;
 	
 public:
 
@@ -48,6 +58,7 @@ public:
 	float GetCharacterStaminaDepletePerSec() const;
 	float GetCharacterStaminaIncreasePerSec() const;
 	float GetZombieMaxHealth() const;
+	auto GetEnemyKillingPoints(EEnemyType EnemyType) const -> int32;
 
 	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override

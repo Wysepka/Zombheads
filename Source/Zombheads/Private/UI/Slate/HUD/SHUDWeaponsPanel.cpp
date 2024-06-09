@@ -2,8 +2,6 @@
 
 
 #include "UI/Slate/HUD/SHUDWeaponsPanel.h"
-
-#include "Commandlets/GatherTextCommandlet.h"
 #include "Player/Inventory/Weapons/WeaponFirearm.h"
 
 SHUDWeaponsPanel::SHUDWeaponsPanel()

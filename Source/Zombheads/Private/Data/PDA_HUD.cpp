@@ -18,3 +18,12 @@ const FHUDWeaponsData& UPDA_HUD::GetWeaponsData()
 {
 	return WeaponsData;
 }
+
+TSharedPtr<const FSlateBrush> UPDA_HUD::GetBackgroundWaveBrush()
+{
+	if(!BackgroundWaveBrush.IsValid())
+	{
+		BackgroundWaveBrush = MakeShareable(new FSlateBrush(UWidgetBlueprintLibrary::MakeBrushFromTexture(BackgroundWaveTexture , 150 , 150)));
+	}
+	return BackgroundWaveBrush;
+}

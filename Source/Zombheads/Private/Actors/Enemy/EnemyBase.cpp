@@ -50,6 +50,11 @@ void AEnemyBase::GetCapsuleComponent()
 	}
 }
 
+int32 AEnemyBase::GetKillingPoints()
+{
+	return KillingPoints;
+}
+
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
@@ -181,8 +186,8 @@ void AEnemyBase::DamageTaken_Receiver(TWeakInterfacePtr<IVitalityComponent> Vita
 		AnimInstance.Get()->IsDead = true;
 		Controller.Get()->StopMovement();
 		EnemyController.Get()->Disable();
-		CapsuleCompPtr.Get()->Deactivate();
 		CapsuleCompPtr.Get()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		CapsuleCompPtr.Get()->Deactivate();
 
 		if(OnActorDied.IsBound())
 		{
@@ -239,6 +244,7 @@ void AEnemyBase::PrimaryDataAssetLoaded(UPDA_Character* Data)
 		LOG_MISSING_COMPONENT("Missing Component: %hs in %s" ,this, typeid(UActorVitalityComponent).name() , *this->GetName());
 		return;
 	}
+	KillingPoints = CharData->GetEnemyKillingPoints(EnemyType);
 	LoadVitalityData(VitalityComponent);
 }
 

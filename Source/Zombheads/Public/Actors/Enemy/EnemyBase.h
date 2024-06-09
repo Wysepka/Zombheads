@@ -17,6 +17,9 @@ class ZOMBHEADS_API AEnemyBase : public APawn , public DamageableReceiver , publ
 {
 	GENERATED_BODY()
 private:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere , Category = "Points" , meta = (AllowPrivateAccess = "true"))
+	EEnemyType EnemyType;
 	
 	FDelegateHandle OnReachedDestHandle;
 	TSoftObjectPtr<AEnemyController> EnemyController;
@@ -33,6 +36,7 @@ private:
 	virtual EActorType GetActorType();
 	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
 	bool IsDead;
+	int32 KillingPoints;
 	
 public:
 	// Sets default values for this pawn's properties
@@ -40,6 +44,7 @@ public:
 	void GetDamageableComponent(TSoftObjectPtr<UActorComponent> VitalityComponent);
 	void GetVitalityComponent(TSoftObjectPtr<UActorComponent>& VitalityComponent);
 	void GetCapsuleComponent();
+	int32 GetKillingPoints();
 
 protected:
 	UPDA_Character* CharData;

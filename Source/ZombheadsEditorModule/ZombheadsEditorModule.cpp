@@ -4,7 +4,7 @@
 #include "PropertyEditorModule.h"
 #include "Extensions/FCustomEnemySpawnerExtension.h"
 
-IMPLEMENT_GAME_MODULE(FZombheadsEditorModule, ZombheadsEditorModule);
+IMPLEMENT_MODULE(FZombheadsEditorModule, ZombheadsEditorModule);
 
 void FZombheadsEditorModule::StartupModule()
 {
