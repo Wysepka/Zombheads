@@ -4,6 +4,21 @@
 #include "UI/Slate/HUD/SGameplayHUD.h"
 #include "Zombheads/ZombheadsGameModeBase.h"
 
+void AHUDGameplay::InitializeUIManager()
+{
+	if(!IsValid(UIManager))
+	{
+		LOG_MISSING_COMPONENT("UIManager is not set in %s, UIManager Type: %s " , *this, *UUIManager::StaticClass()->GetName());
+		return;
+	}
+	UIManagerPtr = TWeakObjectPtr<UUIManager>(CreateWidget<UUIManager>(GetWorld(), UIManager, FName("UIManager")));
+	if (UIManagerPtr.IsValid())
+	{
+		UIManagerPtr->AddToViewport();
+		UE_LOG(LogTemp, Log, TEXT("UIManager added to viewport"));
+	}
+}
+
 void AHUDGameplay::BeginPlay()
 {
 	Super::BeginPlay();
@@ -29,7 +44,8 @@ void AHUDGameplay::BeginPlay()
 	{
 		HUDDataDelegate = arg.Value;
 	}
-	
+
+	InitializeUIManager();
 	//FTimerHandle testDelegate;
 	//GetWorld()->GetTimerManager().SetTimer<AHUDGameplay>(testDelegate , this , &AHUDGameplay::DestroyWidgets , 5.f , false , 5.f);
 }

@@ -17,6 +17,7 @@ enum class EActorType : uint8
 	Zombie = 2		UMETA(DisplayName = "Zombie"),
 };
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnActorDied, EActorType)
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZOMBHEADS_API UActorVitalityComponent : public UActorComponent , public IVitalityComponent , public IDamageable
 {
@@ -32,6 +33,8 @@ private:
 
 	bool bIsSprintingInput;
 	bool bIsSprintingApplied;
+
+	TSharedPtr<FOnActorDied> OnActorDied;
 
 public:	
 	// Sets default values for this component's properties
@@ -58,4 +61,5 @@ public:
 	virtual FDelegateHandle RegisterToDamageTaken(DamageableReceiver* DamageableReceiver) override;
 	virtual void UnregisterToDamageTaken(FDelegateHandle RegisterHandle) override;
 
+	TSharedPtr<FOnActorDied> GetOnActorDiedDelegate();
 };

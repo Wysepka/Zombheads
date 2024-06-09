@@ -19,6 +19,9 @@ public:
 
 	template <typename ActorType>
 	static TWeakObjectPtr<ActorType> FindActorOfType(UWorld* World);
+
+	template <typename ComponentType>
+	static TWeakObjectPtr<ComponentType> FindComponentOfType(AActor* Actor);
 };
 
 template <typename InterfaceType, typename InterfaceUObject>
@@ -64,3 +67,24 @@ TWeakObjectPtr<ActorType> ComponentUtility::FindActorOfType(UWorld* World)
 
 	return TWeakObjectPtr<ActorType>(FoundActor);
 }
+
+template <typename ComponentType>
+TWeakObjectPtr<ComponentType> ComponentUtility::FindComponentOfType(AActor* Actor)
+{
+	if (!Actor)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor is null! Cannot find component."));
+		return nullptr;
+	}
+
+	ComponentType* FoundComponent = Actor->FindComponentByClass<ComponentType>();
+
+	if (!FoundComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Component of type %s not found in actor %s!"), *ComponentType::StaticClass()->GetName(), *Actor->GetName());
+		return nullptr;
+	}
+
+	return TWeakObjectPtr<ComponentType>(FoundComponent);
+}
+

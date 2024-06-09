@@ -9,6 +9,7 @@
 #include "Player/Inventory/IPlayerInventory.h"
 #include "ComponentUtility.h"
 #include "Player/PlayerCharacterWrapper.h"
+#include "Widgets/UIManager.h"
 #include "HUDGameplay.generated.h"
 
 /**
@@ -23,6 +24,7 @@ class ZOMBHEADS_API AHUDGameplay : public AHUD , public IAssetLoaderObserver
 
 protected:
 	void InitializeVitalityHUD();
+	void InitializeUIManager();
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
@@ -35,12 +37,16 @@ private:
 	TSharedPtr<SWidget> TestContainer;
 	TSharedPtr<SGameplayHUD> HUDRoot;
 	TSharedPtr<IPlayerInventory> PlayerInventory;
+	TWeakObjectPtr<UUIManager> UIManagerPtr;
 
 	UPROPERTY(EditDefaultsOnly , Category = "Textures" , meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconTexture;
 	
 	UPROPERTY(EditDefaultsOnly , Category = "HUD" , meta = (AllowPrivateAccess = "true"))
 	UUserWidget* PlayerHUD;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI" , meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUIManager> UIManager;
 
 	TSharedPtr<FSlateBrush> IconBrush;
 

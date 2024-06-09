@@ -142,3 +142,12 @@ void UActorVitalityComponent::UnregisterToDamageTaken(FDelegateHandle RegisterHa
 	TakenDamageDelegate.Remove(RegisterHandle);
 }
 
+TSharedPtr<FOnActorDied> UActorVitalityComponent::GetOnActorDiedDelegate()
+{
+	if(!OnActorDied.IsValid())
+	{
+		OnActorDied = MakeShareable(new FOnActorDied);
+	}
+	return OnActorDied;
+}
+

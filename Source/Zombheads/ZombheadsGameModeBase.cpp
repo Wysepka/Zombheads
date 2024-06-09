@@ -24,6 +24,24 @@ void AZombheadsGameModeBase::BeginPlay() {
 
 	TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfo = ComponentUtility::FindActorWithInterface<IIEnemySpawnerInfo , UIEnemySpawnerInfo>(GetWorld());
 	StateStatInfoPtr = MakeShareable(new StateStatInfo(EnemySpawnerInfo));
+
+	TWeakObjectPtr<APlayerPawn> PlayerPawnPtr = ComponentUtility::FindActorOfType<APlayerPawn>(GetWorld());
+	if(PlayerPawnPtr.IsValid())
+	{
+		TWeakObjectPtr<UActorVitalityComponent> VitalityComponent = ComponentUtility::FindComponentOfType<UActorVitalityComponent>(PlayerPawnPtr.Get());
+		if(VitalityComponent.IsValid())
+		{
+			VitalityComponent->GetOnActorDiedDelegate()->AddUObject(this, &AZombheadsGameModeBase::OnPlayerDied);
+		}
+		else
+		{
+			LOG_EMPTY_ARRAY("Could not Find VitalityComponent EndGameCheck not working for 0 player hp")
+		}
+	}
+	else
+	{
+		LOG_EMPTY_ARRAY("Could not find PlayerPawn EndGameCheck not working for 0 player HP")
+	}
 }
 
 void AZombheadsGameModeBase::BeginDestroy()
@@ -74,6 +92,17 @@ void AZombheadsGameModeBase::PostInitializeComponents()
 	}
 	StateStatInfoPtr = MakeShareable(new StateStatInfo(EnemySpawnerInfo));
 	*/
+}
+
+void AZombheadsGameModeBase::OnPlayerDied(EActorType ActorType)
+{
+	if(ActorType == EActorType::Player)
+	{
+		if(OnEndOfRound->IsBound())
+		{
+			OnEndOfRound->Broadcast();
+		}
+	}
 }
 
 TSharedPtr<StateStatInfo> AZombheadsGameModeBase::GetStateStatInfo()

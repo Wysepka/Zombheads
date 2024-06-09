@@ -12,11 +12,15 @@
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE(FOnEndOfRound);
 DECLARE_MULTICAST_DELEGATE(FOnAllSystemsInitialized);
 UCLASS()
 class ZOMBHEADS_API AZombheadsGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+private:
+	TSharedPtr<FOnEndOfRound> OnEndOfRound; 
 
 public:
 	AZombheadsGameModeBase();
@@ -26,7 +30,7 @@ protected:
 	virtual void BeginDestroy() override;
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void PostInitializeComponents() override;
-
+	void OnPlayerDied(EActorType ActorType);
 
 public:
 	FOnAllSystemsInitialized OnAllSystemsInitialized;
