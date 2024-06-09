@@ -110,6 +110,11 @@ void AEnemySpawner::StartSpawning()
 	);
 }
 
+int AEnemySpawner::GetCurrentWave()
+{
+	return CurrentWave;
+}
+
 void AEnemySpawner::SpawnWave()
 {
 	int EnemiesToSpawn = SpawnerDatas[CurrentWave].EnemyCount;

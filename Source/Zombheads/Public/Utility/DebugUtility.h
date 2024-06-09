@@ -33,3 +33,7 @@ do { \
 	FString FormattedMessage = FString::Printf(TEXT(Description) , *FromTypeString , *ToTypeString); \
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red, FormattedMessage);\
 	UE_LOG(LogTemp, Log,TEXT("%s"), *FormattedMessage); \
+
+#define LOG_EMPTY_ARRAY(Description) \
+	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red, Description); \
+	UE_LOG(LogTemp, Log,TEXT("%s"), *Description); \
