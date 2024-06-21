@@ -389,7 +389,7 @@ void APlayerCharacterWrapper::LookAtMousePos() {
 	//FVector DirOnPlane = WorldLocation - pawnTransform.GetLocation();
 	FVector IntersectionMousePlayerPlane = FMath::RayPlaneIntersection(WorldLocation, WorldDirection, playerPlane);
 	FVector DirToWorldMousePos = (IntersectionMousePlayerPlane - pawnTransform.GetLocation());
-	if (DirToWorldMousePos.Normalize()) {
+	if (DirToWorldMousePos.Normalize() && PawnCharRepresentation != nullptr) {
 		//RotationToMousePos = DirToWorldMousePos.Rotation();
 		PawnCharRepresentation->SetWorldRotation(DirToWorldMousePos.Rotation());
 		//GetPawn()->SetActorRotation(DirToWorldMousePos.Rotation());

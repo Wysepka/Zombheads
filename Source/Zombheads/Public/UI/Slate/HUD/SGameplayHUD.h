@@ -8,8 +8,12 @@
 //#include "SlateBasics.h"
 #include "SlateCore.h"
 //#include "SlateExtras.h"
+#include "SHUDPointsCounter.h"
+#include "SHUDWavePanel.h"
 #include "SHUDWeaponsPanel.h"
 #include "UI/HUDGameplay.h"
+#include "Actors/Spawner/IEnemySpawnerInfo.h"
+#include "Managers/Statistics/StateStatInfo.h"
 
 /**
  * 
@@ -19,6 +23,8 @@ class SGameplayHUD : public SCompoundWidget
 	TWeakObjectPtr<AHUDGameplay> OwningHUD;
 	TSharedPtr<SHUDVitalityPanel> VitalityPanelChild;
 	TSharedPtr<SOverlay> ParentOverlaySlot;
+	TSharedPtr<SHUDWavePanel> WavePanel;
+	TSharedPtr<SHUDPointsCounter> PointsCounter;
 
 	TSharedPtr<SHUDWeaponsPanel> WeaponPanelChild;
 	
@@ -27,7 +33,8 @@ class SGameplayHUD : public SCompoundWidget
 	SLATE_ARGUMENT(TWeakObjectPtr<AHUDGameplay>, OwningHUDArg);
 	SLATE_ARGUMENT(TWeakInterfacePtr<IVitalityComponent>, VitalityComponentArg);
 	SLATE_ARGUMENT(TWeakPtr<IPlayerInventory> , PlayerInventoryArg)
-	
+	SLATE_ARGUMENT(TWeakInterfacePtr<IIEnemySpawnerInfo>, EnemySpawnerInfoArg)
+	SLATE_ARGUMENT(TSharedPtr<StateStatInfo>, StateStatInfoArg)
 	SLATE_END_ARGS()
 
 	SGameplayHUD();

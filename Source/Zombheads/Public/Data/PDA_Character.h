@@ -9,6 +9,13 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Zombie		UMETA(DisplayName = "Zombie"),
+};
+
 UCLASS()
 class ZOMBHEADS_API UPDA_Character : public UPrimaryDataAsset
 {

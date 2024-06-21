@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Utility/DebugUtility.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "FHUDWeaponsData.generated.h"
 
 /**
@@ -18,15 +16,15 @@ struct FHUDWeaponEntry
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapons")
-	FString WeaponID;
+	FString WeaponID = "None";
 
 	UPROPERTY(EditAnywhere, Category = "Weapons")
-	TObjectPtr<UTexture2D> IconTexture;
+	TObjectPtr<UTexture2D> IconTexture = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Weapons")
-	uint32 MaxAmmo;
+	uint32 MaxAmmo = 0;
 	
-	TSharedPtr<FSlateBrush> IconTextureBrush;
+	TSharedPtr<FSlateBrush> IconTextureBrush = nullptr;
 
 public:
 	FString GetWeaponID()
@@ -43,9 +41,9 @@ struct FHUDWeaponsData
 	GENERATED_USTRUCT_BODY()
 private:
 	UPROPERTY(EditDefaultsOnly , meta = (AllowPrivateAccess = "true"))
-	TArray<FHUDWeaponEntry> WeaponData;
+	TArray<FHUDWeaponEntry> WeaponData = TArray<FHUDWeaponEntry>();
 
-	FHUDWeaponEntry DummyEntry;
+	FHUDWeaponEntry DummyEntry = FHUDWeaponEntry();
 	
 public:
 	FHUDWeaponsData();

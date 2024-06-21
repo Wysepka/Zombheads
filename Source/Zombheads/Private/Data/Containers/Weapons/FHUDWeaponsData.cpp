@@ -2,6 +2,8 @@
 
 
 #include "Data/Containers/Weapons/FHUDWeaponsData.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Utility/DebugUtility.h"
 
 TSharedPtr<FSlateBrush> FHUDWeaponEntry::GetIconTextureBrush()
 {

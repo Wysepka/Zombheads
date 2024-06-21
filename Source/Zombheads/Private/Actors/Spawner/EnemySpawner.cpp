@@ -4,7 +4,7 @@
 #include "Actors/Spawner/EnemySpawner.h"
 
 #include "Actors/Spawner/EnemySpawnPoint.h"
-#include "Managers/GameModeFacade.h"
+#include "Zombheads/ZombheadsGameModeBase.h"
 
 // Sets default values
 AEnemySpawner::AEnemySpawner()
@@ -19,6 +19,15 @@ void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AEnemySpawner::BeginDestroy()
+{
+	if(OnEnemyDiedEvent.IsValid())
+	{
+		OnEnemyDiedEvent.Get()->Clear();
+	}
+	Super::BeginDestroy();
 }
 
 // Called every frame
@@ -74,9 +83,9 @@ void AEnemySpawner::ClearSpawnerDatas()
 	SpawnerDatas = TArray<FEnemySpawnData>();
 }
 
-void AEnemySpawner::PreInitializeComponents()
+void AEnemySpawner::PostInitializeComponents()
 {
-	Super::PreInitializeComponents();
+	Super::PostInitializeComponents();
 
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
@@ -87,13 +96,17 @@ void AEnemySpawner::PreInitializeComponents()
 	{
 		SpawnPoints.Add(Cast<AEnemySpawnPoint>(SpawnPointsTemp[i]));
 	}
-	
- 	TWeakObjectPtr<AGameModeFacade> GameMode = Cast<AGameModeFacade>(GetWorld()->GetAuthGameMode());
+
+	const auto DefaultGameMode = GetWorld()->GetAuthGameMode();
+	AZombheadsGameModeBase* ZombheadsGameModeBasePtr = Cast<AZombheadsGameModeBase>(DefaultGameMode); 
+ 	TWeakObjectPtr<AZombheadsGameModeBase> GameMode = TWeakObjectPtr<AZombheadsGameModeBase>(ZombheadsGameModeBasePtr);
 
 	if(GameMode.IsValid())
 	{
 		GameMode->OnAllSystemsInitialized.AddUObject(this, &AEnemySpawner::StartSpawning);
 	}
+
+	OnEnemyDiedEvent = MakeShareable(new FOnEnemyDied());
 }
 
 void AEnemySpawner::StartSpawning()
@@ -108,6 +121,16 @@ void AEnemySpawner::StartSpawning()
 		true,
 		SpawnerDatas[CurrentWave].DelayBeforeSpawning
 	);
+}
+
+int AEnemySpawner::GetCurrentWave()
+{
+	return CurrentWave;
+}
+
+TSharedPtr<FOnEnemyDied> AEnemySpawner::GetOnEnemyDiedDelegate()
+{
+	return OnEnemyDiedEvent;
 }
 
 void AEnemySpawner::SpawnWave()
@@ -134,6 +157,10 @@ void AEnemySpawner::SpawnWave()
 void AEnemySpawner::OnEnemyDied(TWeakObjectPtr<AEnemyBase> EnemyDied)
 {
 	CurrentWaveEnemiesDied++;
+	if(OnEnemyDiedEvent.Get()->IsBound())
+	{
+		OnEnemyDiedEvent.Get()->Broadcast(EnemyDied);
+	}
 	if(CurrentWaveEnemiesDied == SpawnerDatas[CurrentWave].EnemyCount)
 	{
 		SpawnedEnemies = 0;

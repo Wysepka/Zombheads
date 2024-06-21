@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "EnemySpawnPoint.h"
 #include <future>
+
+#include "IEnemySpawnerInfo.h"
 #include "EnemySpawner.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnEveryWaveCleared)
@@ -40,7 +42,7 @@ public:
 };
 
 UCLASS()
-class ZOMBHEADS_API AEnemySpawner : public AActor
+class ZOMBHEADS_API AEnemySpawner : public AActor , public IIEnemySpawnerInfo
 {
 	GENERATED_BODY()
 	
@@ -65,6 +67,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
 public:	
 	// Called every frame
@@ -77,11 +80,17 @@ public:
 	void AddSpawnData();
 	int GetSpawnDatasCount();
 	void ClearSpawnerDatas();
-	void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 	void SpawnWave();
 	void StartSpawning();
 
+	virtual int GetCurrentWave() override;
+	virtual TSharedPtr<FOnEnemyDied> GetOnEnemyDiedDelegate() override;
+	
 	FOnEveryWaveCleared OnEveryWaveCleared;
 	
 	FActorSpawnParameters SpawnParams;
+
+	TSharedPtr<FOnEnemyDied> OnEnemyDiedEvent;
+	
 };
