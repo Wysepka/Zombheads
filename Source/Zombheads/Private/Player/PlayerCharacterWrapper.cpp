@@ -6,6 +6,7 @@
 
 #include "Data/PDA_Character.h"
 #include "UObject/WeakInterfacePtr.h"
+#include "Zombheads/ZombheadsGameModeBase.h"
 
 APlayerCharacterWrapper::APlayerCharacterWrapper() {
 }
@@ -17,7 +18,9 @@ APlayerCharacterWrapper::APlayerCharacterWrapper() {
 void APlayerCharacterWrapper::BeginPlay() {
 	Super::BeginPlay();
 
-	FInputModeGameOnly InputMode; 
+	bShowMouseCursor = true;
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	SetInputMode(InputMode);
 
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("BeginPlay from Code"));
@@ -84,15 +87,12 @@ void APlayerCharacterWrapper::BeginPlay() {
 	{
 		CharDataDelegate = arg.Value;
 	}
-	/*
-	if(AssetLoader->GetIfCharactersDataInitialized())
+
+	TWeakObjectPtr<AZombheadsGameModeBase> GameMode = TWeakObjectPtr<AZombheadsGameModeBase>(Cast<AZombheadsGameModeBase>(GetWorld()->GetAuthGameMode()));
+	if(GameMode.IsValid())
 	{
-		ApplyBaseSpeed(AssetLoader->GetCharacterData());
-	} else
-	{
-		AssetLoader->GetCharacterDataDelegate()->AddUObject(this, &APlayerCharacterWrapper::ApplyBaseSpeed);
+		GameMode->GetEndOfRound()->AddUObject(this, &APlayerCharacterWrapper::OnRoundEnded);
 	}
-	*/
 }
 
 void APlayerCharacterWrapper::PrimaryDataAssetLoaded(UPDA_Character* Data)
@@ -289,6 +289,24 @@ void APlayerCharacterWrapper::SprintBegin()
 void APlayerCharacterWrapper::SprintEnd()
 {
 	bIsSprinting = false;
+}
+
+void APlayerCharacterWrapper::OnRoundEnded()
+{
+	bShowMouseCursor = true;
+	FInputModeGameAndUI InputMode;
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	SetInputMode(InputMode);
+
+	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer());
+	InputSubsystem->AddMappingContext(PlayerInputData->GetPlayerMappingContext().Get() , 0);
+	
+	UEnhancedInputComponent* Eic = Cast<UEnhancedInputComponent>(this->InputComponent);
+	Eic->ClearActionBindings();
+	Eic->ClearActionEventBindings();
+	Eic->ClearActionValueBindings();
+
+	InputSubsystem->ClearAllMappings();
 }
 
 void APlayerCharacterWrapper::Tick(float delta) {

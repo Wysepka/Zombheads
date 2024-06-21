@@ -24,4 +24,10 @@ public:
 
 private:
 	TUniquePtr<LogClearer> LogClearerPtr;
+	UPROPERTY(Category = "PopUps" , meta = (AllowPrivateAccess = "true") , EditDefaultsOnly)
+	TSubclassOf<UUIEndRoundPopup> EndRoundPopup;
+	
+	TWeakObjectPtr<UUIEndRoundPopup> EndRoundPopupPtr;
+
+	void OnEndOfRound();
 };

@@ -3,31 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetLoader.h"
 #include "GameFramework/Actor.h"
-#include "AssetLoaderInitializer.generated.h"
+#include "Widgets/UIMainMenu.h"
+#include "MainMenuInitializer.generated.h"
 
 UCLASS()
-class ZOMBHEADS_API AAssetLoaderInitializer : public AActor
+class ZOMBHEADS_API AMainMenuInitializer : public AActor
 {
 	GENERATED_BODY()
 
 private:
-	TWeakObjectPtr<UAssetLoader> AssetLoader;
+	UPROPERTY(EditDefaultsOnly, Category = "UI" , meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUIMainMenu> UIMainMenu;
+
+	TWeakObjectPtr<UUIMainMenu> UIMainMenuPtr;
 	
 public:	
 	// Sets default values for this actor's properties
-	AAssetLoaderInitializer();
-	virtual void PostInitializeComponents() override;
+	AMainMenuInitializer();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void BeginDestroy() override;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	TWeakObjectPtr<UAssetLoader> GetAssetLoader();
 
 };

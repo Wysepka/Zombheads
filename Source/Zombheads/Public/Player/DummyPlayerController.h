@@ -3,23 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyAnimInstance.h"
-#include "Animation/AnimInstance.h"
-#include "ZombieAnimInstance.generated.h"
+#include "GameFramework/PlayerController.h"
+#include "DummyPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZOMBHEADS_API UZombieAnimInstance : public UEnemyAnimInstance
+class ZOMBHEADS_API ADummyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-private:
-	TSharedPtr<FOnEnemyHitPerformed> OnEnemyHitPerformed;
 public:
-	
-	UZombieAnimInstance(const FObjectInitializer& ObjectInitializer);
-
-	virtual void OnHitPerformed() override;
-	virtual TSharedPtr<FOnEnemyHitPerformed> GetEnemyHitPerformedDelegate() override;
+	void InitMainMenuSettings();
 };

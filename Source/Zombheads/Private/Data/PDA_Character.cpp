@@ -37,3 +37,27 @@ float UPDA_Character::GetZombieMaxHealth() const
 {
 	return ZombieMaxHealth;
 }
+
+int32 UPDA_Character::GetEnemyKillingPoints(EEnemyType EnemyType) const
+{
+	if(EnemyKillingPoints.Contains(EnemyType))
+	{
+		return EnemyKillingPoints[EnemyType];
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+int32 UPDA_Character::GetEnemyHitDamage(EEnemyType EnemyType) const
+{
+	if(EnemyHitDamage.Contains(EnemyType))
+	{
+		return EnemyHitDamage[EnemyType];
+	}
+	else
+	{
+		return 0;
+	}
+}

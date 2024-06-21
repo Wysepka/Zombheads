@@ -80,4 +80,5 @@ public:
 	FOnStateChanged OnStateChanged;
 	AEnemyController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	void Disable();
+	TSoftObjectPtr<APlayerPawn> GetTargetPlayerPawn();
 };

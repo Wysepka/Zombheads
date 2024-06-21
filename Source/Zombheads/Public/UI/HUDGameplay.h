@@ -15,6 +15,10 @@
 //#include "Data/AssetLoaderInitializer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/Inventory/IPlayerInventory.h"
+#include "ComponentUtility.h"
+#include "Player/PlayerCharacterWrapper.h"
+#include "Widgets/UIMainMenu.h"
+#include "Widgets/UIManager.h"
 #include "HUDGameplay.generated.h"
 
 /**

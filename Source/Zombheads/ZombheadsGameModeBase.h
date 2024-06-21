@@ -21,5 +21,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	FOnAllSystemsInitialized OnAllSystemsInitialized;
+	TSharedPtr<class StateStatInfo> GetStateStatInfo();
+	TSharedPtr<FOnEndOfRound> GetEndOfRound();
+
+private:
+	TUniquePtr<LogClearer> LogClearerPtr;
+	TSharedPtr<StateStatInfo> StateStatInfoPtr;
 	
 };

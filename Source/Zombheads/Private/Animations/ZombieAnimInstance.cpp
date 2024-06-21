@@ -10,3 +10,20 @@ UZombieAnimInstance::UZombieAnimInstance(const FObjectInitializer& ObjectInitial
 	IsWalking = false;
 	IsAttacking = false;
 }
+
+void UZombieAnimInstance::OnHitPerformed()
+{
+	if(OnEnemyHitPerformed->IsBound())
+	{
+		OnEnemyHitPerformed->Broadcast();
+	}
+}
+
+TSharedPtr<FOnEnemyHitPerformed> UZombieAnimInstance::GetEnemyHitPerformedDelegate()
+{
+	if(!OnEnemyHitPerformed.IsValid())
+	{
+		OnEnemyHitPerformed = MakeShareable(new FOnEnemyHitPerformed);
+	}
+	return OnEnemyHitPerformed;
+}

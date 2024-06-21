@@ -25,6 +25,25 @@ void UAssetLoader::LoadAssets(UAssetManager* AssetManager)
 	LoadHUDPrimaryDataAsset();
 }
 
+void UAssetLoader::UnloadAssets(UAssetManager* AssetManager)
+{
+	TArray<FPrimaryAssetId> AssetIDs;
+	TArray<FPrimaryAssetId> AssetIDsWeapons;
+	TArray<FPrimaryAssetId> AssetIDsCharacter;
+	TArray<FPrimaryAssetId> AssetIDsHUD;
+	TArray<FPrimaryAssetId> AssetIDsAnimations;
+	AssetManager->GetPrimaryAssetIdList(FPrimaryAssetType(*UWeaponsPrimaryDataAsset::DefinedAssetKey), AssetIDsWeapons);
+	AssetManager->GetPrimaryAssetIdList(FPrimaryAssetType(*UAnimationsPrimaryDataAsset::DefinedAssetKey), AssetIDsAnimations);
+	AssetManager->GetPrimaryAssetIdList(FPrimaryAssetType(*UPDA_Character::DefinedAssetKey), AssetIDsCharacter);
+	AssetManager->GetPrimaryAssetIdList(FPrimaryAssetType(*UPDA_HUD::DefinedAssetKey), AssetIDsHUD);
+
+	AssetIDs.Append(AssetIDsWeapons);
+	AssetIDs.Append(AssetIDsCharacter);
+	AssetIDs.Append(AssetIDsHUD);
+	AssetIDs.Append(AssetIDsAnimations);
+	auto unloadedAssets = AssetManager->UnloadPrimaryAssets(AssetIDs);
+}
+
 void UAssetLoader::LoadWeaponsPrimaryDataAsset()
 {
 	FPrimaryAssetType PrimaryAssetType = FPrimaryAssetType(*UWeaponsPrimaryDataAsset::DefinedAssetKey);

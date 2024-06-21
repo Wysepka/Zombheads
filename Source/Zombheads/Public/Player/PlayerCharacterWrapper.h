@@ -80,6 +80,8 @@ private:
 	void SprintBegin();
 	void SprintEnd();
 
+	void OnRoundEnded();
+
 	FDelegateHandle CharDataDelegate;
 	TWeakObjectPtr<UAssetLoader> AssetLoader;
 	

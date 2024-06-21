@@ -9,10 +9,12 @@
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE(FOnEnemyHitPerformed);
 UCLASS()
 class ZOMBHEADS_API UEnemyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
+	
 public:
 
 	UEnemyAnimInstance(const FObjectInitializer& ObjectInitializer);
@@ -37,4 +39,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite , Category = "AnimData")
 	TSoftObjectPtr<UAnimSequence> HitSequence;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHitPerformed();
+
+	virtual TSharedPtr<FOnEnemyHitPerformed> GetEnemyHitPerformedDelegate();
 };

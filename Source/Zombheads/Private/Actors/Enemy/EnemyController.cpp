@@ -260,4 +260,9 @@ void AEnemyController::Disable()
 	CrowdFollowingComponentOverriden.Get()->Cleanup();
 }
 
+TSoftObjectPtr<APlayerPawn> AEnemyController::GetTargetPlayerPawn()
+{
+	return TargetPawn;
+}
+
 

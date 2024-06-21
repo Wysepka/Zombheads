@@ -48,6 +48,7 @@ private:
 	void LoadHUDPrimaryDataAsset();
 	
 	void LoadAssets(UAssetManager* AssetManager);
+	void UnloadAssets(UAssetManager* AssetManager);
 	void AssetsLoadedCallback(FPrimaryAssetId ID);
 	UAssetManager* LastAssetManager;
 	

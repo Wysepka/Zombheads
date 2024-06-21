@@ -207,6 +207,7 @@ void AEnemyBase::AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMe
 		return;
 	}
 	AnimInstance = Cast<UEnemyAnimInstance>(AnimInstanceRaw);
+	AnimInstance.Get()->GetEnemyHitPerformedDelegate()->AddUObject(this, &AEnemyBase::OnEnemyAnimHitPerformed);
 	TSoftObjectPtr<UMaterialInterface> EnemyMaterial = EnemyMesh.Get()->GetMaterial(0);
 	if(!EnemyMaterial.IsValid())
 	{
@@ -239,6 +240,13 @@ void AEnemyBase::PrimaryDataAssetLoaded(UPDA_Character* Data)
 		LOG_MISSING_COMPONENT("Missing Component: %hs in %s" ,this, typeid(UActorVitalityComponent).name() , *this->GetName());
 		return;
 	}
+	KillingPoints = CharData->GetEnemyKillingPoints(EnemyType);
+	DamagePoints = CharData->GetEnemyHitDamage(EnemyType);
 	LoadVitalityData(VitalityComponent);
+}
+
+void AEnemyBase::OnEnemyAnimHitPerformed()
+{
+	EnemyController->GetTargetPlayerPawn()->GetDamegeableComponent()->TakeDamage(DamagePoints);
 }
 

@@ -33,6 +33,9 @@ private:
 	bool bIsSprintingInput;
 	bool bIsSprintingApplied;
 
+	TSharedPtr<FOnActorDied> OnActorDied;
+	EActorType ActorType;
+
 public:	
 	// Sets default values for this component's properties
 	UActorVitalityComponent();
@@ -49,7 +52,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
 
-	void LoadData(EActorType ActorType, const TSoftObjectPtr<UPDA_Character>& CharData);
+	void LoadData(EActorType ActorTypeArg, const TSoftObjectPtr<UPDA_Character>& CharData);
 	virtual bool HasStaminaToSprint() const override;
 	virtual bool GetIfSprinting() const override;
 	virtual float CurrentStaminaPercentage() const override;

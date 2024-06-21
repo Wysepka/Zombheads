@@ -56,6 +56,7 @@ private:
 	TWeakInterfacePtr<ICharacterMovement> CharacterMovement;
 	TSoftObjectPtr<UActorVitalityComponent> VitalityComponent;
 	TWeakInterfacePtr<IVitalityComponent> VitalityComponentInterface;
+	TWeakInterfacePtr<IDamageable> DamageableVitalityInterface;
 	
 	UFUNCTION(BlueprintCallable, Category = "Animation")
 	void SetSkeletalMeshComponent_CPP(USkeletalMeshComponent* SkeletelMeshComp);
@@ -127,4 +128,5 @@ public:
 	FPlayerPivotInitialized* GetPlayerPivotInitializedDelegate();
 
 	TWeakInterfacePtr<IVitalityComponent> GetVitalityComponent();
+	TWeakInterfacePtr<IDamageable> GetDamegeableComponent();
 };

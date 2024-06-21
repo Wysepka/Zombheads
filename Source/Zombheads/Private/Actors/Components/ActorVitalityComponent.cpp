@@ -81,9 +81,10 @@ void UActorVitalityComponent::SetupPlayerInputComponent(UInputComponent* PlayerI
 	}
 }
 
-void UActorVitalityComponent::LoadData(EActorType ActorType, const TSoftObjectPtr<UPDA_Character>& CharData)
+void UActorVitalityComponent::LoadData(EActorType ActorTypeArg, const TSoftObjectPtr<UPDA_Character>& CharData)
 {
-	if(ActorType == EActorType::Player)
+	this->ActorType = ActorTypeArg;
+	if(ActorTypeArg == EActorType::Player)
 	{
 		MaxHealth = CharData.Get()->GetCharacterMaxHealth();
 		CurrentHealth = MaxHealth;
@@ -91,7 +92,7 @@ void UActorVitalityComponent::LoadData(EActorType ActorType, const TSoftObjectPt
 		CurrentStamina = MaxStamina;
 		StaminaDepletePerSec = CharData.Get()->GetCharacterStaminaDepletePerSec();
 		StaminaIncreasePerSec = CharData.Get()->GetCharacterStaminaIncreasePerSec();
-	} else if(ActorType == EActorType::Zombie)
+	} else if(ActorTypeArg == EActorType::Zombie)
 	{
 		MaxHealth = CharData.Get()->GetZombieMaxHealth();
 		CurrentHealth = MaxHealth;
@@ -129,6 +130,13 @@ void UActorVitalityComponent::TakeDamage(float value)
 	if(TakenDamageDelegate.IsBound())
 	{
 		TakenDamageDelegate.Broadcast(TWeakInterfacePtr<IVitalityComponent>(this));
+	}
+	if(CurrentHealth <= 0)
+	{
+		if(OnActorDied->IsBound())
+		{
+			OnActorDied->Broadcast(ActorType);
+		}
 	}
 }
 

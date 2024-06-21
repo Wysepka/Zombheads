@@ -11,17 +11,28 @@ AAssetLoaderInitializer::AAssetLoaderInitializer()
 	//AssetLoader = UObject::CreateDefaultSubobject<UAssetLoader>(FName("AssetLoader"));
 }
 
+void AAssetLoaderInitializer::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if(AssetLoader == nullptr)
+	{
+		AssetLoader = TWeakObjectPtr<UAssetLoader>(NewObject<UAssetLoader>(UAssetLoader::StaticClass()));
+	}
+}
+
 // Called when the game starts or when spawned
 void AAssetLoaderInitializer::BeginPlay()
 {
 	Super::BeginPlay();
-	if(AssetLoader == nullptr)
-	{
-		AssetLoader = NewObject<UAssetLoader>(UAssetLoader::StaticClass());
-	}
 	UAssetManager& AssetManager = UAssetManager::Get();
 	GetAssetLoader()->LoadAssets(&AssetManager);
 	//AssetLoader->LoadAssets(&AssetManager);
+}
+
+void AAssetLoaderInitializer::BeginDestroy()
+{
+	Super::BeginDestroy();
+	GetAssetLoader()->UnloadAssets(&UAssetManager::Get());
 }
 
 // Called every frame
@@ -33,11 +44,6 @@ void AAssetLoaderInitializer::Tick(float DeltaTime)
 
 TWeakObjectPtr<UAssetLoader> AAssetLoaderInitializer::GetAssetLoader()
 {
-	if(AssetLoader == nullptr)
-	{
-		UE_LOG(LogTemp , Log, TEXT("AssetLoader is not initialized ! Creating new Instance"));
-		AssetLoader = TWeakObjectPtr<UAssetLoader>(NewObject<UAssetLoader>(UAssetLoader::StaticClass()));
-	}
 	return AssetLoader;
 }
 

@@ -35,6 +35,12 @@ private:
 
 	UPROPERTY(EditAnywhere , Category = "Zombie" , meta=(AllowPrivateAccess = "true"))
 	float ZombieMaxHealth;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie" , meta = (AllowPrivateAccess = "true"))
+	TMap<EEnemyType , int32> EnemyKillingPoints;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie" , meta = (AllowPrivateAccess = "true"))
+	TMap<EEnemyType , int32> EnemyHitDamage;
 	
 public:
 
@@ -48,6 +54,8 @@ public:
 	float GetCharacterStaminaDepletePerSec() const;
 	float GetCharacterStaminaIncreasePerSec() const;
 	float GetZombieMaxHealth() const;
+	auto GetEnemyKillingPoints(EEnemyType EnemyType) const -> int32;
+	int32 GetEnemyHitDamage(EEnemyType EnemyType) const;
 
 	/*
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override

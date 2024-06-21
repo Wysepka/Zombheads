@@ -3,23 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EnemyAnimInstance.h"
-#include "Animation/AnimInstance.h"
-#include "ZombieAnimInstance.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "UIMainMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ZOMBHEADS_API UZombieAnimInstance : public UEnemyAnimInstance
+class ZOMBHEADS_API UUIMainMenu : public UUserWidget
 {
 	GENERATED_BODY()
-private:
-	TSharedPtr<FOnEnemyHitPerformed> OnEnemyHitPerformed;
-public:
-	
-	UZombieAnimInstance(const FObjectInitializer& ObjectInitializer);
 
-	virtual void OnHitPerformed() override;
-	virtual TSharedPtr<FOnEnemyHitPerformed> GetEnemyHitPerformedDelegate() override;
+public:
+	UFUNCTION(BlueprintCallable)
+	void OnStartButton_Pressed();
+
+	UFUNCTION(BlueprintCallable)
+	void OnHighScoresButton_Pressed();
+
+	UFUNCTION(BlueprintCallable)
+	void OnExitButton_Pressed();
 };

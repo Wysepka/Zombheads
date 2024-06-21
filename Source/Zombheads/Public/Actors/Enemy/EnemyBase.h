@@ -32,7 +32,10 @@ private:
 
 	virtual EActorType GetActorType();
 	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
+	void OnEnemyAnimHitPerformed();
 	bool IsDead;
+	int32 KillingPoints;
+	int32 DamagePoints;
 	
 public:
 	// Sets default values for this pawn's properties
