@@ -18,7 +18,7 @@ AEnemySpawner::AEnemySpawner()
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	MaxSpawnDataWaveIdx = SpawnerDatas.Num() - 1;
 }
 
 void AEnemySpawner::BeginDestroy()
@@ -135,7 +135,7 @@ TSharedPtr<FOnEnemyDied> AEnemySpawner::GetOnEnemyDiedDelegate()
 
 void AEnemySpawner::SpawnWave()
 {
-	int EnemiesToSpawn = SpawnerDatas[CurrentWave].EnemyCount;
+	int EnemiesToSpawn = SpawnerDatas[IsOverSpawnData ? MaxSpawnDataWaveIdx : CurrentWave].EnemyCount;
 
 	if(SpawnedEnemies == EnemiesToSpawn)
 	{
@@ -148,7 +148,7 @@ void AEnemySpawner::SpawnWave()
 	}
 
 	TWeakObjectPtr<AEnemySpawnPoint> SpawnPoint = SpawnPoints[CurrentSpawnPoint];
-	AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(SpawnerDatas[CurrentWave].EnemyBP, SpawnPoint->GetTransform(), SpawnParams);
+	AEnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<AEnemyBase>(SpawnerDatas[IsOverSpawnData ? MaxSpawnDataWaveIdx : CurrentWave].EnemyBP, SpawnPoint->GetTransform(), SpawnParams);
 	SpawnedEnemy->OnActorDied.AddUObject(this, &AEnemySpawner::OnEnemyDied);
 	SpawnedEnemies++;
 	CurrentSpawnPoint++;
@@ -166,13 +166,15 @@ void AEnemySpawner::OnEnemyDied(TWeakObjectPtr<AEnemyBase> EnemyDied)
 		SpawnedEnemies = 0;
 		CurrentWave++;
 		CurrentWaveEnemiesDied = 0;
+		IsOverSpawnData = SpawnerDatas.Num() > CurrentWave;
+		int CurrentWaveDataIdx = IsOverSpawnData ? MaxSpawnDataWaveIdx : CurrentWave;
 		GetWorld()->GetTimerManager().SetTimer(
 			SpawnHandle,
 			this,
 			&AEnemySpawner::SpawnWave,
-			SpawnerDatas[CurrentWave].InBetweenSpawnDelay,
+			SpawnerDatas[CurrentWaveDataIdx].InBetweenSpawnDelay,
 			true,
-			SpawnerDatas[CurrentWave].DelayBeforeSpawning
+			SpawnerDatas[CurrentWaveDataIdx].DelayBeforeSpawning
 		);
 	}
 }

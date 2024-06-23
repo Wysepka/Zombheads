@@ -3,24 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "UIMainMenu.generated.h"
+#include "Camera/CameraComponent.h"
 
 /**
  * 
  */
-UCLASS()
-class ZOMBHEADS_API UUIMainMenu : public UUserWidget
+class ZOMBHEADS_API ActorUtility
 {
-	GENERATED_BODY()
-
 public:
-	UFUNCTION(BlueprintCallable)
-	void OnStartButton_Pressed();
+	ActorUtility();
+	~ActorUtility();
 
-	UFUNCTION(BlueprintCallable)
-	void OnHighScoresButton_Pressed();
+	static bool IsMeshRenderedByCamera(USkeletalMeshComponent* MeshComponent, UCameraComponent* CameraComponent);
 
-	UFUNCTION(BlueprintCallable)
-	void OnExitButton_Pressed();
+private:
+	static FMatrix GetCameraProjectionMatrix(UCameraComponent* CameraComponent);
 };

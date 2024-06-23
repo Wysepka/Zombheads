@@ -240,6 +240,11 @@ TWeakInterfacePtr<IDamageable> APlayerPawn::GetDamegeableComponent()
 	return DamageableVitalityInterface;
 }
 
+TWeakObjectPtr<UActorVitalityComponent> APlayerPawn::GetVitalityComponentInstance()
+{
+	return  TWeakObjectPtr<UActorVitalityComponent>(VitalityComponent.Get());
+}
+
 void APlayerPawn::SetSkeletalMeshComponent_CPP(USkeletalMeshComponent* SkeletelMeshComp)
 {
 	this->SkeletalMeshComponent = SkeletelMeshComp;

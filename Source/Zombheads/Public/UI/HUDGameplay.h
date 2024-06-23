@@ -37,12 +37,16 @@ private:
 	TSharedPtr<SWidget> TestContainer;
 	TSharedPtr<SGameplayHUD> HUDRoot;
 	TSharedPtr<IPlayerInventory> PlayerInventory;
+	TWeakObjectPtr<UUIManager> UIManagerInstance;
 
 	UPROPERTY(EditDefaultsOnly , Category = "Textures" , meta = (AllowPrivateAccess = "true"))
 	UTexture2D* IconTexture;
 	
 	UPROPERTY(EditDefaultsOnly , Category = "HUD" , meta = (AllowPrivateAccess = "true"))
 	UUserWidget* PlayerHUD;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI" , meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UUIManager> UIManager;
 
 	TSharedPtr<FSlateBrush> IconBrush;
 

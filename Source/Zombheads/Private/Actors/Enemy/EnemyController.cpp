@@ -11,6 +11,7 @@
 void AEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	CurrentEnemyState = IDLE;
 	AttachToPawn(GetPawn());
 	APawn* EnemyPawn = GetPawn();

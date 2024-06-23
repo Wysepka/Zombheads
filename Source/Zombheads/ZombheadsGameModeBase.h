@@ -13,6 +13,7 @@
  * 
  */
 DECLARE_MULTICAST_DELEGATE(FOnAllSystemsInitialized);
+DECLARE_MULTICAST_DELEGATE(FOnEndOfRound)
 UCLASS()
 class ZOMBHEADS_API AZombheadsGameModeBase : public AGameModeBase
 {
@@ -31,9 +32,10 @@ public:
 	FOnAllSystemsInitialized OnAllSystemsInitialized;
 	TSharedPtr<class StateStatInfo> GetStateStatInfo();
 	TSharedPtr<FOnEndOfRound> GetEndOfRound();
-
 private:
 	TUniquePtr<LogClearer> LogClearerPtr;
 	TSharedPtr<StateStatInfo> StateStatInfoPtr;
-	
+	TSharedPtr<FOnEndOfRound> OnEndOfRound;
+
+	void OnPlayerDied(EActorType ActorType);
 };

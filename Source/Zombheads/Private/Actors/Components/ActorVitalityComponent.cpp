@@ -36,7 +36,6 @@ void UActorVitalityComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -133,7 +132,7 @@ void UActorVitalityComponent::TakeDamage(float value)
 	}
 	if(CurrentHealth <= 0)
 	{
-		if(OnActorDied->IsBound())
+		if(OnActorDied.IsValid() && OnActorDied->IsBound())
 		{
 			OnActorDied->Broadcast(ActorType);
 		}
@@ -148,5 +147,14 @@ FDelegateHandle UActorVitalityComponent::RegisterToDamageTaken(DamageableReceive
 void UActorVitalityComponent::UnregisterToDamageTaken(FDelegateHandle RegisterHandle)
 {
 	TakenDamageDelegate.Remove(RegisterHandle);
+}
+
+TSharedPtr<FOnActorDied> UActorVitalityComponent::GetOnActorDied()
+{
+	if(!OnActorDied.IsValid())
+	{
+		OnActorDied = MakeShareable(new FOnActorDied);
+	}
+	return OnActorDied;
 }
 

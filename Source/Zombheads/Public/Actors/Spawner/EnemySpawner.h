@@ -52,8 +52,10 @@ private:
 	
 	TArray<TWeakObjectPtr<AEnemySpawnPoint>> SpawnPoints;
 	int CurrentWave;
+	int MaxSpawnDataWaveIdx;
 	int CurrentSpawnPoint;
 	int SpawnedEnemies;
+	bool IsOverSpawnData;
 
 	int CurrentWaveEnemiesDied;
 

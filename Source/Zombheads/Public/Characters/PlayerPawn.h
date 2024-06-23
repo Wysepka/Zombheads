@@ -129,4 +129,5 @@ public:
 
 	TWeakInterfacePtr<IVitalityComponent> GetVitalityComponent();
 	TWeakInterfacePtr<IDamageable> GetDamegeableComponent();
+	TWeakObjectPtr<UActorVitalityComponent> GetVitalityComponentInstance();
 };

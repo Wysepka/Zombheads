@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Actors/Enemy/EnemyController.h"
 #include "Animations/EnemyAnimInstance.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "EnemyBase.generated.h"
 
@@ -28,6 +29,7 @@ private:
 	TSoftObjectPtr<UEnemyAnimInstance> AnimInstance;
 	TSoftObjectPtr<UMaterialInstanceDynamic> DynamicEnemyMaterial;
 	TSoftObjectPtr<UCapsuleComponent> CapsuleCompPtr;
+	TWeakObjectPtr<UCameraComponent> CameraComponent;
 
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true") , Category = "Enemy")
 	virtual void AssignSkeletalMesh_Blueprint(USkeletalMeshComponent* SkeletalMeshComponent);
@@ -36,9 +38,12 @@ private:
 	virtual EActorType GetActorType();
 	virtual void PrimaryDataAssetLoaded(UPDA_Character* Data) override;
 	void OnEnemyAnimHitPerformed();
+	void DelayedDestroy();
 	bool IsDead;
 	int32 KillingPoints;
 	int32 DamagePoints;
+	bool IsBeingDestroyed;
+	FTimerHandle DestroyHandle;
 	
 public:
 	// Sets default values for this pawn's properties

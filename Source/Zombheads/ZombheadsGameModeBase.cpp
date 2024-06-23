@@ -30,6 +30,12 @@ void AZombheadsGameModeBase::BeginPlay() {
 
 	TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfo = ComponentUtility::FindActorWithInterface<IIEnemySpawnerInfo , UIEnemySpawnerInfo>(GetWorld());
 	StateStatInfoPtr = MakeShareable(new StateStatInfo(EnemySpawnerInfo));
+
+	auto PlayerPawn = ComponentUtility::FindActorOfType<APlayerPawn>(GetWorld());
+	if(PlayerPawn.IsValid())
+	{
+		PlayerPawn->GetVitalityComponentInstance()->GetOnActorDied()->AddUObject(this, &AZombheadsGameModeBase::OnPlayerDied);
+	}
 }
 
 void AZombheadsGameModeBase::BeginDestroy()

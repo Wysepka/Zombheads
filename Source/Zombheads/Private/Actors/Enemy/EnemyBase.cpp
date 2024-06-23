@@ -3,7 +3,10 @@
 
 #include "Actors/Enemy/EnemyBase.h"
 
+#include "ComponentUtility.h"
 #include "Components/CapsuleComponent.h"
+#include "Player/Camera/TPSCameraActor.h"
+#include "Utility/ActorUtility.h"
 #include "Utility/DebugUtility.h"
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -101,6 +104,13 @@ void AEnemyBase::BeginPlay()
 	}
 
 	GetCapsuleComponent();
+
+	auto CameraClass = ComponentUtility::FindActorOfType<ATPSCameraActor>(GetWorld());
+	CameraComponent = ComponentUtility::FindComponentOfType<UCameraComponent>(CameraClass.Get());
+	if(!CameraComponent.IsValid())
+	{
+		LOG_MISSING_COMPONENT("Missing Camera Component In EnemyBase" , this);
+	}
 }
 
 void AEnemyBase::OnControllerStateChanged(FOnStateChangedData StateData)
@@ -156,6 +166,15 @@ void AEnemyBase::Tick(float DeltaTime)
 		else
 		{
 			AnimInstance->CurrentTime = GetWorld()->GetTimeSeconds();
+		}
+	}
+
+	if(IsDead && IsValid(EnemyMesh) && CameraComponent.IsValid() && IsValid(this))
+	{
+		if(!IsBeingDestroyed)
+		{
+			GetWorld()->GetTimerManager().SetTimer(DestroyHandle , this, &AEnemyBase::DelayedDestroy , 20.f , false);
+			IsBeingDestroyed = true;
 		}
 	}
 }
@@ -253,5 +272,11 @@ void AEnemyBase::PrimaryDataAssetLoaded(UPDA_Character* Data)
 void AEnemyBase::OnEnemyAnimHitPerformed()
 {
 	EnemyController->GetTargetPlayerPawn()->GetDamegeableComponent()->TakeDamage(DamagePoints);
+}
+
+void AEnemyBase::DelayedDestroy()
+{
+	
+	K2_DestroyActor();
 }
 

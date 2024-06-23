@@ -29,6 +29,15 @@ void AHUDGameplay::BeginPlay()
 	{
 		HUDDataDelegate = arg.Value;
 	}
+
+	if(IsValid(UIManager))
+	{
+		UIManagerInstance = TWeakObjectPtr<UUIManager>(CreateWidget<UUIManager>(GetWorld(), UIManager));
+		if(UIManagerInstance.IsValid())
+		{
+			UIManagerInstance->AddToViewport();
+		}
+	}
 	
 	//FTimerHandle testDelegate;
 	//GetWorld()->GetTimerManager().SetTimer<AHUDGameplay>(testDelegate , this , &AHUDGameplay::DestroyWidgets , 5.f , false , 5.f);
