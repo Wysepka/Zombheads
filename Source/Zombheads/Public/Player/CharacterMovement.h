@@ -24,7 +24,7 @@ class ZOMBHEADS_API ICharacterMovement
 public:
 	virtual float GetCharacterWalkSpeed() const;
 	virtual float GetCharacterRunSpeed() const;
-	virtual float GetCharacterMovementMagnitude() const;
+	virtual float GetCharacterMovementMagnitudeZeroGravity() const;
 	virtual bool GetIfCharacterSprinting() const;
 public:
 };

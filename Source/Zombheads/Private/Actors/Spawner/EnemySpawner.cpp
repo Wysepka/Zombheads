@@ -166,7 +166,7 @@ void AEnemySpawner::OnEnemyDied(TWeakObjectPtr<AEnemyBase> EnemyDied)
 		SpawnedEnemies = 0;
 		CurrentWave++;
 		CurrentWaveEnemiesDied = 0;
-		IsOverSpawnData = SpawnerDatas.Num() > CurrentWave;
+		IsOverSpawnData = SpawnerDatas.Num() <= CurrentWave;
 		int CurrentWaveDataIdx = IsOverSpawnData ? MaxSpawnDataWaveIdx : CurrentWave;
 		GetWorld()->GetTimerManager().SetTimer(
 			SpawnHandle,

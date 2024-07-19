@@ -337,8 +337,9 @@ void APlayerCharacterWrapper::Tick(float delta) {
 			{
 				MovementFinal = MovementFinalNormalized * WalkSpeedMultiplier;
 			}
-			
-			PawnMovememt->AddInputVector(MovementFinal);
+
+			MovementFinalAppliedGravity = FVector(MovementFinal.X , MovementFinal.Y , -.1f);
+			PawnMovememt->AddInputVector(MovementFinalAppliedGravity);
 		}
 	}
 }
@@ -359,9 +360,10 @@ bool APlayerCharacterWrapper::GetIfCharacterSprinting() const
 	return bIsSprinting;
 }
 
-float APlayerCharacterWrapper::GetCharacterMovementMagnitude() const
+float APlayerCharacterWrapper::GetCharacterMovementMagnitudeZeroGravity() const
 {
-	return MovementFinal.Size();
+	const FVector MovementFinalZeroGravity = FVector(MovementFinalAppliedGravity.X , MovementFinalAppliedGravity.Y , 0.f);
+	return MovementFinalZeroGravity.Size();
 }
 
 void APlayerCharacterWrapper::LookAtMousePos() {

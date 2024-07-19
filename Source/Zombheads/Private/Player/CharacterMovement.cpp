@@ -19,7 +19,7 @@ float ICharacterMovement::GetCharacterRunSpeed() const
 	return 0.f;
 }
 
-float ICharacterMovement::GetCharacterMovementMagnitude() const
+float ICharacterMovement::GetCharacterMovementMagnitudeZeroGravity() const
 {
 	UE_LOG(LogTemp , Log, TEXT("CharacterMovement method not implemented"))
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("ICharacterMovement not implemented")));

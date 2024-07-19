@@ -11,6 +11,10 @@ StateStatInfo::StateStatInfo()
 StateStatInfo::StateStatInfo(TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfoTemp)
 {
 	CurrentPoints = 0;
+	if(!EnemySpawnerInfoTemp.IsValid())
+	{
+		return;
+	}
 	EnemySpawnerInfo = EnemySpawnerInfoTemp;
 	OnPointsChanged = MakeShareable(new FOnPointsChanged());
 	auto EnemyDiedDlgt = EnemySpawnerInfo->GetOnEnemyDiedDelegate(); 

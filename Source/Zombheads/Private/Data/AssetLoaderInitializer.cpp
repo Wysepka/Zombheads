@@ -14,9 +14,9 @@ AAssetLoaderInitializer::AAssetLoaderInitializer()
 void AAssetLoaderInitializer::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if(AssetLoader == nullptr)
+	if(!AssetLoader.IsValid())
 	{
-		AssetLoader = TWeakObjectPtr<UAssetLoader>(NewObject<UAssetLoader>(UAssetLoader::StaticClass()));
+		AssetLoader = TStrongObjectPtr<UAssetLoader>(NewObject<UAssetLoader>(UAssetLoader::StaticClass()));
 	}
 }
 
@@ -33,6 +33,10 @@ void AAssetLoaderInitializer::BeginDestroy()
 {
 	Super::BeginDestroy();
 	GetAssetLoader()->UnloadAssets(&UAssetManager::Get());
+	if(AssetLoader.IsValid())
+	{
+		AssetLoader.Reset();
+	}
 }
 
 // Called every frame
@@ -44,7 +48,7 @@ void AAssetLoaderInitializer::Tick(float DeltaTime)
 
 TWeakObjectPtr<UAssetLoader> AAssetLoaderInitializer::GetAssetLoader()
 {
-	return AssetLoader;
+	return TWeakObjectPtr<UAssetLoader>(AssetLoader.Get());
 }
 
 

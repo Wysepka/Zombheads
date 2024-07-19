@@ -185,13 +185,16 @@ void AEnemyController::MoveToTarget(const FTransform& TargetTransform)
 			}
 		}
 
-		//Vell we need to update MoveToLocation each frame cuz Pivot position might be changing
-		FAIMoveRequest MoveRequest;
-		MoveToLocation(TargetPivot->GetComponentLocation() , StoppingDistance / 3);
-		//CrowdFollowingComponent->ApplyCrowdAgentPosition(TargetPivot->GetComponentLocation());
-		//CrowdFollowingComponent->ApplyCrowdAgentPosition(GetTransformComponent()->GetComponentLocation());
-		//UCrowdManager::GetCurrent(GetWorld())->UpdateAgentParams(CrowdFollowingComponent.Get());
-		//UCrowdManager::GetCurrent(GetWorld())->UpdateAgentState(CrowdFollowingComponent.Get());
+		//if(MoveRequestResult == EPathFollowingRequestResult::Type::Failed || MoveRequestResult == EPathFollowingRequestResult::Type::AlreadyAtGoal)
+		//{
+			//Vell we need to update MoveToLocation each frame cuz Pivot position might be changing
+			MoveRequestResult = MoveToLocation(TargetPivot->GetComponentLocation() , StoppingDistance / 3);
+			//MoveRequestResult = MoveToActor(GetTargetPlayerPawn().Get() , StoppingDistance / 3);
+			//CrowdFollowingComponent->ApplyCrowdAgentPosition(TargetPivot->GetComponentLocation());
+			//CrowdFollowingComponent->ApplyCrowdAgentPosition(GetTransformComponent()->GetComponentLocation());
+			//UCrowdManager::GetCurrent(GetWorld())->UpdateAgentParams(CrowdFollowingComponent.Get());
+			//UCrowdManager::GetCurrent(GetWorld())->UpdateAgentState(CrowdFollowingComponent.Get());
+		//}
 	} else
 	{
 		if(CurrentEnemyState == TOWARD_TARGET || CurrentEnemyState == IDLE)

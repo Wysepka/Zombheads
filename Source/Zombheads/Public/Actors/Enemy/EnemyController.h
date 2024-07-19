@@ -48,6 +48,7 @@ private:
 	AActor* Target;
 
 	EEnemyState CurrentEnemyState;
+	EPathFollowingRequestResult::Type MoveRequestResult = EPathFollowingRequestResult::Type::Failed;
 
 	UPROPERTY(EditAnywhere , Category = "Settings")
 	float StoppingDistance;

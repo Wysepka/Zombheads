@@ -53,6 +53,7 @@ private:
 	FVector MovementLeft;
 	FVector MovementFinalNormalized;
 	FVector MovementFinal;
+	FVector MovementFinalAppliedGravity;
 	float WalkSpeedMultiplier;
 	float RunSpeedMultiplier;
 	bool bIsSprinting;
@@ -139,7 +140,7 @@ public:
 	virtual float GetCharacterRunSpeed() const override;
 	virtual float GetCharacterWalkSpeed() const override;
 	virtual bool GetIfCharacterSprinting() const override;
-	virtual float GetCharacterMovementMagnitude() const override;
+	virtual float GetCharacterMovementMagnitudeZeroGravity() const override;
 	//End region
 
 	//Region IAssetLoaderObserver

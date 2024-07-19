@@ -89,7 +89,7 @@ void APlayerPawn::Tick(float DeltaTime)
 	if(CharacterMovement.IsValid())
 	{
 		const bool IsSprinting = CharacterMovement.Get()->GetIfCharacterSprinting();
-		const float MovementMagnitude = CharacterMovement.Get()->GetCharacterMovementMagnitude();
+		const float MovementMagnitude = CharacterMovement.Get()->GetCharacterMovementMagnitudeZeroGravity();
 
 		AnimInstance->IsWalking = !FMath::IsNearlyZero(MovementMagnitude);
 		AnimInstance->IsRunning = IsSprinting && !FMath::IsNearlyZero(MovementMagnitude);

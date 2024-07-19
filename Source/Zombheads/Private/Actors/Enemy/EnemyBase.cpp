@@ -74,7 +74,9 @@ void AEnemyBase::BeginPlay()
 	TWeakObjectPtr<UAssetLoader> AssetLoaderPin = AssetLoaderInitializer->GetAssetLoader();
 	if(!AssetLoaderPin.IsValid())
 	{
-		LOG_MISSING_COMPONENT("Could not find AssetLoader in %s" , *this , *this->GetName());
+		auto result = AssetLoaderPin.IsValid();
+		AssetLoaderInitializer->GetAssetLoader();
+		LOG_MISSING_COMPONENT("Could not find AssetLoader in %s" , *this , *this->GetName() , NULL);
 	}
 	else
 	{
