@@ -7,12 +7,12 @@ public class Zombheads : ModuleRules
 	public Zombheads(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "EnhancedInput" , "Slate" , "SlateCore" , "AIModule", "NavigationSystem"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "EnhancedInput" , "Slate" , "SlateCore" , "AIModule", "NavigationSystem" , "UMG"});
 		PrivateDependencyModuleNames.AddRange(new string[] {});
 
 		if (Target.bBuildEditor)
 		{
-			PublicDependencyModuleNames.AddRange(new string[] {"UMG"});
+			//PublicDependencyModuleNames.AddRange(new string[] {"UMG"});
 		}
 	}
 }
