@@ -2,7 +2,9 @@
 Demo Project, Windows inspired by Boxhead 2 Players Flash game made in '00
 Made entirelly in Unreal Engine 5, uses Slate built in UI framework for all HUD elements,
 and Crowd Manager Detour built-in engine pathfinding algorithm for AI for handling complex AI collisions,
-i.e. more than 300 simultaneously Agents, while maintaining reasonable FPS.
+i.e. more than 300 simultaneously Agents, while maintaining reasonable FPS. **Also all Logic
+is implemented in C++, i was making use of Blueprints only if i had to i.e. Animations,
+assigning Actor Components to UFUNCTIONS**
 
 I was working on this project on my free time besides Full Time Job,
 it took 13 months, and meanwhile i learned many basics, and some more
