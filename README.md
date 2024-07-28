@@ -25,4 +25,8 @@ Due to the nature of not-so-good implementation by Unreal Engine Pawn Movement i
 because AI is switching paths every frame
 ![UnrealEditor-Win64-DebugGame_ZeYF4VMeIS](https://github.com/user-attachments/assets/fc46ec81-54c6-408b-b2c6-c2f555d8bd70)
 
+Also project implements seperate Module for Editor Stuff, due to the error inside of Engine
+and help from one of the unreal-engine-discord-fellowship i could not fix it and
+implement seperate module for UI stuff
+
 For more informations contact me wysepkawyspa[D-O-T]gmail.com
