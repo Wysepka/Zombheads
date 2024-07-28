@@ -107,12 +107,17 @@ void AEnemySpawner::PostInitializeComponents()
 	}
 
 	OnEnemyDiedEvent = MakeShareable(new FOnEnemyDied());
+	OnNewWaveSpawned = MakeShareable(new FOnNewWaveSpawned());
 }
 
 void AEnemySpawner::StartSpawning()
 {
 	CurrentWave = 0;
-
+	if(OnNewWaveSpawned.Get()->IsBound())
+	{
+		OnNewWaveSpawned.Get()->Broadcast(CurrentWave+1);
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(
 		SpawnHandle,
 		this,
@@ -131,6 +136,11 @@ int AEnemySpawner::GetCurrentWave()
 TSharedPtr<FOnEnemyDied> AEnemySpawner::GetOnEnemyDiedDelegate()
 {
 	return OnEnemyDiedEvent;
+}
+
+TSharedPtr<FOnNewWaveSpawned> AEnemySpawner::GetOnNewWaveSpanedDelegate()
+{
+	return OnNewWaveSpawned;
 }
 
 void AEnemySpawner::SpawnWave()
@@ -165,6 +175,12 @@ void AEnemySpawner::OnEnemyDied(TWeakObjectPtr<AEnemyBase> EnemyDied)
 	{
 		SpawnedEnemies = 0;
 		CurrentWave++;
+		
+		if(OnNewWaveSpawned.Get()->IsBound())
+		{
+			OnNewWaveSpawned.Get()->Broadcast(CurrentWave + 1);
+		}
+		
 		CurrentWaveEnemiesDied = 0;
 		IsOverSpawnData = SpawnerDatas.Num() <= CurrentWave;
 		int CurrentWaveDataIdx = IsOverSpawnData ? MaxSpawnDataWaveIdx : CurrentWave;

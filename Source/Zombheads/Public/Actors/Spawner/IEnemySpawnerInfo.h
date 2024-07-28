@@ -8,6 +8,8 @@
 #include "IEnemySpawnerInfo.generated.h"
 
 // This class does not need to be modified.
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnNewWaveSpawned , int)
+
 UINTERFACE(MinimalAPI)
 class UIEnemySpawnerInfo : public UInterface
 {
@@ -24,6 +26,7 @@ class ZOMBHEADS_API IIEnemySpawnerInfo
 public:
 	virtual int GetCurrentWave() {return 0;}
 	virtual TSharedPtr<FOnEnemyDied> GetOnEnemyDiedDelegate() {return MakeShareable(new FOnEnemyDied());}
+	virtual TSharedPtr<FOnNewWaveSpawned> GetOnNewWaveSpanedDelegate() {return MakeShareable(new FOnNewWaveSpawned());}
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 };

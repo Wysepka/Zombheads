@@ -70,6 +70,7 @@ void SHUDWeaponsPanel::Construct(const FArguments& inArgs)
 		.ShadowColorAndOpacity(FLinearColor::Black)
 		.ShadowOffset(FIntPoint(-1, 1))
 		.Font(FontInfo)
+		//.Text("Inf/Inf")
 	];
 	
 	Slot2HZBase->AttachWidget(WeaponAmmoContainer.ToSharedRef());
@@ -85,11 +86,12 @@ void SHUDWeaponsPanel::Tick(const FGeometry& AllottedGeometry, const double InCu
 	
 	if(CurrentWeaponUsed.Get()->GetUsableType() == EItemType::Firearm)
 	{
-		FormattedText = FString::Printf(TEXT("%d/%d") , CurrentWeaponUsed->GetCurrentAmmo() , CurrentWeaponUsed->GetMaxAmmmo());
+		FormattedText = FString(TEXT("Inf/Inf"));
+		//FormattedText = FString::Printf(TEXT("%d/%d") , CurrentWeaponUsed->GetCurrentAmmo() , CurrentWeaponUsed->GetMaxAmmmo());
 	}
 	else
 	{
-		FormattedText = FString(TEXT("Infinity"));
+		FormattedText = FString(TEXT("Inf"));
 	}
 
 	FText ToWrite = FText::FromString(FormattedText);
@@ -120,6 +122,7 @@ void SHUDWeaponsPanel::OnPlayerWeaponChanged(TWeakObjectPtr<UObject> WeaponInsta
 	else
 	{
 		WeaponIconImgPtr->SetImage(nullptr);
+		WeaponAmmoText.Get()->SetText(FText::FromString(""));
 	}
 }
 

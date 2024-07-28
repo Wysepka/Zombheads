@@ -8,14 +8,18 @@
 float ICharacterMovement::GetCharacterWalkSpeed() const
 {
 	UE_LOG(LogTemp , Log, TEXT("CharacterMovement method not implemented"))
+#if !UE_BUILD_SHIPPING
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("ICharacterMovement not implemented")));
+#endif
 	return 0.f;
 }
 
 float ICharacterMovement::GetCharacterRunSpeed() const
 {
 	UE_LOG(LogTemp , Log, TEXT("CharacterMovement method not implemented"))
+#if !UE_BUILD_SHIPPING
 	GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , FString::Printf(TEXT("ICharacterMovement not implemented")));
+#endif
 	return 0.f;
 }
 

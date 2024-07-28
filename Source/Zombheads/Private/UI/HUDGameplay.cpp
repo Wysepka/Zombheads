@@ -116,7 +116,9 @@ void AHUDGameplay::InitializeVitalityHUD()
 		AActor* PlayerPawnActor = UGameplayStatics::GetActorOfClass(GetWorld() , APlayerPawn::StaticClass());
 		if(PlayerPawnActor == nullptr)
 		{
+#if !UE_BUILD_SHIPPING
 			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find PlayerPawn actor, VitalityStat HUD is not initialized"));
+#endif
 			UE_LOG(LogTemp, Log, TEXT("Could not find PlayerPawn actor, VitalityStat HUD is not initialized"));
 			return;
 		}
@@ -126,7 +128,10 @@ void AHUDGameplay::InitializeVitalityHUD()
 
 		if(!VitalityComp.IsValid() || VitalityComp == nullptr)
 		{
+			
+#if !UE_BUILD_SHIPPING
 			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find VitalityComponent, VitalityStat HUD is not initialized"));
+#endif
 			UE_LOG(LogTemp, Log, TEXT("Could not find VitalityComponent, VitalityStat HUD is not initialized"));
 			return;
 		}
@@ -136,7 +141,9 @@ void AHUDGameplay::InitializeVitalityHUD()
 
 		if(!CharWrapper.IsValid())
 		{
+#if !UE_BUILD_SHIPPING
 			GEngine->AddOnScreenDebugMessage(-1 , 10.f , FColor::Red , TEXT("Could not find PlayerCharacterWrapper, WeaponsHUD is not initialized"));
+#endif
 			UE_LOG(LogTemp, Log, TEXT("Could not find PlayerCharacterWrappers, Players HUD is not initialized"));
 			return;
 		}

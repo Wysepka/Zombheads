@@ -11,7 +11,6 @@
 #include "IEnemySpawnerInfo.h"
 #include "EnemySpawner.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnEveryWaveCleared)
 
 USTRUCT(BlueprintType)
 struct FEnemySpawnData
@@ -88,8 +87,9 @@ public:
 
 	virtual int GetCurrentWave() override;
 	virtual TSharedPtr<FOnEnemyDied> GetOnEnemyDiedDelegate() override;
+	virtual TSharedPtr<FOnNewWaveSpawned> GetOnNewWaveSpanedDelegate() override;
 	
-	FOnEveryWaveCleared OnEveryWaveCleared;
+	TSharedPtr<FOnNewWaveSpawned> OnNewWaveSpawned;
 	
 	FActorSpawnParameters SpawnParams;
 

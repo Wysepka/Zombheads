@@ -27,6 +27,9 @@ void SHUDWavePanel::Construct(const FArguments& inArgs)
 	AddSlot().Expose(Overlay1Slot);
 	AddSlot().Expose(Overlay2Slot);
 
+	EnemySpawnerInfoPtr->GetOnNewWaveSpanedDelegate()->AddRaw(this, &SHUDWavePanel::OnEnemySpawnCount_Changed);
+
+
 	FSlateFontInfo FontInfo = FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/Roboto-Regular.ttf"), 32);
 	
 	SAssignNew(HorizontalLayout , SHorizontalBox);
@@ -66,7 +69,7 @@ void SHUDWavePanel::Construct(const FArguments& inArgs)
 	.ShadowColorAndOpacity(FLinearColor::Gray)
 	.ShadowOffset(FIntPoint(-1, 1))
 	.Font(FontInfo)
-	.Text(FText::FromString("0"));
+	.Text(FText::FromString("1"));
 
 	Layout1SlotTemp->AttachWidget(WaveLocTextBlock.ToSharedRef());
 	Layout2SlotTemp->AttachWidget(WaveNumTextBlock.ToSharedRef());
@@ -83,5 +86,13 @@ void SHUDWavePanel::Tick(const FGeometry& AllottedGeometry, const double InCurre
 	if(HorizontalLayout.IsValid() && ContainerBackgroundImg.IsValid())
 	{
 		ContainerBackgroundImg->SetDesiredSizeOverride(HorizontalLayout->GetDesiredSize());
+	}
+}
+
+void SHUDWavePanel::OnEnemySpawnCount_Changed(int waveNum)
+{
+	if(WaveNumTextBlock.IsValid())
+	{
+		WaveNumTextBlock->SetText(FText::FromString(FString::FromInt(waveNum)));
 	}
 }

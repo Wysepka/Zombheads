@@ -97,8 +97,10 @@ void AWeaponBase::Initialize()
 void AWeaponBase::WeaponAssetsLoaded(UWeaponsPrimaryDataAsset* DataAsset)
 {
 	UE_LOG(LogTemp, Log, TEXT("Weapon Data Asset loaded"));
+#if !UE_BUILD_SHIPPING
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, FString::Printf(TEXT("Weapon Data Asset loaded")));
-
+#endif
+	
 	UseSound = DataAsset->GetWeaponsDataMap()[WeaponID].UseSound;
 	WeaponDamage = DataAsset->GetWeaponsDataMap()[WeaponID].Damage;
 

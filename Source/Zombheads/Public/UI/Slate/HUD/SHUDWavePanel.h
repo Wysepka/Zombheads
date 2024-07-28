@@ -22,6 +22,7 @@ public:
 
 	void Construct(const FArguments& inArgs);
 	void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+	void OnEnemySpawnCount_Changed(int waveNum);
 
 private:
 	TWeakInterfacePtr<IIEnemySpawnerInfo> EnemySpawnerInfoPtr;

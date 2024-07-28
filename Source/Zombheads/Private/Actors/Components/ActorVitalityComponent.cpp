@@ -98,7 +98,7 @@ void UActorVitalityComponent::LoadData(EActorType ActorTypeArg, const TSoftObjec
 	}
 	else
 	{
-		LOG_MISSING_COMPONENT("Invalid Actor Type in %s, define new type of Actor in %s" ,*this, *UActorVitalityComponent::GetName());
+		LOG_MISSING_COMPONENT("Invalid Actor Type in %s" ,*this, *UActorVitalityComponent::GetName());
 	}
 }
 
