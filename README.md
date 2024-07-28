@@ -4,6 +4,10 @@ Made entirelly in Unreal Engine 5, uses Slate built in UI framework for all HUD 
 and Crowd Manager Detour built-in engine pathfinding algorithm for AI for handling complex AI collisions,
 i.e. more than 300 simultaneously Agents, while maintaining reasonable FPS.
 
+I was working on this project on my free time besides Full Time Job,
+it took 13 months, and meanwhile i learned many basics, and some more
+advanced topics while making it.
+
 ## Working Build
 ### https://drive.google.com/drive/folders/1Tt5LFsXJftc9qYB-8PHjZTHv95R-BrMJ?usp=drive_link
 
